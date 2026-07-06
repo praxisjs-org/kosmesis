@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "experimentalDecorators": false,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "paths": {
+      "@/*": ["../packages/registry/*"]
+    }
+  },
+  "include": [".storybook/**/*.ts", "stories/**/*.ts", "stories/**/*.tsx"]
+}
