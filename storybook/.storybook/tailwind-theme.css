@@ -4,6 +4,23 @@
  * `packages/cli/src/templates/kosmesis-theme-css.ts`). Kept as a literal copy here — same token
  * names and values — since that template is CLI-internal codegen, not a runtime-importable module.
  */
+
+/*
+ * Fixes "reset" as the lowest-priority cascade layer up front, before Tailwind's own
+ * `@layer theme, base, components, utilities;` (emitted by the `@import` below) gets a chance to
+ * register first. This file is always statically bundled — inlined as a dev-mode `<style>` or
+ * extracted into a production `<link rel="stylesheet">` parsed before any JS runs — while
+ * `@praxisjs/css`'s `preflight()` (see `./praxisjs-css-theme`) registers its `@layer reset {...}`
+ * block imperatively at runtime, via `document.head.appendChild`. In a dev build both happen
+ * through JS in import order, so relying on import order alone (reset imported first) used to be
+ * enough. A production build changes only one side of that: Tailwind's CSS becomes a static
+ * `<link>` present at HTML-parse time, ahead of any JS, which flips the effective order and
+ * ranks "reset" above "utilities" — silently wiping out every Tailwind utility class. Naming
+ * "reset" here first is order-independent: whichever of the two loads first, "reset" is already
+ * pinned below "utilities" by the time either supplies its actual rules.
+ */
+@layer reset;
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
