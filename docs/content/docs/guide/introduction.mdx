@@ -1,11 +1,28 @@
 ---
 title: Introduction
-description: Why Kosmesis exists and how it relates to Morphos and shadcn/ui.
+description: The philosophy behind Kosmesis, what it is, and how it relates to Morphos and shadcn/ui.
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-## What is Kosmesis?
+## Philosophy [#philosophy]
+
+Kosmesis (κόσμησις, Greek: adornment, ornamentation — the same root as "cosmetic" and "cosmos").
+Not the structure underneath — the surface applied to it.
+
+[Morphos](https://morphos.praxisjs.org) already decided how a dialog opens, traps focus, and
+closes on Escape. It exposes that as a fact — `data-open` on the root element — and stops there.
+Kosmesis picks up exactly where Morphos stops: rounded corners or square, a blurred backdrop or a
+plain one, a shadow, a color, a transition. None of that is behavior. All of it is Kosmesis.
+
+That split is why Kosmesis isn't a component library you install. A library asks you to configure
+presentation through its props and theme objects — you get however much control it decided to
+expose, and no more. Kosmesis instead copies the presentation straight into your project as plain
+source. `kosmesis add button` writes `button.tsx` into `src/components/ui/`, and from that
+line onward it's your file. Nothing is hidden behind a package boundary, because there is no
+package boundary — just a `Dialog` from Morphos, wearing whatever you decided to put on it.
+
+## What is Kosmesis? [#what-is-kosmesis]
 
 Kosmesis is [shadcn/ui](https://ui.shadcn.com), rebuilt for [PraxisJS](https://praxisjs.org)
 instead of React, and built on top of [Morphos](https://morphos.praxisjs.org) instead of Radix
@@ -18,9 +35,10 @@ Concretely, that means:
   your project.
 - **No runtime dependency on Kosmesis itself.** Once a component is added, your project only
   depends on `@morphos/*` (for the components that wrap a Morphos primitive), `@praxisjs/*`,
-  and a couple of small Tailwind helper packages (`clsx`, `tailwind-merge`).
+  and whichever small styling helpers your chosen style system needs (`clsx` + `tailwind-merge`
+  for Tailwind, nothing extra for `@praxisjs/css`).
 
-## Why not just publish a component library?
+## Why not just publish a component library? [#why-not-a-library]
 
 That's exactly the question shadcn/ui's own docs answer, and the reasoning carries over
 unchanged: a published library is a black box you configure through props and theme objects.
@@ -28,24 +46,48 @@ The moment you need something the library didn't anticipate, you're stuck wrappi
 overriding, or forking. Copy-paste ownership means the component is application code from the
 moment it lands — you can change anything about it immediately, with no escape hatch to design.
 
-## Kosmesis + Morphos
+## What Kosmesis provides [#what-kosmesis-provides]
+
+- **A CLI workflow** — `kosmesis init` scaffolds your chosen style system once; `kosmesis add`
+  resolves a component's dependency closure and writes every file it needs.
+- **Two complete style systems** — Tailwind CSS + `class-variance-authority`, or `@praxisjs/css`
+  (typed CSS-in-TS through the PraxisJS decorator model) — with an identical public prop API
+  either way.
+- **Presentation over Morphos's behavior** — every interactive component is a thin styling layer
+  over the matching Morphos primitive, reading the exact same `data-*` attributes Morphos already
+  exposes.
+- **Components Morphos has no equivalent for** — `Card`, `Badge`, `Table`, `Skeleton`,
+  `Typography`, and others that are pure presentation, built from scratch exactly as shadcn/ui
+  does.
+
+## What Kosmesis does not provide [#what-kosmesis-does-not-provide]
+
+- A package to install and keep up to date. Once copied, a component has no ongoing relationship
+  with Kosmesis — no version to track, no breaking-change migration to run later.
+- Any behavior of its own. Kosmesis never reimplements what Morphos already does — it wraps or
+  directly re-exports the primitive, never both.
+- A fixed design opinion. Variants, tokens, and spacing all live in the copied source — change
+  anything without waiting on an upstream release.
+
+<Callout type="info">
+  Don't want to write every visual detail from scratch? That's the point of copying a working
+  default in the first place — start from a real, styled component and edit only what you need to.
+</Callout>
+
+## Kosmesis + Morphos [#kosmesis-and-morphos]
 
 Every Kosmesis component that wraps interactive behavior — `Dialog`, `Select`, `Accordion`,
 `Tooltip`, and so on — is a thin presentational layer over the equivalent Morphos primitive.
 Morphos already does the hard part: keyboard navigation, focus trapping, ARIA roles, and
 `data-*` state exposure. Kosmesis adds:
 
-- Tailwind CSS v4 utility classes, using `data-[state=open]:`-style variants that read the
-  exact same `data-*` attributes Morphos sets on the component root.
+- Style-system-specific presentation — Tailwind's `data-[state=open]:`-style variants, or
+  `@praxisjs/css`'s `.on("&[data-state]", {...})` selectors — reading the exact same `data-*`
+  attributes Morphos sets on the component root either way.
 - Sensible default composition (e.g. `DialogContent` already renders a backdrop, a close
   button, and padding — you don't have to assemble it from raw Morphos parts every time).
-- `class-variance-authority`-style variant props (`variant`, `size`, ...) matching shadcn/ui's
-  own component APIs, so anyone coming from shadcn/ui feels at home immediately.
-
-Some shadcn/ui components have no Radix equivalent — `Card`, `Badge`, `Table`, `Skeleton`,
-`Typography`. Morphos doesn't have equivalents for these either, for the same reason: they're
-pure presentation with no interactive behavior to make headless. Kosmesis builds these from
-scratch, exactly as shadcn/ui does.
+- Consistent variant props (`variant`, `size`, ...) matching shadcn/ui's own component APIs, so
+  anyone coming from shadcn/ui feels at home immediately.
 
 <Callout type="info">
   Curious which Morphos primitive backs a given component (or whether it's built from scratch)?
@@ -53,12 +95,27 @@ scratch, exactly as shadcn/ui does.
   file — open it and read it.
 </Callout>
 
-## Relationship to the ecosystem
+## Two style systems, chosen once [#two-style-systems]
+
+Every component ships twice: once styled with Tailwind CSS, once with `@praxisjs/css`. The public
+prop API is identical either way — only the styling implementation differs.
+
+| | Tailwind | `@praxisjs/css` |
+|---|---|---|
+| Styling | Utility classes + `class-variance-authority` | Typed CSS-in-TS via the `@Styled` decorator |
+| Runtime dependency | `clsx`, `tailwind-merge`, `tailwindcss` | `@praxisjs/css` only |
+| Best for | Projects already invested in Tailwind | Projects that want styling to be plain TypeScript, no utility-class build step |
+
+`kosmesis init` asks which one you want exactly once, and writes the choice to `components.json`.
+Every later `kosmesis add` reads it from there — a project never mixes the two, the same way
+shadcn/ui never mixes "new-york" and "default" styles in one project.
+
+## Relationship to the ecosystem [#relationship-to-the-ecosystem]
 
 ```
 praxisjs        — the framework (signals, class components, JSX)
 morphos         — headless primitives on top of praxisjs (behavior, a11y, data-* state)
-kosmesis        — copy-paste components on top of morphos (Tailwind presentation, variants)
+kosmesis        — copy-paste components on top of morphos (presentation, in two style systems)
 ```
 
 Ready to try it? Continue to [Getting Started](/docs/guide/getting-started).
