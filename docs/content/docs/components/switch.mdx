@@ -1,0 +1,53 @@
+---
+title: Switch
+description: A toggle switch, wrapping Morphos's Switch primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="switch" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="switch" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-switch--default" title="Default" height={380} />
+    <StorybookEmbed story="tailwind-switch--controlled" title="Controlled" height={380} />
+    <StorybookEmbed story="tailwind-switch--disabled" title="Disabled" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-switch--default" title="Default" height={380} />
+    <StorybookEmbed story="praxiscss-switch--controlled" title="Controlled" height={380} />
+    <StorybookEmbed story="praxiscss-switch--disabled" title="Disabled" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+
+<div class="flex items-center gap-2">
+  <Switch id="airplane-mode" />
+  <Label htmlFor="airplane-mode">Airplane mode</Label>
+</div>
+```
+
+## Props
+
+Passes through to Morphos's `Switch` — `checked`, `defaultChecked`, `disabled`, `name`, `value`,
+`onCheckedChange`.

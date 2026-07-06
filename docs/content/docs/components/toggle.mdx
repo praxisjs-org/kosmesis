@@ -1,0 +1,53 @@
+---
+title: Toggle
+description: A two-state toggle button, wrapping Morphos's Toggle primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="toggle" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="toggle" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-toggle--default" title="Default" height={300} />
+    <StorybookEmbed story="tailwind-toggle--all-variants" title="All variants" height={300} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-toggle--default" title="Default" height={300} />
+    <StorybookEmbed story="praxiscss-toggle--all-variants" title="All variants" height={300} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Toggle } from "@/components/ui/toggle";
+
+<Toggle aria-label="Toggle bold">B</Toggle>
+<Toggle variant="outline">Outline</Toggle>
+<Toggle size="sm">Small</Toggle>
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `variant` | `"default" \| "outline"` | `"default"` |
+| `size` | `"default" \| "sm" \| "lg"` | `"default"` |
+| `pressed` / `defaultPressed` | `boolean` | — |
+| `onPressedChange` | `(pressed: boolean) => void` | — |

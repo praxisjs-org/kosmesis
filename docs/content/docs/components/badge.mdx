@@ -1,0 +1,62 @@
+---
+title: Badge
+description: A small status/label pill. Purely presentational — no Morphos primitive to wrap.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="badge" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="badge" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-badge--default" title="Default" height={300} />
+    <StorybookEmbed story="tailwind-badge--all-variants" title="All variants" height={300} />
+    <StorybookEmbed story="tailwind-badge--as-link" title="As link" height={300} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-badge--default" title="Default" height={300} />
+    <StorybookEmbed story="praxiscss-badge--all-variants" title="All variants" height={300} />
+    <StorybookEmbed story="praxiscss-badge--as-link" title="As link" height={300} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — same as upstream shadcn/ui, since neither Morphos nor Radix has a badge
+primitive. Variants are backed by `class-variance-authority`.
+
+## Usage
+
+```tsx
+import { Badge } from "@/components/ui/badge";
+
+<Badge>Default</Badge>
+<Badge variant="secondary">Secondary</Badge>
+<Badge variant="destructive">Destructive</Badge>
+<Badge variant="outline">Outline</Badge>
+<Badge as="a" href="/status">Link badge</Badge>
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `variant` | `"default" \| "secondary" \| "destructive" \| "outline"` | `"default"` |
+| `as` | `"span" \| "a" \| "div"` | `"span"` |
+| `href` | `string` | — (used when `as="a"`) |
+| `class` | `string` | — |

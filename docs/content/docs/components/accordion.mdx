@@ -1,0 +1,75 @@
+---
+title: Accordion
+description: A collapsible item list, single or multiple open at once, wrapping Morphos's Accordion primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="accordion" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="accordion" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-accordion--default" title="Default (single)" height={460} />
+    <StorybookEmbed story="tailwind-accordion--multiple" title="Multiple open" height={460} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-accordion--default" title="Default (single)" height={460} />
+    <StorybookEmbed story="praxiscss-accordion--multiple" title="Multiple open" height={460} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
+@Component()
+class FaqAccordion extends StatefulComponent {
+  @State() accordion = new Accordion({ type: "single", collapsible: true });
+
+  render() {
+    return (
+      <Accordion type="single" collapsible class="w-full max-w-md">
+        <AccordionItem accordion={this.accordion} value="item-1">
+          <AccordionTrigger accordion={this.accordion} item="item-1">
+            Is it accessible?
+          </AccordionTrigger>
+          <AccordionContent accordion={this.accordion} item="item-1">
+            Yes. It adheres to the WAI-ARIA design pattern.
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+  }
+}
+```
+
+<Callout type="info">
+  `<Accordion>` mounted in the tree and `this.accordion` are two separate objects — see the note
+  on [Radio Group](/docs/components/radio-group). Keep `type`/`collapsible` in sync between them.
+</Callout>
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `type` | `"single" \| "multiple"` | `"single"` |
+| `collapsible` | `boolean` | `true` — only relevant when `type="single"` |
+| `defaultValue` | `string \| string[]` | — |
+| `onValueChange` | `(value: string \| string[]) => void` | — |

@@ -1,0 +1,95 @@
+---
+title: Command
+description: A cmdk-style, always-filtered command list, with a CommandDialog composition over Morphos's Dialog.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="command" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="command" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-command--default" title="Default (inline)" height={520} />
+    <StorybookEmbed story="tailwind-command--as-dialog" title="As command palette (⌘K)" height={520} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-command--default" title="Default (inline)" height={520} />
+    <StorybookEmbed story="praxiscss-command--as-dialog" title="As command palette (⌘K)" height={520} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Command, CommandState } from "@/components/ui/command";
+
+@Component()
+class QuickSearch extends StatefulComponent {
+  @State() commandState = new CommandState({
+    items: [
+      { value: "calendar", label: "Calendar", group: "Suggestions" },
+      { value: "emoji", label: "Search Emoji", group: "Suggestions" },
+      { value: "profile", label: "Profile", group: "Settings" },
+    ],
+    onSelect: (item) => console.log(item.value),
+  });
+
+  render() {
+    return <Command state={this.commandState} class="w-96 border shadow-md" />;
+  }
+}
+```
+
+## As a ⌘K palette
+
+```tsx
+import { Dialog } from "@morphos/overlays";
+import { CommandDialog, CommandState } from "@/components/ui/command";
+
+@Component()
+class Palette extends StatefulComponent {
+  @State() dialog = new Dialog();
+  @State() commandState = new CommandState({ items: [/* ... */] });
+
+  onMount() {
+    document.addEventListener("keydown", this._handleShortcut);
+  }
+
+  onUnmount() {
+    document.removeEventListener("keydown", this._handleShortcut);
+  }
+
+  private readonly _handleShortcut = (e: KeyboardEvent) => {
+    if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      this.dialog.toggle();
+    }
+  };
+
+  render() {
+    return <CommandDialog dialog={this.dialog} state={this.commandState} />;
+  }
+}
+```
+
+<Callout type="info">
+  Morphos has no cmdk-style primitive to wrap, so `CommandState` implements filtering and roving
+  keyboard navigation directly — closer to Morphos's own `Combobox` internals than a wrap of it,
+  since Command's list is always rendered rather than toggled open/closed.
+</Callout>

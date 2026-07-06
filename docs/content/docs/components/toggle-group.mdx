@@ -1,0 +1,62 @@
+---
+title: Toggle Group
+description: Single- or multiple-selection toggle group, wrapping Morphos's ToggleGroup primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="toggle-group" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="toggle-group" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-togglegroup--single" title="Single select" height={380} />
+    <StorybookEmbed story="tailwind-togglegroup--multiple" title="Multiple select" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-togglegroup--single" title="Single select" height={380} />
+    <StorybookEmbed story="praxiscss-togglegroup--multiple" title="Multiple select" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+
+@Component()
+class TextAlignPicker extends StatefulComponent {
+  @State() group = new ToggleGroup({ type: "single", defaultValue: "left" });
+
+  render() {
+    return (
+      <ToggleGroup type="single" defaultValue="left" variant="outline">
+        <ToggleGroupItem group={this.group} value="left" variant="outline">Left</ToggleGroupItem>
+        <ToggleGroupItem group={this.group} value="center" variant="outline">Center</ToggleGroupItem>
+        <ToggleGroupItem group={this.group} value="right" variant="outline">Right</ToggleGroupItem>
+      </ToggleGroup>
+    );
+  }
+}
+```
+
+<Callout type="warning">
+  Unlike shadcn/ui's React version, `variant`/`size` aren't inherited from the group via context —
+  pass the same `variant`/`size` to `ToggleGroup` and every `ToggleGroupItem` to keep them visually
+  consistent.
+</Callout>

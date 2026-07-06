@@ -1,0 +1,79 @@
+---
+title: Label
+description: An accessible label, typically paired with Morphos's Field. Purely presentational.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="label" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="label" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-label--default" title="Default" height={300} />
+    <StorybookEmbed story="tailwind-label--with-input" title="With input" height={300} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-label--default" title="Default" height={300} />
+    <StorybookEmbed story="praxiscss-label--with-input" title="With input" height={300} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+
+<div class="flex flex-col gap-2">
+  <Label htmlFor="email">Email</Label>
+  <Input id="email" type="email" placeholder="you@example.com" />
+</div>
+```
+
+## Pairing with Field
+
+```tsx
+import { Field, FieldControl, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+
+@Component()
+class MyForm extends StatefulComponent {
+  // A second, separately-tracked instance — the same "instantiate once, pass to every part"
+  // pattern every Morphos compound component uses. The JSX-mounted <Field> below produces the
+  // actual container element; `this.field` is what FieldLabel/Control/Description read from.
+  @State() field = new Field();
+
+  render() {
+    return (
+      <Field>
+        <FieldLabel field={this.field}>Email</FieldLabel>
+        <FieldControl field={this.field}>
+          <Input id={this.field.fieldId} />
+        </FieldControl>
+        <FieldDescription field={this.field}>We'll never share your email.</FieldDescription>
+      </Field>
+    );
+  }
+}
+```
+
+<Callout type="info">
+  `Label` itself doesn't require a `Field` — pass `htmlFor` pointing at any input's `id` for a
+  plain standalone label.
+</Callout>

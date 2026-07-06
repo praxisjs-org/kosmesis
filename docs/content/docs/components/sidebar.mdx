@@ -1,0 +1,100 @@
+---
+title: Sidebar
+description: A collapsible application sidebar composing a mobile sheet and a desktop rail. No Morphos equivalent.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="sidebar" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="sidebar" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-sidebar--default" title="Default" height={600} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-sidebar--default" title="Default" height={600} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarState,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+
+@Component()
+class AppShell extends StatefulComponent {
+  @State() sidebar = new SidebarState();
+
+  render() {
+    return (
+      <SidebarProvider sidebar={this.sidebar}>
+        <Sidebar sidebar={this.sidebar}>
+          <SidebarHeader>My App</SidebarHeader>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton as="a" href="/" isActive>Home</SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton as="a" href="/settings">Settings</SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroup>
+          </SidebarContent>
+          <SidebarFooter>v1.0.0</SidebarFooter>
+        </Sidebar>
+        <SidebarInset>
+          <SidebarTrigger sidebar={this.sidebar} />
+          <main>Page content</main>
+        </SidebarInset>
+      </SidebarProvider>
+    );
+  }
+}
+```
+
+<Callout type="info">
+  No Morphos primitive to wrap here — Radix doesn't have a sidebar primitive either, so
+  shadcn/ui's own `Sidebar` is a composition of `Sheet` (mobile), buttons, and plain divs, and
+  this mirrors that. `SidebarState` is a small custom state container (not a Morphos class) —
+  it's fully self-contained, no dual-instantiation concerns.
+</Callout>
+
+## Notes
+
+- `collapsible` on `Sidebar` accepts `"offcanvas" | "icon" | "none"` (default `"offcanvas"`).
+- `SidebarTrigger` checks a `(max-width: 767px)` media query at click time to decide whether to
+  toggle the desktop rail or the mobile sheet.
+- Theming uses dedicated `--sidebar`, `--sidebar-foreground`, `--sidebar-accent`, etc. CSS
+  variables (already wired up by `kosmesis init`), separate from the page's `--background`, so a
+  dark sidebar next to a light page (or vice versa) is just a token override away.

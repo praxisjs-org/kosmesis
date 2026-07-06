@@ -1,0 +1,63 @@
+---
+title: Field
+description: A form field wrapper with label, description, and error message, wrapping Morphos's Field/Fieldset.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="field" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="field" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-field--default" title="Default" height={380} />
+    <StorybookEmbed story="tailwind-field--invalid" title="Invalid" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-field--default" title="Default" height={380} />
+    <StorybookEmbed story="praxiscss-field--invalid" title="Invalid" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Field, FieldControl, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+
+@Component()
+class SignupForm extends StatefulComponent {
+  @Prop() invalid = false;
+  @State() field = new Field({ invalid: this.invalid, required: true });
+
+  render() {
+    return (
+      <Field invalid={this.invalid} required>
+        <FieldLabel field={this.field}>Email</FieldLabel>
+        <FieldControl field={this.field}>
+          <Input id={this.field.fieldId} type="email" required invalid={this.invalid} />
+        </FieldControl>
+        <FieldDescription field={this.field}>We'll never share your email.</FieldDescription>
+        <FieldError field={this.field}>Please enter a valid email address.</FieldError>
+      </Field>
+    );
+  }
+}
+```
+
+`FieldError` only renders while `field.invalid` is true. `Fieldset` (also exported from this
+file) wraps a native `<fieldset>` with a `legend` string prop, for grouping several `Field`s.

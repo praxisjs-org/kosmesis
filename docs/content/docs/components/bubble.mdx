@@ -1,0 +1,45 @@
+---
+title: Bubble
+description: A single chat message bubble. Purely presentational.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="bubble" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="bubble" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-bubble--default" title="Default" height={380} />
+    <StorybookEmbed story="tailwind-bubble--conversation" title="Conversation" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-bubble--default" title="Default" height={380} />
+    <StorybookEmbed story="praxiscss-bubble--conversation" title="Conversation" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Bubble } from "@/components/ui/bubble";
+
+<Bubble variant="received">Hey, how's it going?</Bubble>
+<Bubble variant="sent">Pretty good, thanks!</Bubble>
+```
+
+For avatar + role-based layout, see [Message](/docs/components/message), which composes this.

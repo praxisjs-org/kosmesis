@@ -1,0 +1,81 @@
+---
+title: Drawer
+description: A side panel sliding in from any edge, wrapping Morphos's Drawer primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="drawer" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="drawer" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-drawer--default" title="Default (bottom)" height={520} />
+    <StorybookEmbed story="tailwind-drawer--right-side" title="Right side" height={520} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-drawer--default" title="Default (bottom)" height={520} />
+    <StorybookEmbed story="praxiscss-drawer--right-side" title="Right side" height={520} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+
+@Component()
+class MobileNav extends StatefulComponent {
+  @State() drawer = new Drawer({ side: "left" });
+
+  render() {
+    return (
+      <>
+        <DrawerTrigger drawer={this.drawer} class={buttonVariants({ variant: "outline" })}>
+          Open menu
+        </DrawerTrigger>
+        <DrawerContent drawer={this.drawer} aria-labelledby="nav-title">
+          <DrawerHeader>
+            <DrawerTitle id="nav-title">Navigation</DrawerTitle>
+            <DrawerDescription>Browse the site.</DrawerDescription>
+          </DrawerHeader>
+          <DrawerFooter>
+            <DrawerClose drawer={this.drawer} class={buttonVariants({ variant: "outline" })}>
+              Close
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </>
+    );
+  }
+}
+```
+
+## Props
+
+`side` — `"top" | "right" | "bottom" | "left"` (default `"right"`) — which edge the drawer slides
+in from. See [Sheet](/docs/components/sheet) for the shadcn/ui-named alias.

@@ -1,0 +1,74 @@
+---
+title: Dropdown Menu
+description: A menu with full keyboard navigation, wrapping Morphos's Dropdown primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="dropdown-menu" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="dropdown-menu" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-dropdownmenu--default" title="Default" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-dropdownmenu--default" title="Default" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { buttonVariants } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+@Component()
+class AccountMenu extends StatefulComponent {
+  @State() dropdown = new DropdownMenu();
+
+  render() {
+    return (
+      <>
+        <DropdownMenuTrigger dropdown={this.dropdown} class={buttonVariants({ variant: "outline" })}>
+          Open menu
+        </DropdownMenuTrigger>
+        <DropdownMenuContent dropdown={this.dropdown} aria-label="Account menu">
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem dropdown={this.dropdown} value="profile" onSelect={() => {}}>
+            Profile
+          </DropdownMenuItem>
+          <DropdownMenuItem dropdown={this.dropdown} value="logout" variant="destructive" onSelect={() => {}}>
+            Log out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </>
+    );
+  }
+}
+```
+
+`DropdownMenu`/`DropdownMenuTrigger` are Morphos's `Dropdown`/`DropdownTrigger`, re-exported and
+renamed to match shadcn/ui's naming.

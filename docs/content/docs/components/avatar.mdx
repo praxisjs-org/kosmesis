@@ -1,0 +1,67 @@
+---
+title: Avatar
+description: An image with automatic fallback, wrapping Morphos's Avatar/AvatarImage/AvatarFallback.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="avatar" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="avatar" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-avatar--with-image" title="With image" height={300} />
+    <StorybookEmbed story="tailwind-avatar--with-fallback" title="With fallback (broken URL)" height={300} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-avatar--with-image" title="With image" height={300} />
+    <StorybookEmbed story="praxiscss-avatar--with-fallback" title="With fallback (broken URL)" height={300} />
+  </Tab>
+</Tabs>
+
+## About
+
+Wraps Morphos's `Avatar` compound component. `AvatarImage` reports load/error status onto the
+root's `data-status` attribute; `AvatarFallback` reads that status to hide itself once the image
+has loaded.
+
+## Usage
+
+```tsx
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+@Component()
+class MyPage extends StatefulComponent {
+  @State() avatar = new Avatar();
+
+  render() {
+    return (
+      <Avatar>
+        <AvatarImage avatar={this.avatar} src="/avatars/01.png" alt="Jane Doe" />
+        <AvatarFallback avatar={this.avatar}>JD</AvatarFallback>
+      </Avatar>
+    );
+  }
+}
+```
+
+<Callout type="info">
+  `Avatar` renders the wrapping `<span>` itself, but `AvatarImage`/`AvatarFallback` still need the
+  same `Avatar` instance passed via their `avatar` prop to read/report load status — instantiate
+  it once (`@State() avatar = new Avatar()`), same as every other Morphos compound component.
+</Callout>

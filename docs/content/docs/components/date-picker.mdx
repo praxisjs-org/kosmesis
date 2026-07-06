@@ -1,0 +1,56 @@
+---
+title: Date Picker
+description: A Popover + Calendar composition for picking a single date.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="date-picker" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="date-picker" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-datepicker--default" title="Default" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-datepicker--default" title="Default" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Popover } from "@morphos/overlays";
+import { CalendarState } from "@/components/ui/calendar";
+import { DatePicker } from "@/components/ui/date-picker";
+
+@Component()
+class BookingForm extends StatefulComponent {
+  @State() popover = new Popover();
+  @State() calendar = new CalendarState({
+    onSelect: () => { this.popover.closePopover(); },
+  });
+
+  render() {
+    return <DatePicker popover={this.popover} calendar={this.calendar} />;
+  }
+}
+```
+
+This is a composition, not a new primitive — [Popover](/docs/components/popover) (Morphos) +
+[Calendar](/docs/components/calendar) (built from scratch). If you need a different trigger
+style or a range picker, compose those two components directly instead of using `DatePicker`.

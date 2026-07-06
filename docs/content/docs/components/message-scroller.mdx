@@ -1,0 +1,70 @@
+---
+title: Message Scroller
+description: A scrollable chat viewport with an imperative scrollToBottom(). Pairs with Message.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="message-scroller" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="message-scroller" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-messagescroller--default" title="Default (auto-scrolls to bottom)" height={460} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-messagescroller--default" title="Default (auto-scrolls to bottom)" height={460} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Ref } from "@praxisjs/decorators";
+import type { Ref as RefType } from "@praxisjs/decorators";
+import { Message, MessageGroup } from "@/components/ui/message";
+import { MessageScroller } from "@/components/ui/message-scroller";
+
+@Component()
+class Chat extends StatefulComponent {
+  @State() messages: { from: "user" | "assistant"; text: string }[] = [];
+
+  @Ref<MessageScroller>()
+  scroller!: RefType<MessageScroller>;
+
+  addMessage(from: "user" | "assistant", text: string) {
+    this.messages = [...this.messages, { from, text }];
+    queueMicrotask(() => { this.scroller.current?.scrollToBottom("smooth"); });
+  }
+
+  render() {
+    return (
+      <MessageScroller ref={this.scroller} class="h-96">
+        <MessageGroup>
+          {() => this.messages.map((m) => <Message from={m.from}>{m.text}</Message>)}
+        </MessageGroup>
+      </MessageScroller>
+    );
+  }
+}
+```
+
+<Callout type="info">
+  PraxisJS has no DOM-mutation-observer-style "children changed" hook built in, so
+  `scrollToBottom()` is called explicitly after appending a message rather than automatically.
+</Callout>

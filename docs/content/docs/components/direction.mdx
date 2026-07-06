@@ -1,0 +1,51 @@
+---
+title: Direction
+description: Sets the ambient text direction (ltr/rtl) via the native dir attribute. Purely presentational.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="direction" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="direction" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-directionprovider--default" title="Default" height={460} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-directionprovider--default" title="Default" height={460} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { DirectionProvider } from "@/components/ui/direction";
+
+<DirectionProvider dir="rtl">
+  <YourApp />
+</DirectionProvider>
+```
+
+<Callout type="info">
+  shadcn/ui's `DirectionProvider` relies on React Context so every descendant primitive reads the
+  ambient direction. PraxisJS/Morphos have no context system, so this is a plain element setting
+  the native `dir` attribute — the browser (and Morphos's own CSS-selector-driven styling) already
+  respects it via `:dir(rtl)`/`[dir="rtl"]` for free. If a component's *behavior* (not just layout)
+  needs to flip per-direction, pass `orientation`/`side` props to that component directly.
+</Callout>

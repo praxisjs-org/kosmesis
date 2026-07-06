@@ -1,0 +1,81 @@
+---
+title: Getting Started
+description: Install the Kosmesis CLI and add your first component.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Steps, Step } from 'fumadocs-ui/components/steps';
+import { KosmesisInstall } from '@/components/kosmesis-install';
+
+## Prerequisites
+
+Kosmesis expects a [create-praxisjs](https://praxisjs.org)-scaffolded project (the `minimal`,
+`full`, or `router` template all work) using Vite. If you don't have one yet:
+
+```sh
+npm create praxisjs@latest my-app
+cd my-app
+```
+
+## Setup
+
+<Steps>
+<Step>
+
+### Run `init`
+
+From the root of your PraxisJS project:
+
+```sh
+npx kosmesis init
+```
+
+This will:
+
+- Write a `components.json` config file.
+- Add `@import "tailwindcss";` plus Kosmesis's theme tokens (`--background`, `--foreground`,
+  `--primary`, ...) to your global stylesheet.
+- Wire the `@tailwindcss/vite` plugin into your `vite.config.ts`.
+- Create `src/lib/utils.ts` exporting a `cn()` helper (`clsx` + `tailwind-merge`).
+
+</Step>
+<Step>
+
+### Add a component
+
+<KosmesisInstall name="button" />
+
+This copies `button.tsx` into `src/components/ui/button.tsx`. If the component wraps a Morphos
+primitive, its package (e.g. `@morphos/inputs`) is added to your `package.json` automatically —
+run your package manager's install afterwards to fetch it.
+
+</Step>
+<Step>
+
+### Use it
+
+```tsx
+import { Button } from "@/components/ui/button";
+
+@Component()
+class MyPage extends StatefulComponent {
+  render() {
+    return <Button variant="outline">Click me</Button>;
+  }
+}
+```
+
+</Step>
+</Steps>
+
+<Callout type="info">
+  `@/components/ui/...` assumes a `@/*` → `./src/*` path alias in `tsconfig.json`. Add one if your
+  create-praxisjs template doesn't already have it, or adjust the `aliases` in `components.json`
+  to use relative imports instead.
+</Callout>
+
+## Updating a component
+
+There's no update command — because there's no dependency to update. If a newer version of a
+component ships better defaults, re-run `kosmesis add <component>` and diff the result before
+overwriting your local copy (or just apply the change by hand).

@@ -1,0 +1,73 @@
+---
+title: Navigation Menu
+description: Site navigation with submenus, wrapping Morphos's NavigationMenu primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="navigation-menu" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="navigation-menu" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-navigationmenu--default" title="Default" height={520} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-navigationmenu--default" title="Default" height={520} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+
+@Component()
+class SiteNav extends StatefulComponent {
+  @State() nav = new NavigationMenu();
+  @State() productsItem = new NavigationMenuItem({ nav: this.nav, value: "products" });
+
+  render() {
+    return (
+      <NavigationMenu aria-label="Main navigation">
+        <NavigationMenuList nav={this.nav}>
+          <NavigationMenuItem nav={this.nav} value="products">
+            <NavigationMenuTrigger item={this.productsItem}>Products</NavigationMenuTrigger>
+            <NavigationMenuContent item={this.productsItem}>
+              <NavigationMenuLink href="/analytics">Analytics</NavigationMenuLink>
+              <NavigationMenuLink href="/automation">Automation</NavigationMenuLink>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
+    );
+  }
+}
+```
+
+<Callout type="info">
+  Each `NavigationMenuItem` needs its own sibling instance (`this.productsItem`) — one per
+  submenu — the same "instantiate once, pass to every part" pattern as the top-level `nav`.
+</Callout>

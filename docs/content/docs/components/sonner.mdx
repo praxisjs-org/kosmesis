@@ -1,0 +1,81 @@
+---
+title: Sonner
+description: An auto-dismissing notification queue with a global toast() helper, wrapping Morphos's ToastProvider.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="sonner" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="sonner" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-sonner--default" title="Default" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-sonner--default" title="Default" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+Mount `<Toaster />` once, near your app root:
+
+```tsx
+import { Toaster } from "@/components/ui/sonner";
+
+@Component()
+class App extends StatefulComponent {
+  render() {
+    return (
+      <>
+        <YourApp />
+        <Toaster />
+      </>
+    );
+  }
+}
+```
+
+Then call `toast()` from anywhere:
+
+```tsx
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/sonner";
+
+<Button onClick={() => toast.success("Event has been created.")}>
+  Show toast
+</Button>
+```
+
+## API
+
+| Function | Description |
+|---|---|
+| `toast.show({ title, description?, variant?, duration? })` | Full control over a toast item |
+| `toast.success(title, description?)` | Shortcut for `variant: "success"` |
+| `toast.error(title, description?)` | Shortcut for `variant: "error"` |
+| `toast.message(title, description?)` | Shortcut for `variant: "info"` |
+| `toast.dismiss(id)` | Dismiss a specific toast early |
+
+<Callout type="info">
+  Morphos's `ToastProvider` is self-contained — it owns the toast queue *and* renders it (via a
+  `Portal`) from the same instance, unlike Dialog/Popover which split state from rendering. Since
+  PraxisJS has no global-ref mechanism, `Toaster` tracks "the currently mounted instance" itself
+  (last one mounted wins) so `toast()` can reach it from anywhere — mount only one `<Toaster />`.
+</Callout>

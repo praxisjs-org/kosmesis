@@ -1,0 +1,65 @@
+---
+title: Tabs
+description: A tab panel with keyboard navigation, wrapping Morphos's Tabs primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="tabs" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="tabs" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-tabs--default" title="Default" height={460} />
+    <StorybookEmbed story="tailwind-tabs--vertical" title="Vertical orientation" height={460} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-tabs--default" title="Default" height={460} />
+    <StorybookEmbed story="praxiscss-tabs--vertical" title="Vertical orientation" height={460} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+@Component()
+class AccountSettings extends StatefulComponent {
+  @State() tabs = new Tabs({ defaultValue: "account" });
+
+  render() {
+    return (
+      <Tabs defaultValue="account" class="w-96">
+        <TabsList tabs={this.tabs} aria-label="Settings">
+          <TabsTrigger tabs={this.tabs} value="account">Account</TabsTrigger>
+          <TabsTrigger tabs={this.tabs} value="password">Password</TabsTrigger>
+        </TabsList>
+        <TabsContent tabs={this.tabs} value="account">Account settings.</TabsContent>
+        <TabsContent tabs={this.tabs} value="password">Password settings.</TabsContent>
+      </Tabs>
+    );
+  }
+}
+```
+
+<Callout type="info">
+  `<Tabs>` mounted in the tree and `this.tabs` are two separate objects, kept in sync via matching
+  props (`defaultValue`) — see the same note on [Radio Group](/docs/components/radio-group) for
+  why. `TabsList`, `TabsTrigger`, and `TabsContent` all read/drive selection through `this.tabs`.
+</Callout>

@@ -1,0 +1,59 @@
+---
+title: Typography
+description: Prose text primitives (headings, lead, muted, inline code, blockquote). Purely presentational.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="typography" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="typography" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-typography--showcase" title="Showcase" height={460} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-typography--showcase" title="Showcase" height={460} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import {
+  TypographyBlockquote,
+  TypographyH1,
+  TypographyH2,
+  TypographyH3,
+  TypographyH4,
+  TypographyInlineCode,
+  TypographyLarge,
+  TypographyLead,
+  TypographyMuted,
+  TypographyP,
+  TypographySmall,
+} from "@/components/ui/typography";
+
+<TypographyH1>The Joke Tax</TypographyH1>
+<TypographyLead>Everyone knows the story of the man who wanted more than everything.</TypographyLead>
+<TypographyP>The king thought long and hard, and finally came up with <TypographyInlineCode>a brilliant plan</TypographyInlineCode>.</TypographyP>
+<TypographyBlockquote>"After all," he said, "everyone paid the tax."</TypographyBlockquote>
+<TypographyMuted>Enter your email below.</TypographyMuted>
+```
+
+Unlike most other components, these render native heading/paragraph elements directly — there's
+no single `Typography` root, just one class per text style, matching upstream shadcn/ui exactly.

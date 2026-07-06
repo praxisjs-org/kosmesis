@@ -1,0 +1,60 @@
+---
+title: Progress
+description: A progress bar with an indeterminate mode, wrapping Morphos's Progress primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="progress" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="progress" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-progress--default" title="Default" height={380} />
+    <StorybookEmbed story="tailwind-progress--indeterminate" title="Indeterminate" height={380} />
+    <StorybookEmbed story="tailwind-progress--animated" title="Animated" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-progress--default" title="Default" height={380} />
+    <StorybookEmbed story="praxiscss-progress--indeterminate" title="Indeterminate" height={380} />
+    <StorybookEmbed story="praxiscss-progress--animated" title="Animated" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Progress } from "@/components/ui/progress";
+
+<Progress value={66} />
+<Progress /> {/* indeterminate — no value prop */}
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `value` | `number \| undefined` | — (indeterminate when omitted) |
+| `max` / `min` | `number` | `100` / `0` |
+
+<Callout type="info">
+  Morphos's `Progress` sets `role="progressbar"` and the `--progress` custom property on its own
+  root element rather than rendering a separate indicator child — Kosmesis wraps it in a track
+  `div` for the background, and the fill itself is the Morphos element, sized via
+  `w-(--progress,0%)`.
+</Callout>

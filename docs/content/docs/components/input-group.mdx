@@ -1,0 +1,51 @@
+---
+title: Input Group
+description: Pairs an Input with leading/trailing addons. Purely presentational.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="input-group" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="input-group" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-inputgroup--default" title="Default" height={380} />
+    <StorybookEmbed story="tailwind-inputgroup--both-addons" title="Leading and trailing addons" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-inputgroup--default" title="Default" height={380} />
+    <StorybookEmbed story="praxiscss-inputgroup--both-addons" title="Leading and trailing addons" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Input } from "@/components/ui/input";
+import { InputGroup, InputGroupAddon, InputGroupText } from "@/components/ui/input-group";
+
+<InputGroup>
+  <InputGroupAddon>
+    <InputGroupText>$</InputGroupText>
+  </InputGroupAddon>
+  <Input type="number" placeholder="0.00" />
+  <InputGroupAddon align="end">
+    <InputGroupText>USD</InputGroupText>
+  </InputGroupAddon>
+</InputGroup>
+```

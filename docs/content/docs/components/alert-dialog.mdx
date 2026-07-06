@@ -1,0 +1,79 @@
+---
+title: Alert Dialog
+description: A confirmation dialog for destructive/important actions, wrapping Morphos's AlertDialog primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="alert-dialog" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="alert-dialog" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-alertdialog--default" title="Default" height={520} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-alertdialog--default" title="Default" height={520} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { buttonVariants } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+@Component()
+class DeleteAccountDialog extends StatefulComponent {
+  @State() alertDialog = new AlertDialog();
+
+  render() {
+    return (
+      <>
+        <AlertDialogTrigger alertDialog={this.alertDialog} class={buttonVariants({ variant: "destructive" })}>
+          Delete account
+        </AlertDialogTrigger>
+        <AlertDialogContent alertDialog={this.alertDialog} aria-labelledby="delete-title">
+          <AlertDialogHeader>
+            <AlertDialogTitle id="delete-title">Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your account.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel alertDialog={this.alertDialog}>Cancel</AlertDialogCancel>
+            <AlertDialogAction alertDialog={this.alertDialog}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </>
+    );
+  }
+}
+```
+
+Unlike [Dialog](/docs/components/dialog), `AlertDialogContent` has no close (✕) button and no
+`closeOnBackdropClick` by default — the user must explicitly choose Cancel or Continue.

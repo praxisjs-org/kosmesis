@@ -1,0 +1,15 @@
+{
+  "title": "Components",
+  "pages": [
+    "button", "badge", "avatar", "separator", "skeleton", "card", "aspect-ratio", "label", "input",
+    "textarea", "alert", "table", "typography", "progress", "spinner", "kbd", "native-select",
+    "button-group", "input-group", "number-field", "item", "empty", "marker", "direction",
+    "checkbox", "switch", "radio-group", "select", "tabs", "accordion", "collapsible", "toggle",
+    "toggle-group", "slider", "tooltip", "popover", "dialog", "alert-dialog", "dropdown-menu",
+    "context-menu", "hover-card", "navigation-menu", "menubar", "scroll-area", "sheet", "drawer",
+    "field", "input-otp", "combobox", "toast", "sonner",
+    "calendar", "date-picker", "command", "data-table", "carousel", "chart", "pagination",
+    "resizable", "sidebar", "breadcrumb",
+    "attachment", "bubble", "message", "message-scroller"
+  ]
+}

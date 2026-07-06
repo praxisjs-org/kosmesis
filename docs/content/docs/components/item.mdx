@@ -1,0 +1,79 @@
+---
+title: Item
+description: A generic list-row layout primitive with media/content/actions slots. Purely presentational.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="item" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="item" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-item--default" title="Default" height={380} />
+    <StorybookEmbed story="tailwind-item--group" title="Group with separator" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-item--default" title="Default" height={380} />
+    <StorybookEmbed story="praxiscss-item--group" title="Group with separator" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Button } from "@/components/ui/button";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemSeparator,
+  ItemTitle,
+} from "@/components/ui/item";
+
+<ItemGroup>
+  <Item variant="outline">
+    <ItemMedia>🔔</ItemMedia>
+    <ItemContent>
+      <ItemTitle>New comment</ItemTitle>
+      <ItemDescription>Someone replied to your post.</ItemDescription>
+    </ItemContent>
+    <ItemActions>
+      <Button size="sm" variant="ghost">View</Button>
+    </ItemActions>
+  </Item>
+  <ItemSeparator />
+  <Item variant="outline">
+    <ItemMedia>⭐</ItemMedia>
+    <ItemContent>
+      <ItemTitle>New star</ItemTitle>
+      <ItemDescription>Your repository got a new star.</ItemDescription>
+    </ItemContent>
+  </Item>
+</ItemGroup>
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `variant` | `"default" \| "outline" \| "muted"` | `"default"` |
+| `size` | `"default" \| "sm"` | `"default"` |
+| `as` | `"div" \| "a" \| "button"` | `"div"` |

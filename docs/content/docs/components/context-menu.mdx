@@ -1,0 +1,59 @@
+---
+title: Context Menu
+description: A right-click context menu, wrapping Morphos's ContextMenu primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="context-menu" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="context-menu" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-contextmenu--default" title="Default" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-contextmenu--default" title="Default" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
+
+@Component()
+class FileRow extends StatefulComponent {
+  @State() menu = new ContextMenu();
+
+  render() {
+    return (
+      <>
+        <ContextMenuTrigger contextMenu={this.menu} class="rounded-md border border-dashed p-8 text-center text-sm">
+          Right-click here
+        </ContextMenuTrigger>
+        <ContextMenuContent contextMenu={this.menu} aria-label="File actions">
+          <ContextMenuItem contextMenu={this.menu} value="rename" onSelect={() => {}}>Rename</ContextMenuItem>
+          <ContextMenuItem contextMenu={this.menu} value="delete" variant="destructive" onSelect={() => {}}>
+            Delete
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </>
+    );
+  }
+}
+```

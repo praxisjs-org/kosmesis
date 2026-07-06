@@ -1,0 +1,54 @@
+---
+title: Documentation
+description: Copy-paste UI components for PraxisJS, built on top of Morphos.
+---
+
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Kosmesis
+
+Kosmesis (κόσμησις, Greek: adornment, ornamentation) is a collection of copy-paste UI components
+for [PraxisJS](https://praxisjs.org), in the same spirit as [shadcn/ui](https://ui.shadcn.com) —
+not a component library you install, but a set of well-built defaults you copy into your own
+project and own outright.
+
+Where shadcn/ui wraps Radix UI, Kosmesis wraps [Morphos](https://morphos.praxisjs.org) — the
+headless primitive library for PraxisJS. Morphos supplies behavior (keyboard navigation, ARIA,
+focus management, `data-*` state); Kosmesis supplies presentation (Tailwind CSS v4 variants
+reacting to that same `data-*` contract).
+
+<Callout type="info">
+  This is not an npm package you add as a dependency. Running `kosmesis add button` copies
+  `button.tsx` into `src/components/ui/button.tsx` in your own repository. You can edit it however
+  you like the moment it lands.
+</Callout>
+
+<Cards>
+  <Card title="Introduction" href="/docs/guide/introduction" description="Why Kosmesis exists and how it relates to Morphos and shadcn/ui." />
+  <Card title="Getting Started" href="/docs/guide/getting-started" description="Install the CLI and add your first component." />
+  <Card title="Components" href="/docs/components/button" description="Browse every available component." />
+</Cards>
+
+## How it works
+
+1. **`kosmesis init`** — configures `components.json`, wires Tailwind CSS v4 into your
+   create-praxisjs project, and adds the `cn()` class-merging helper.
+2. **`kosmesis add <component>`** — copies the component's source file(s) into
+   `src/components/ui/`, and adds any Morphos package it depends on to your `package.json`.
+3. **You own it** — the file is yours. Change variants, remove parts, or restyle it entirely.
+
+## Design decisions
+
+- **Tailwind CSS v4** — CSS-first configuration, `data-[state=open]:` variants reacting directly
+  to the `data-*` attributes Morphos already sets on every component root.
+- **shadcn-style tokens** — `--background`, `--foreground`, `--primary`, etc., so existing
+  shadcn themes and registries are a natural fit.
+- **class-variance-authority-style variants** — each component defines its variants as plain
+  exported functions, matching the pattern shadcn/ui components use.
+
+<Callout type="info">
+  Not every shadcn/ui component maps to an existing Morphos primitive — some (`Card`, `Badge`,
+  `Table`, `Skeleton`, and others) are purely presentational, exactly as they are upstream, since
+  Radix UI doesn't cover everything shadcn/ui ships either.
+</Callout>

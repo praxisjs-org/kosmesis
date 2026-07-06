@@ -1,0 +1,70 @@
+---
+title: Select
+description: A custom listbox select with keyboard support, wrapping Morphos's Select primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="select" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="select" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-select--default" title="Default" height={380} />
+    <StorybookEmbed story="tailwind-select--controlled" title="Controlled" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-select--default" title="Default" height={380} />
+    <StorybookEmbed story="praxiscss-select--controlled" title="Controlled" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Select } from "@/components/ui/select";
+
+<Select
+  placeholder="Select a fruit"
+  options={[
+    { value: "apple", label: "Apple" },
+    { value: "banana", label: "Banana" },
+    { value: "cherry", label: "Cherry" },
+  ]}
+  onValueChange={(value) => console.log(value)}
+/>
+```
+
+<Callout type="info">
+  Morphos's `Select` takes a flat `options` array and renders its own trigger + listbox as one
+  unit — there's no `SelectTrigger`/`SelectContent`/`SelectItem` compound API to compose (Radix
+  has one; Morphos deliberately doesn't). Need children-based composition or free-text search
+  instead? See [Combobox](/docs/components/combobox). Need a plain native picker?
+  See [Native Select](/docs/components/native-select).
+</Callout>
+
+## Props
+
+| Prop | Type |
+|---|---|
+| `options` | `{ value: string; label: string; disabled?: boolean }[]` |
+| `value` / `defaultValue` | `string` |
+| `placeholder` | `string` |
+| `disabled` / `required` / `clearable` | `boolean` |
+| `onValueChange` | `(value: string) => void` |
+| `onClear` | `() => void` |

@@ -1,0 +1,55 @@
+---
+title: Checkbox
+description: A checkbox with indeterminate support, wrapping Morphos's Checkbox primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="checkbox" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="checkbox" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-checkbox--default" title="Default" height={380} />
+    <StorybookEmbed story="tailwind-checkbox--with-label" title="With label" height={380} />
+    <StorybookEmbed story="tailwind-checkbox--states" title="All states" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-checkbox--default" title="Default" height={380} />
+    <StorybookEmbed story="praxiscss-checkbox--with-label" title="With label" height={380} />
+    <StorybookEmbed story="praxiscss-checkbox--states" title="All states" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+
+<div class="flex items-center gap-2">
+  <Checkbox id="terms" />
+  <Label htmlFor="terms">Accept terms and conditions</Label>
+</div>
+
+<Checkbox indeterminate />
+```
+
+## Props
+
+Passes through to Morphos's `Checkbox` — `checked`, `defaultChecked`, `indeterminate`,
+`disabled`, `required`, `name`, `value`, `onCheckedChange`.

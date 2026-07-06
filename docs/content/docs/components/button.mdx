@@ -1,0 +1,89 @@
+---
+title: Button
+description: A button, wrapping Morphos's polymorphic Button primitive with shadcn-style variants.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="button" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="button" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-button--default" title="Default" height={380} />
+    <StorybookEmbed story="tailwind-button--all-variants" title="All variants" height={380} />
+    <StorybookEmbed story="tailwind-button--all-sizes" title="All sizes" height={380} />
+    <StorybookEmbed story="tailwind-button--disabled" title="Disabled" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-button--default" title="Default" height={380} />
+    <StorybookEmbed story="praxiscss-button--all-variants" title="All variants" height={380} />
+    <StorybookEmbed story="praxiscss-button--all-sizes" title="All sizes" height={380} />
+    <StorybookEmbed story="praxiscss-button--disabled" title="Disabled" height={380} />
+  </Tab>
+</Tabs>
+
+## About
+
+Wraps `@morphos/inputs`'s `Button` — a polymorphic primitive supporting an `as` prop for
+link-buttons. Kosmesis adds `variant`/`size` props backed by `class-variance-authority`,
+matching shadcn/ui's own API exactly.
+
+## Usage
+
+```tsx
+import { Button } from "@/components/ui/button";
+
+@Component()
+class MyPage extends StatefulComponent {
+  render() {
+    return (
+      <div>
+        <Button>Default</Button>
+        <Button variant="destructive">Destructive</Button>
+        <Button variant="outline">Outline</Button>
+        <Button variant="secondary">Secondary</Button>
+        <Button variant="ghost">Ghost</Button>
+        <Button variant="link">Link</Button>
+        <Button size="sm">Small</Button>
+        <Button size="lg">Large</Button>
+        <Button as="a" href="/dashboard">Go to dashboard</Button>
+      </div>
+    );
+  }
+}
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `variant` | `"default" \| "destructive" \| "outline" \| "secondary" \| "ghost" \| "link"` | `"default"` |
+| `size` | `"default" \| "sm" \| "lg" \| "icon"` | `"default"` |
+| `as` | `"button" \| "a" \| "span" \| "div"` | `"button"` |
+| `disabled` | `boolean` | — |
+| `onClick` | `(event: MouseEvent) => void` | — |
+
+All other props (`href`, `type`, `aria-*`, `class`, `id`, `children`, ...) pass through to
+Morphos's `Button` unchanged — see [its docs](https://morphos.praxisjs.org/docs/inputs/button)
+for the full list.
+
+<Callout type="info">
+  `disabled` only becomes the native `disabled` attribute when `as="button"`; otherwise it's
+  exposed as `aria-disabled="true"`, since non-button elements don't support `disabled` natively.
+</Callout>

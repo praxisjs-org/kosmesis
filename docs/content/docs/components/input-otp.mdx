@@ -1,0 +1,56 @@
+---
+title: Input OTP
+description: A one-time password input, wrapping Morphos's OtpField primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="input-otp" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="input-otp" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-inputotp--default" title="Default" height={380} />
+    <StorybookEmbed story="tailwind-inputotp--controlled" title="Controlled" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-inputotp--default" title="Default" height={380} />
+    <StorybookEmbed story="praxiscss-inputotp--controlled" title="Controlled" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { InputOTP } from "@/components/ui/input-otp";
+
+<InputOTP length={6} onComplete={(value) => console.log(value)} />
+```
+
+<Callout type="info">
+  Morphos's `OtpField` renders every cell itself (owning per-cell focus/paste/backspace logic
+  internally) rather than exposing an `InputOTPSlot`-style compound API like shadcn/ui's — so
+  there's just one component here, not a slot/group/separator composition. Target individual
+  cells with the `data-index` attribute Morphos sets on each `<input>` if you need per-cell
+  styling beyond what's built in.
+</Callout>
+
+## Props
+
+Passes through to Morphos's `OtpField` — `length`, `value`/`defaultValue`, `disabled`, `name`,
+`pattern`, `inputMode`, `onValueChange`, `onComplete`.

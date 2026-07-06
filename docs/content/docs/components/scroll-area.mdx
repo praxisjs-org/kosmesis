@@ -1,0 +1,55 @@
+---
+title: Scroll Area
+description: A custom-styled scroll container, composing Morphos's ScrollArea + Viewport + Scrollbar + Thumb.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="scroll-area" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="scroll-area" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-scrollarea--default" title="Default (vertical)" height={380} />
+    <StorybookEmbed story="tailwind-scrollarea--horizontal" title="Horizontal" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-scrollarea--default" title="Default (vertical)" height={380} />
+    <StorybookEmbed story="praxiscss-scrollarea--horizontal" title="Horizontal" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+<ScrollArea class="h-72 w-48 rounded-md border">
+  <div class="p-4">
+    {Array.from({ length: 50 }, (_, i) => (
+      <p key={i} class="text-sm">Item {i + 1}</p>
+    ))}
+  </div>
+</ScrollArea>
+```
+
+<Callout type="info">
+  Unlike Dialog/Tabs/Accordion, `ScrollArea` doesn't need a second, separately-tracked instance —
+  it composes Viewport/Scrollbar/Thumb internally and passes `this` to them directly, so
+  `new ScrollArea()` is the only instance you ever need.
+</Callout>

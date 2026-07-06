@@ -1,0 +1,62 @@
+---
+title: Carousel
+description: A scroll-snap-based slideshow. Purely presentational — no Morphos equivalent, no Embla dependency.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="carousel" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="carousel" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-carousel--default" title="Default" height={520} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-carousel--default" title="Default" height={520} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Carousel, CarouselItem, CarouselNext, CarouselPrevious, CarouselState } from "@/components/ui/carousel";
+
+@Component()
+class PhotoCarousel extends StatefulComponent {
+  @State() carousel = new CarouselState();
+
+  render() {
+    return (
+      <Carousel carousel={this.carousel} class="w-full max-w-xs">
+        <CarouselItem><img src="/photo-1.jpg" alt="" /></CarouselItem>
+        <CarouselItem><img src="/photo-2.jpg" alt="" /></CarouselItem>
+        <CarouselItem><img src="/photo-3.jpg" alt="" /></CarouselItem>
+        <CarouselPrevious carousel={this.carousel} />
+        <CarouselNext carousel={this.carousel} />
+      </Carousel>
+    );
+  }
+}
+```
+
+<Callout type="info">
+  Deliberately avoids a heavy dependency like Embla: native CSS scroll-snap plus `scrollBy`
+  handles sliding, dragging (via native touch/trackpad scroll), and snapping for free.
+  `CarouselState` just tracks whether prev/next are available.
+</Callout>

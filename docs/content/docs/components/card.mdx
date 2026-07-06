@@ -1,0 +1,71 @@
+---
+title: Card
+description: A bordered content container with Header, Title, Description, Action, Content, and Footer parts. Purely presentational.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="card" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="card" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-card--default" title="Default" height={380} />
+    <StorybookEmbed story="tailwind-card--with-action" title="With header action" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-card--default" title="Default" height={380} />
+    <StorybookEmbed story="praxiscss-card--with-action" title="With header action" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+<Card class="w-96">
+  <CardHeader>
+    <CardTitle>Create project</CardTitle>
+    <CardDescription>Deploy your new project in one click.</CardDescription>
+    <CardAction>
+      <Button variant="ghost" size="sm">⋯</Button>
+    </CardAction>
+  </CardHeader>
+  <CardContent>
+    <p>Project settings go here.</p>
+  </CardContent>
+  <CardFooter class="border-t">
+    <Button class="w-full">Deploy</Button>
+  </CardFooter>
+</Card>
+```
+
+## Parts
+
+`Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardAction`, `CardContent`, `CardFooter` —
+all accept `class`, `id`, and `children`. `CardHeader` uses a grid layout so `CardAction`
+(typically a menu button) sits in the top-right corner automatically when present.

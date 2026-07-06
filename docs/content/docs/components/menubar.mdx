@@ -1,0 +1,68 @@
+---
+title: Menubar
+description: A horizontal menu bar with dropdown menus, wrapping Morphos's Menubar primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="menubar" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="menubar" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-menubar--default" title="Default" height={520} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-menubar--default" title="Default" height={520} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
+
+@Component()
+class AppMenubar extends StatefulComponent {
+  @State() menubar = new Menubar({ "aria-label": "Application menu" });
+  @State() fileMenu = new MenubarMenu({ menubar: this.menubar, value: "file" });
+
+  render() {
+    return (
+      <Menubar aria-label="Application menu">
+        <MenubarMenu menubar={this.menubar} value="file">
+          <MenubarTrigger menu={this.fileMenu}>File</MenubarTrigger>
+          <MenubarContent menu={this.fileMenu}>
+            <MenubarItem menu={this.fileMenu} label="New File" onSelect={() => {}} />
+            <MenubarSeparator />
+            <MenubarItem menu={this.fileMenu} label="Quit" onSelect={() => {}} />
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>
+    );
+  }
+}
+```
+
+Each `MenubarMenu` needs its own sibling instance, same as `NavigationMenuItem`.

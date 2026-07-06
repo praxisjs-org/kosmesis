@@ -1,0 +1,61 @@
+---
+title: Alert
+description: A static inline notification with Title/Description parts, wrapping Morphos's Alert primitive.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="alert" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="alert" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-alert--default" title="Default" height={380} />
+    <StorybookEmbed story="tailwind-alert--all-variants" title="All variants" height={380} />
+    <StorybookEmbed story="tailwind-alert--no-title" title="No title" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-alert--default" title="Default" height={380} />
+    <StorybookEmbed story="praxiscss-alert--all-variants" title="All variants" height={380} />
+    <StorybookEmbed story="praxiscss-alert--no-title" title="No title" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+<Alert>
+  <AlertTitle>Heads up!</AlertTitle>
+  <AlertDescription>You can add components using the CLI.</AlertDescription>
+</Alert>
+
+<Alert variant="destructive">
+  <AlertTitle>Error</AlertTitle>
+  <AlertDescription>Your session has expired. Please log in again.</AlertDescription>
+</Alert>
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `variant` | `"default" \| "destructive"` | `"default"` |
+
+`variant="destructive"` maps to Morphos's `variant="error"` under the hood (and sets
+`aria-live="assertive"` accordingly); `variant="default"` maps to Morphos's `"info"`.

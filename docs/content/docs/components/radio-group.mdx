@@ -1,0 +1,71 @@
+---
+title: Radio Group
+description: A radio group with keyboard navigation, wrapping Morphos's RadioGroup + Radio.
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="radio-group" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="radio-group" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-radiogroup--default" title="Default" height={380} />
+    <StorybookEmbed story="tailwind-radiogroup--disabled" title="Disabled" height={380} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-radiogroup--default" title="Default" height={380} />
+    <StorybookEmbed story="praxiscss-radiogroup--disabled" title="Disabled" height={380} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+@Component()
+class PlanPicker extends StatefulComponent {
+  // Referenced by each RadioGroupItem via its `group` prop.
+  @State() plan = new RadioGroup({ defaultValue: "pro" });
+
+  render() {
+    return (
+      <RadioGroup orientation="vertical" aria-label="Plan" class="gap-3">
+        <div class="flex items-center gap-2">
+          <RadioGroupItem group={this.plan} value="free" id="free" />
+          <Label htmlFor="free">Free</Label>
+        </div>
+        <div class="flex items-center gap-2">
+          <RadioGroupItem group={this.plan} value="pro" id="pro" />
+          <Label htmlFor="pro">Pro</Label>
+        </div>
+      </RadioGroup>
+    );
+  }
+}
+```
+
+<Callout type="info">
+  The `<RadioGroup>` element mounted in the tree and the `this.plan` instance passed to each
+  `RadioGroupItem` are deliberately two separate objects — Morphos has no context system, so
+  `RadioGroup` produces the actual accessible container (role, `aria-label`, `data-*`) while a
+  second instance (created once, e.g. in `@State()`) is what `RadioGroupItem` reads selection
+  from. Keep their config props (like `defaultValue`) in sync.
+</Callout>
