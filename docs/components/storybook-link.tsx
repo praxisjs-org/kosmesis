@@ -1,4 +1,4 @@
-const STORYBOOK_BASE = 'https://storybook.morphos.praxisjs.org';
+const STORYBOOK_BASE = 'https://storybook.kosmesis.praxisjs.org';
 
 interface StorybookLinkProps {
   story: string;

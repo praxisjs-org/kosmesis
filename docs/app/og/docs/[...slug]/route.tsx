@@ -12,7 +12,7 @@ export async function GET(_req: Request, { params }: RouteContext<'/og/docs/[...
   return renderOGImage({
     title: page.data.title,
     description: page.data.description,
-    url: 'morphos.praxisjs.org/docs',
+    url: 'kosmesis.praxisjs.org/docs',
   });
 }
 

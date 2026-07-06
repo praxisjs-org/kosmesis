@@ -12,12 +12,12 @@ export default function Layout({ children }: LayoutProps<"/docs">) {
       tabs={[
         {
           title: "Documentation",
-          description: "Guides, API reference, and component packages",
+          description: "Guides and components, in both style systems",
           url: "/docs",
         },
         {
           title: "Changelog",
-          description: "Release history across all packages",
+          description: "Release history for the kosmesis CLI",
           url: "/docs/changelog",
         },
       ]}
