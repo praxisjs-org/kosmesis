@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+
+# TypeScript generated
+*.tsbuildinfo
+*.d.ts.map
+*.js.map
+
+# Vite
+.vite/
+*.local
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Tests
+coverage/
+
+# vitepress build output
+docs/.vitepress/dist
+docs/.vitepress/cache
+docs/.vitepress/.temp
+
+# Storybook
+storybook/storybook-static/
+
+#codecove
+codecov
+codecov.SHA256SUM
+codecov.SHA256SUM.sig

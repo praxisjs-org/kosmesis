@@ -1,0 +1,42 @@
+{
+  "name": "kosmesis-monorepo",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.30.2",
+  "scripts": {
+    "build": "pnpm -r run build",
+    "build:cli": "pnpm --filter kosmesis build",
+    "dev": "pnpm -r --parallel run dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "pnpm -r run typecheck",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "registry:build": "pnpm --filter @kosmesis/registry run build ../../docs/public/r",
+    "docs:dev": "pnpm --filter @kosmesis/docs dev",
+    "docs:build": "pnpm --filter @kosmesis/docs build",
+    "docs:preview": "pnpm --filter @kosmesis/docs start",
+    "prepare": "husky",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish"
+  },
+  "lint-staged": {
+    "packages/**/*.{ts,tsx}": "eslint --fix"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.30.0",
+    "@types/node": "^25.9.1",
+    "@vitest/coverage-v8": "^4.1.2",
+    "eslint": "^10.1.0",
+    "eslint-plugin-import-x": "^4.16.2",
+    "eslint-plugin-unicorn": "^63.0.0",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.58.0",
+    "vitest": "^4.1.2"
+  }
+}
