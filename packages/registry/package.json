@@ -1,0 +1,27 @@
+{
+  "name": "@kosmesis/registry",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-registry.mjs",
+    "registry:typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@morphos/core": "^0.1.0",
+    "@morphos/feedback": "^1.0.0",
+    "@morphos/inputs": "^1.0.0",
+    "@morphos/layout": "^1.0.0",
+    "@morphos/overlays": "^1.0.1",
+    "@praxisjs/core": "^2.0.0",
+    "@praxisjs/css": "^0.3.0",
+    "@praxisjs/decorators": "^1.5.1",
+    "@praxisjs/jsx": "^0.7.3",
+    "@praxisjs/runtime": "^0.5.4",
+    "@praxisjs/shared": "^0.3.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.6.0",
+    "typescript": "^6.0.3"
+  }
+}

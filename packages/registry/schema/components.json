@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kosmesis.praxisjs.org/schema.json",
+  "title": "Kosmesis components.json",
+  "description": "Per-project configuration written by `kosmesis init` and read by `kosmesis add`.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
+    "style": {
+      "type": "string",
+      "description": "Component visual style variant. Currently always \"default\"."
+    },
+    "styleSystem": {
+      "type": "string",
+      "enum": ["tailwind", "praxisjs-css"],
+      "description": "Which styling system this project's components are written against."
+    },
+    "css": {
+      "type": "string",
+      "description": "Path to the project's global stylesheet (styleSystem: \"tailwind\") or generated theme module (styleSystem: \"praxisjs-css\"), relative to the project root."
+    },
+    "aliases": {
+      "type": "object",
+      "properties": {
+        "components": { "type": "string" },
+        "ui": { "type": "string" },
+        "lib": { "type": "string" },
+        "utils": { "type": "string" }
+      },
+      "required": ["components", "ui", "lib", "utils"],
+      "additionalProperties": false
+    },
+    "registry": {
+      "type": "string",
+      "description": "Registry base — a local directory path or an http(s):// URL serving `<styleSystem>/<name>.json` files."
+    }
+  },
+  "required": ["style", "styleSystem", "css", "aliases", "registry"],
+  "additionalProperties": false
+}

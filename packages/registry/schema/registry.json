@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kosmesis.praxisjs.org/schema/registry.json",
+  "title": "Kosmesis registry index",
+  "description": "Top-level shape of registry.<styleSystem>.json — the source list `packages/registry/scripts/build-registry.mjs` reads to produce the per-component JSON files served at `/r/<styleSystem>/<name>.json`.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
+    "name": {
+      "type": "string"
+    },
+    "homepage": {
+      "type": "string",
+      "format": "uri"
+    },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/registryItem" }
+    }
+  },
+  "required": ["name", "homepage", "items"],
+  "additionalProperties": false,
+  "$defs": {
+    "registryItemType": {
+      "type": "string",
+      "enum": ["registry:ui", "registry:lib", "registry:hook", "registry:block"]
+    },
+    "registryFile": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Source path relative to packages/registry, e.g. \"ui/tailwind/button.tsx\"."
+        },
+        "type": { "$ref": "#/$defs/registryItemType" },
+        "target": {
+          "type": "string",
+          "description": "Filename to write inside the consumer's ui alias directory. Defaults to the basename of `path`."
+        }
+      },
+      "required": ["path", "type"],
+      "additionalProperties": false
+    },
+    "registryItem": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "$ref": "#/$defs/registryItemType" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "dependencies": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "npm packages this component needs at runtime."
+        },
+        "registryDependencies": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Other registry item names this component's source imports from."
+        },
+        "files": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/registryFile" }
+        }
+      },
+      "required": ["name", "type", "files"],
+      "additionalProperties": false
+    }
+  }
+}
