@@ -60,3 +60,30 @@ class PhotoCarousel extends StatefulComponent {
   handles sliding, dragging (via native touch/trackpad scroll), and snapping for free.
   `CarouselState` just tracks whether prev/next are available.
 </Callout>
+
+## Props
+
+### CarouselState
+
+Instantiate directly (`@State() carousel = new CarouselState()`) and pass it to `Carousel` and
+the control parts below.
+
+| Prop | Type | Default |
+|---|---|---|
+| `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` |
+
+### Carousel
+
+| Prop | Type | Default |
+|---|---|---|
+| `carousel` | `CarouselState` | — required |
+| `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` |
+
+### CarouselPrevious / CarouselNext
+
+| Prop | Type | Default |
+|---|---|---|
+| `carousel` | `CarouselState` | — required |
+
+`children` fall back to `‹`/`›` glyphs when omitted. `CarouselItem` takes no props beyond
+`class`/`children`.

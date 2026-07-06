@@ -64,9 +64,20 @@ it, while the underlying value stays a plain `number`:
 
 ## Props
 
-Passes through to Morphos's `NumberField` — `value`/`defaultValue`, `min`/`max`/`step`, `disabled`,
-`required`, `name`, `formatOptions` (an `Intl.NumberFormat` options object, e.g. for currency
-display), `onValueChange`.
+Passes through to Morphos's `NumberField`.
+
+| Prop | Type | Default |
+|---|---|---|
+| `value` | `number` | — controlled value |
+| `defaultValue` | `number` | — |
+| `min` | `number` | — |
+| `max` | `number` | — |
+| `step` | `number` | — |
+| `disabled` | `boolean` | — |
+| `required` | `boolean` | — |
+| `name` | `string` | — |
+| `formatOptions` | `Intl.NumberFormatOptions` | — e.g. `{ style: "currency", currency: "USD" }` |
+| `onValueChange` | `(value: number) => void` | — |
 
 The underlying input is `type="text"` with `inputmode="decimal"` — not `type="number"` — so no
 browser-native spinner UI ever shows through; the decrement/increment buttons are the only way to

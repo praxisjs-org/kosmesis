@@ -52,5 +52,17 @@ import { InputOTP } from "@/components/ui/input-otp";
 
 ## Props
 
-Passes through to Morphos's `OtpField` — `length`, `value`/`defaultValue`, `disabled`, `name`,
-`pattern`, `inputMode`, `onValueChange`, `onComplete`.
+Passes through to Morphos's `OtpField`.
+
+| Prop | Type | Default |
+|---|---|---|
+| `length` | `number` | — |
+| `value` | `string` | — |
+| `defaultValue` | `string` | — |
+| `onValueChange` | `(value: string) => void` | — |
+| `onComplete` | `(value: string) => void` | — |
+| `disabled` | `boolean` | — |
+| `name` | `string` | — |
+| `pattern` | `string` | — |
+| `inputMode` | `"numeric" \| "text"` | — |
+| `aria-label` | `string` | — |

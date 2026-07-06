@@ -72,3 +72,55 @@ class AccountMenu extends StatefulComponent {
 
 `DropdownMenu`/`DropdownMenuTrigger` are Morphos's `Dropdown`/`DropdownTrigger`, re-exported and
 renamed to match shadcn/ui's naming.
+
+## Props
+
+### DropdownMenu
+
+Instantiate it in state (`@State() dropdown = new DropdownMenu()`) and pass it to every part
+below.
+
+| Prop | Type | Default |
+|---|---|---|
+| `open` | `boolean` | — controlled |
+| `defaultOpen` | `boolean` | — |
+| `onOpenChange` | `(open: boolean) => void` | — |
+| `closeOnSelect` | `boolean` | — |
+| `side` | `AnchorSide` | `"bottom"` |
+| `align` | `AnchorAlign` | `"start"` |
+| `sideOffset` | `number` | `4` |
+
+### DropdownMenuTrigger
+
+| Prop | Type | Default |
+|---|---|---|
+| `dropdown` | `Dropdown` | — required |
+| `aria-label` | `string` | — |
+
+### DropdownMenuContent
+
+| Prop | Type | Default |
+|---|---|---|
+| `dropdown` | `Dropdown` | — required |
+| `aria-label` | `string` | — |
+| `aria-labelledby` | `string` | — |
+
+### DropdownMenuItem
+
+| Prop | Type | Default |
+|---|---|---|
+| `dropdown` | `Dropdown` | — required |
+| `value` | `string` | — required |
+| `label` | `string` | — |
+| `disabled` | `boolean` | — |
+| `onSelect` | `() => void` | — |
+| `variant` | `"default" \| "destructive"` | `"default"` |
+| `inset` | `boolean` | — |
+
+### DropdownMenuLabel
+
+| Prop | Type | Default |
+|---|---|---|
+| `inset` | `boolean` | — |
+
+`DropdownMenuSeparator` and `DropdownMenuShortcut` take no props beyond `class`/`children`.

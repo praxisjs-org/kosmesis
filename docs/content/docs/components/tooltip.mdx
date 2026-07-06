@@ -58,3 +58,31 @@ class SaveButton extends StatefulComponent {
 `TooltipTrigger`/`TooltipContent`. Since `TooltipTrigger` renders a plain `<span>`, it's safe to
 nest a `<Button>` inside it (unlike `PopoverTrigger`/`DialogTrigger`, which render their own
 `<button>`).
+
+## Props
+
+### Tooltip
+
+Re-exported directly from `@morphos/overlays` — instantiate it in state (`@State() tooltip = new
+Tooltip()`) and pass it to `TooltipTrigger`/`TooltipContent`.
+
+| Prop | Type | Default |
+|---|---|---|
+| `openDelay` | `number` | `500` |
+| `closeDelay` | `number` | `0` |
+| `side` | `"top" \| "bottom" \| "left" \| "right"` | `"top"` |
+| `align` | `"start" \| "center" \| "end"` | `"center"` |
+| `sideOffset` | `number` | `4` |
+
+### TooltipTrigger
+
+| Prop | Type | Default |
+|---|---|---|
+| `tooltip` | `Tooltip` | — required |
+
+### TooltipContent
+
+| Prop | Type | Default |
+|---|---|---|
+| `tooltip` | `Tooltip` | — required |
+| `aria-label` | `string` | — |

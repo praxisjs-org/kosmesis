@@ -53,3 +53,21 @@ import { Combobox } from "@/components/ui/combobox";
   [Command](/docs/components/command), which is built for that instead of Combobox's
   single-field-select use case.
 </Callout>
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `options` | `ComboboxOption[]` (`{ value: string; label: string; disabled?: boolean }`) | — required |
+| `value` | `string` | — |
+| `defaultValue` | `string` | — |
+| `placeholder` | `string` | — |
+| `disabled` | `boolean` | — |
+| `required` | `boolean` | — |
+| `name` | `string` | — |
+| `filterFn` | `(option: ComboboxOption, query: string) => boolean` | — |
+| `onValueChange` | `(value: string) => void` | — |
+| `onQueryChange` | `(query: string) => void` | — |
+| `aria-label` | `string` | — |
+| `aria-labelledby` | `string` | — |
+| `aria-describedby` | `string` | — |

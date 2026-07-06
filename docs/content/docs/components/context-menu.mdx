@@ -57,3 +57,41 @@ class FileRow extends StatefulComponent {
   }
 }
 ```
+
+## Props
+
+### ContextMenu
+
+Re-exported directly from `@morphos/overlays` — instantiate it in state (`@State() menu = new
+ContextMenu()`) and pass it to every part below.
+
+| Prop | Type | Default |
+|---|---|---|
+| `onOpenChange` | `(open: boolean) => void` | — |
+
+### ContextMenuTrigger
+
+| Prop | Type | Default |
+|---|---|---|
+| `contextMenu` | `ContextMenu` | — required |
+
+### ContextMenuContent
+
+| Prop | Type | Default |
+|---|---|---|
+| `contextMenu` | `ContextMenu` | — required |
+| `aria-label` | `string` | — |
+
+### ContextMenuItem
+
+| Prop | Type | Default |
+|---|---|---|
+| `contextMenu` | `ContextMenu` | — required |
+| `value` | `string` | — required |
+| `label` | `string` | — |
+| `disabled` | `boolean` | — |
+| `onSelect` | `() => void` | — |
+| `variant` | `"default" \| "destructive"` | `"default"` |
+| `inset` | `boolean` | — |
+
+`ContextMenuSeparator` takes no props beyond `class`.

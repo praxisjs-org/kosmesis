@@ -60,3 +60,14 @@ class Chat extends StatefulComponent {
 
 Use with [Message Scroller](/docs/components/message-scroller) for a scrollable chat viewport, and
 [Attachment](/docs/components/attachment) for file previews within a message.
+
+## Props
+
+### Message
+
+| Prop | Type | Default |
+|---|---|---|
+| `from` | `"user" \| "assistant"` | — required |
+| `avatar` | `Children` | — rendered before the bubble (e.g. an `Avatar`) |
+
+`MessageGroup` takes no props beyond `class`/`children`.

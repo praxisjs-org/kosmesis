@@ -76,4 +76,50 @@ class DeleteAccountDialog extends StatefulComponent {
 ```
 
 Unlike [Dialog](/docs/components/dialog), `AlertDialogContent` has no close (✕) button and no
-`closeOnBackdropClick` by default — the user must explicitly choose Cancel or Continue.
+`closeOnOutsideClick` by default — the user must explicitly choose Cancel or Continue.
+
+## Props
+
+### AlertDialog
+
+Re-exported directly from `@morphos/overlays` — instantiate it in state (`@State() alertDialog =
+new AlertDialog()`) and pass it to every part below.
+
+| Prop | Type | Default |
+|---|---|---|
+| `open` | `boolean` | — controlled open state |
+| `defaultOpen` | `boolean` | — |
+| `onOpenChange` | `(open: boolean) => void` | — |
+| `closeOnEscape` | `boolean` | — |
+| `closeOnOutsideClick` | `boolean` | — |
+
+### AlertDialogTrigger
+
+| Prop | Type | Default |
+|---|---|---|
+| `alertDialog` | `AlertDialog` | — required |
+
+### AlertDialogContent
+
+| Prop | Type | Default |
+|---|---|---|
+| `alertDialog` | `AlertDialog` | — required |
+| `aria-label` | `string` | — |
+| `aria-labelledby` | `string` | — |
+| `aria-describedby` | `string` | — |
+
+### AlertDialogTitle
+
+| Prop | Type | Default |
+|---|---|---|
+| `as` | `"h1" \| "h2" \| "h3" \| "h4" \| "h5" \| "h6"` | — |
+
+### AlertDialogAction / AlertDialogCancel
+
+| Prop | Type | Default |
+|---|---|---|
+| `alertDialog` | `AlertDialog` | — required |
+| `onClick` | `() => void` | — |
+
+`AlertDialogDescription`, `AlertDialogHeader`, and `AlertDialogFooter` take no props beyond
+`class`/`children`.

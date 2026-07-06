@@ -71,3 +71,46 @@ class SiteNav extends StatefulComponent {
   Each `NavigationMenuItem` needs its own sibling instance (`this.productsItem`) — one per
   submenu — the same "instantiate once, pass to every part" pattern as the top-level `nav`.
 </Callout>
+
+## Props
+
+### NavigationMenu
+
+| Prop | Type | Default |
+|---|---|---|
+| `orientation` | `"horizontal" \| "vertical"` | — |
+| `aria-label` | `string` | — |
+
+### NavigationMenuList
+
+| Prop | Type | Default |
+|---|---|---|
+| `nav` | `NavigationMenu` | — required |
+
+### NavigationMenuItem
+
+| Prop | Type | Default |
+|---|---|---|
+| `nav` | `NavigationMenu` | — required |
+| `value` | `string` | — required |
+
+### NavigationMenuTrigger
+
+| Prop | Type | Default |
+|---|---|---|
+| `item` | `NavigationMenuItem` | — required |
+
+### NavigationMenuContent
+
+| Prop | Type | Default |
+|---|---|---|
+| `item` | `NavigationMenuItem` | — required |
+
+### NavigationMenuLink
+
+| Prop | Type | Default |
+|---|---|---|
+| `href` | `string` | — |
+| `target` | `string` | — |
+| `rel` | `string` | — |
+| `onClick` | `(event: MouseEvent) => void` | — |

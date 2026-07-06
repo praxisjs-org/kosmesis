@@ -53,3 +53,21 @@ import { ScrollArea } from "@/components/ui/scroll-area";
   it composes Viewport/Scrollbar/Thumb internally and passes `this` to them directly, so
   `new ScrollArea()` is the only instance you ever need.
 </Callout>
+
+## Props
+
+### ScrollArea
+
+| Prop | Type | Default |
+|---|---|---|
+| `type` | `"auto" \| "always" \| "scroll" \| "hover" \| "hidden"` | — |
+
+### ScrollBar
+
+Rendered internally by `ScrollArea` (once per axis) — you only need this directly for advanced
+custom layouts.
+
+| Prop | Type | Default |
+|---|---|---|
+| `scrollArea` | `ScrollArea` | — required |
+| `orientation` | `"vertical" \| "horizontal"` | `"vertical"` |

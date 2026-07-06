@@ -56,3 +56,33 @@ class UserMention extends StatefulComponent {
 
 `HoverCard`/`HoverCardTrigger` are Morphos's `PreviewCard`/`PreviewCardTrigger`, re-exported and
 renamed.
+
+## Props
+
+### HoverCard
+
+Re-exported directly from `@morphos/overlays` (as `PreviewCard`) — instantiate it in state
+(`@State() card = new HoverCard()`) and pass it to `HoverCardTrigger`/`HoverCardContent`.
+
+| Prop | Type | Default |
+|---|---|---|
+| `open` | `boolean` | — controlled open state |
+| `defaultOpen` | `boolean` | — |
+| `onOpenChange` | `(open: boolean) => void` | — |
+| `openDelay` | `number` | — |
+| `closeDelay` | `number` | — |
+| `side` | `"top" \| "right" \| "bottom" \| "left"` | `"bottom"` |
+| `align` | `"start" \| "center" \| "end"` | `"start"` |
+| `sideOffset` | `number` | `4` |
+
+### HoverCardTrigger
+
+| Prop | Type | Default |
+|---|---|---|
+| `card` | `HoverCard` | — required |
+
+### HoverCardContent
+
+| Prop | Type | Default |
+|---|---|---|
+| `card` | `HoverCard` | — required |

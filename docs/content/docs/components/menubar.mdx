@@ -66,3 +66,54 @@ class AppMenubar extends StatefulComponent {
 ```
 
 Each `MenubarMenu` needs its own sibling instance, same as `NavigationMenuItem`.
+
+## Props
+
+### Menubar
+
+Extends Morphos's `Menubar` so `new Menubar({ "aria-label": "..." })` still yields a real instance
+with `.activeMenu`/`.toggle()` — what `MenubarMenu` needs via its `menubar` prop.
+
+| Prop | Type | Default |
+|---|---|---|
+| `aria-label` | `string` | — |
+
+### MenubarMenu
+
+Re-exported directly from `@morphos/layout` — its `render()` is a no-op Fragment. Each menu needs
+its own instance, shared between the `<MenubarMenu>` mounted in the tree and the
+`MenubarTrigger`/`MenubarContent` that reference it via their `menu` prop.
+
+| Prop | Type | Default |
+|---|---|---|
+| `menubar` | `Menubar` | — required |
+| `value` | `string` | — required |
+| `side` | `"top" \| "right" \| "bottom" \| "left"` | `"bottom"` |
+| `align` | `"start" \| "center" \| "end"` | `"start"` |
+| `sideOffset` | `number` | `4` |
+
+### MenubarTrigger
+
+| Prop | Type | Default |
+|---|---|---|
+| `menu` | `MenubarMenu` | — required |
+
+### MenubarContent
+
+| Prop | Type | Default |
+|---|---|---|
+| `menu` | `MenubarMenu` | — required |
+
+### MenubarItem
+
+| Prop | Type | Default |
+|---|---|---|
+| `menu` | `MenubarMenu` | — required |
+| `value` | `string` | — |
+| `label` | `string` | — |
+| `disabled` | `boolean` | — |
+| `onSelect` | `() => void` | — |
+| `variant` | `"default" \| "destructive"` | `"default"` |
+| `inset` | `boolean` | — |
+
+`MenubarSeparator` takes no props beyond `class`.

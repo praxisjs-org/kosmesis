@@ -53,3 +53,23 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 `previousElementSibling`/`nextElementSibling` and its direction via the closest
 `[data-slot=resizable-panel-group]` ancestor, entirely through the DOM at drag time. Place it
 directly between the two `ResizablePanel`s it should resize.
+
+## Props
+
+### ResizablePanelGroup
+
+| Prop | Type | Default |
+|---|---|---|
+| `direction` | `"horizontal" \| "vertical"` | `"horizontal"` |
+
+### ResizablePanel
+
+| Prop | Type | Default |
+|---|---|---|
+| `defaultSize` | `number` | `50` — percentage of the group's main axis |
+
+### ResizableHandle
+
+| Prop | Type | Default |
+|---|---|---|
+| `withHandle` | `boolean` | `false` — renders a small grip glyph |

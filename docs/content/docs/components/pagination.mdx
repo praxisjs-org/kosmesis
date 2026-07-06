@@ -54,3 +54,29 @@ import {
   </PaginationContent>
 </Pagination>
 ```
+
+## Props
+
+### PaginationLink
+
+| Prop | Type | Default |
+|---|---|---|
+| `href` | `string` | — |
+| `isActive` | `boolean` | — |
+| `size` | `"icon" \| "default"` | `"icon"` |
+| `onClick` | `(event: MouseEvent) => void` | — |
+| `aria-label` | `string` | — |
+
+### PaginationPrevious / PaginationNext
+
+Thin wrappers around `PaginationLink` with `size` fixed to `"default"` and a hardcoded
+`aria-label` ("Go to previous/next page").
+
+| Prop | Type | Default |
+|---|---|---|
+| `href` | `string` | — |
+| `onClick` | `(event: MouseEvent) => void` | — |
+| `children` | `Children` | `"Previous"` / `"Next"` |
+
+`Pagination`, `PaginationContent`, `PaginationItem`, and `PaginationEllipsis` take no props
+beyond `class`/`children`.

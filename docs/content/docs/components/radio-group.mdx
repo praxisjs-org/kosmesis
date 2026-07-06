@@ -69,3 +69,29 @@ class PlanPicker extends StatefulComponent {
   second instance (created once, e.g. in `@State()`) is what `RadioGroupItem` reads selection
   from. Keep their config props (like `defaultValue`) in sync.
 </Callout>
+
+## Props
+
+### RadioGroup
+
+| Prop | Type | Default |
+|---|---|---|
+| `value` | `string` | — controlled value |
+| `defaultValue` | `string` | — |
+| `name` | `string` | — |
+| `disabled` | `boolean` | — |
+| `required` | `boolean` | — |
+| `orientation` | `"horizontal" \| "vertical"` | — |
+| `onValueChange` | `(value: string) => void` | — |
+| `aria-label` | `string` | — |
+| `aria-labelledby` | `string` | — |
+
+### RadioGroupItem
+
+| Prop | Type | Default |
+|---|---|---|
+| `value` | `string` | — required |
+| `group` | `RadioGroup` | — required |
+| `disabled` | `boolean` | — |
+| `aria-label` | `string` | — |
+| `aria-labelledby` | `string` | — |

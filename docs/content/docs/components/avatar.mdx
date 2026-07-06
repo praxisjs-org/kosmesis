@@ -65,3 +65,23 @@ class MyPage extends StatefulComponent {
   same `Avatar` instance passed via their `avatar` prop to read/report load status — instantiate
   it once (`@State() avatar = new Avatar()`), same as every other Morphos compound component.
 </Callout>
+
+## Props
+
+### Avatar
+
+No own props beyond `class`/`id`/`children`.
+
+### AvatarImage
+
+| Prop | Type | Default |
+|---|---|---|
+| `avatar` | `Avatar` | — required |
+| `src` | `string` | — required |
+| `alt` | `string` | — required |
+
+### AvatarFallback
+
+| Prop | Type | Default |
+|---|---|---|
+| `avatar` | `Avatar` | — required |

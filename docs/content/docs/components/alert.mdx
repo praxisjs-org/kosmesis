@@ -56,6 +56,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 | Prop | Type | Default |
 |---|---|---|
 | `variant` | `"default" \| "destructive"` | `"default"` |
+| `title` | `string` | — rendered as Morphos's title slot, above `children` |
+| `live` | `"polite" \| "assertive"` | `"polite"` — sets `aria-live` |
 
-`variant="destructive"` maps to Morphos's `variant="error"` under the hood (and sets
-`aria-live="assertive"` accordingly); `variant="default"` maps to Morphos's `"info"`.
+`variant="destructive"` maps to Morphos's `variant="error"` under the hood; `variant="default"`
+maps to Morphos's `"info"`. All other props (`class`, `id`, `children`, ...) pass through to
+Morphos's `Alert` unchanged.

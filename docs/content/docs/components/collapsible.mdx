@@ -52,3 +52,31 @@ class Notes extends StatefulComponent {
   }
 }
 ```
+
+## Props
+
+### Collapsible
+
+Subclasses Morphos's `Disclosure` — instantiate directly (`@State() disclosure = new
+Collapsible()`).
+
+| Prop | Type | Default |
+|---|---|---|
+| `open` | `boolean` | — controlled |
+| `defaultOpen` | `boolean` | `false` |
+| `onOpenChange` | `(open: boolean) => void` | — |
+
+### CollapsibleTrigger
+
+| Prop | Type | Default |
+|---|---|---|
+| `disclosure` | `Disclosure` | — required |
+| `aria-label` | `string` | — |
+
+The prop is literally named `disclosure`, not `collapsible`, despite the class rename.
+
+### CollapsibleContent
+
+| Prop | Type | Default |
+|---|---|---|
+| `disclosure` | `Disclosure` | — required |

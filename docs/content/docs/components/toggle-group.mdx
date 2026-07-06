@@ -60,3 +60,32 @@ class TextAlignPicker extends StatefulComponent {
   pass the same `variant`/`size` to `ToggleGroup` and every `ToggleGroupItem` to keep them visually
   consistent.
 </Callout>
+
+## Props
+
+### ToggleGroup
+
+| Prop | Type | Default |
+|---|---|---|
+| `type` | `"single" \| "multiple"` | — required |
+| `value` | `string \| string[]` | — |
+| `defaultValue` | `string \| string[]` | — |
+| `disabled` | `boolean` | `false` |
+| `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` |
+| `onValueChange` | `(value: string \| string[]) => void` | — |
+| `aria-label` | `string` | — |
+| `aria-labelledby` | `string` | — |
+
+`ToggleGroup` itself does not accept `variant`/`size` — despite the Usage example above passing
+`variant="outline"` to it, that prop has no effect on the group; only `ToggleGroupItem` renders
+variant/size styling, so it must be set per-item.
+
+### ToggleGroupItem
+
+| Prop | Type | Default |
+|---|---|---|
+| `group` | `ToggleGroup` | — required |
+| `value` | `string` | — required |
+| `disabled` | `boolean` | — |
+| `variant` | `"default" \| "outline"` | `"default"` |
+| `size` | `"default" \| "sm" \| "lg"` | `"default"` |

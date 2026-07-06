@@ -93,3 +93,32 @@ class Palette extends StatefulComponent {
   keyboard navigation directly — closer to Morphos's own `Combobox` internals than a wrap of it,
   since Command's list is always rendered rather than toggled open/closed.
 </Callout>
+
+## Props
+
+### CommandState
+
+Instantiate directly (`@State() commandState = new CommandState({...})`).
+
+| Prop | Type | Default |
+|---|---|---|
+| `items` | `CommandItemDef[]` (`{ value, label, group?, disabled?, onSelect? }`) | `[]` |
+| `onSelect` | `(item: CommandItemDef) => void` | — |
+
+### Command
+
+| Prop | Type | Default |
+|---|---|---|
+| `state` | `CommandState` | — required |
+| `placeholder` | `string` | `"Type a command or search..."` |
+| `emptyText` | `string` | `"No results found."` |
+| `class` | `string` | — |
+
+### CommandDialog
+
+| Prop | Type | Default |
+|---|---|---|
+| `dialog` | `Dialog` | — required, a Morphos `Dialog` instance |
+| `state` | `CommandState` | — required |
+| `placeholder` | `string` | — |
+| `class` | `string` | — |

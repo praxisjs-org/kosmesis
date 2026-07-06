@@ -77,5 +77,48 @@ class MobileNav extends StatefulComponent {
 
 ## Props
 
-`side` — `"top" | "right" | "bottom" | "left"` (default `"right"`) — which edge the drawer slides
-in from. See [Sheet](/docs/components/sheet) for the shadcn/ui-named alias.
+### Drawer
+
+Re-exported directly from `@morphos/overlays` — instantiate it in state (`@State() drawer = new
+Drawer()`) and pass it to every part below.
+
+| Prop | Type | Default |
+|---|---|---|
+| `open` | `boolean` | — controlled |
+| `defaultOpen` | `boolean` | — |
+| `onOpenChange` | `(open: boolean) => void` | — |
+| `closeOnEscape` | `boolean` | `true` |
+| `closeOnBackdropClick` | `boolean` | `true` |
+| `side` | `"top" \| "right" \| "bottom" \| "left"` | `"right"` |
+
+`side` is which edge the drawer slides in from. See [Sheet](/docs/components/sheet) for the
+shadcn/ui-named alias.
+
+### DrawerTrigger
+
+| Prop | Type | Default |
+|---|---|---|
+| `drawer` | `Drawer` | — required |
+
+### DrawerContent
+
+| Prop | Type | Default |
+|---|---|---|
+| `drawer` | `Drawer` | — required |
+| `aria-label` | `string` | — |
+| `aria-labelledby` | `string` | — |
+| `aria-describedby` | `string` | — |
+
+### DrawerTitle
+
+| Prop | Type | Default |
+|---|---|---|
+| `as` | `"h1" \| "h2" \| "h3" \| "h4" \| "h5" \| "h6"` | — |
+
+### DrawerClose
+
+| Prop | Type | Default |
+|---|---|---|
+| `drawer` | `Drawer` | — required |
+
+`DrawerHeader`, `DrawerFooter`, and `DrawerDescription` take no props beyond `class`/`children`.

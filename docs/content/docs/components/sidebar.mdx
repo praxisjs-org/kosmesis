@@ -92,9 +92,56 @@ class AppShell extends StatefulComponent {
 
 ## Notes
 
-- `collapsible` on `Sidebar` accepts `"offcanvas" | "icon" | "none"` (default `"offcanvas"`).
 - `SidebarTrigger` checks a `(max-width: 767px)` media query at click time to decide whether to
   toggle the desktop rail or the mobile sheet.
 - Theming uses dedicated `--sidebar`, `--sidebar-foreground`, `--sidebar-accent`, etc. CSS
   variables (already wired up by `kosmesis init`), separate from the page's `--background`, so a
   dark sidebar next to a light page (or vice versa) is just a token override away.
+
+## Props
+
+### SidebarState
+
+Not mounted via JSX — instantiate once (`@State() sidebar = new SidebarState()`) and pass it to
+every part below.
+
+| Prop | Type | Default |
+|---|---|---|
+| `defaultOpen` | `boolean` | `true` |
+| `onOpenChange` | `(open: boolean) => void` | — |
+
+### SidebarProvider
+
+| Prop | Type | Default |
+|---|---|---|
+| `sidebar` | `SidebarState` | — required |
+
+### Sidebar
+
+| Prop | Type | Default |
+|---|---|---|
+| `sidebar` | `SidebarState` | — required |
+| `side` | `"left" \| "right"` | `"left"` |
+| `collapsible` | `"offcanvas" \| "icon" \| "none"` | `"offcanvas"` |
+
+### SidebarTrigger
+
+| Prop | Type | Default |
+|---|---|---|
+| `sidebar` | `SidebarState` | — required |
+| `children` | `Children` | `"☰"` |
+
+### SidebarMenuButton
+
+| Prop | Type | Default |
+|---|---|---|
+| `as` | `"button" \| "a"` | `"button"` |
+| `href` | `string` | — only used when `as="a"` |
+| `isActive` | `boolean` | — |
+| `onClick` | `(event: MouseEvent) => void` | — |
+| `variant` | `"default" \| "outline"` | `"default"` |
+| `size` | `"default" \| "sm" \| "lg"` | `"default"` |
+
+`SidebarInset`, `SidebarHeader`, `SidebarFooter`, `SidebarContent`, `SidebarGroup`,
+`SidebarGroupLabel`, `SidebarGroupContent`, `SidebarMenu`, `SidebarMenuItem`, and
+`SidebarSeparator` are layout-only — no props beyond `class`/`children`.

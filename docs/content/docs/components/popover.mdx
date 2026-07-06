@@ -62,3 +62,34 @@ class Settings extends StatefulComponent {
   Radix's. Style it directly with `buttonVariants()` (imported from `./button`) instead of
   nesting a separate `Button` inside it, which would produce invalid nested `<button>` elements.
 </Callout>
+
+## Props
+
+### Popover
+
+Re-exported directly from `@morphos/overlays`.
+
+| Prop | Type | Default |
+|---|---|---|
+| `open` | `boolean` | — controlled open state |
+| `defaultOpen` | `boolean` | — |
+| `onOpenChange` | `(open: boolean) => void` | — |
+| `closeOnEscape` | `boolean` | — |
+| `closeOnOutsideClick` | `boolean` | — |
+| `side` | `"top" \| "right" \| "bottom" \| "left"` | `"bottom"` |
+| `align` | `"start" \| "center" \| "end"` | `"start"` |
+| `sideOffset` | `number` | `4` |
+
+### PopoverTrigger
+
+| Prop | Type | Default |
+|---|---|---|
+| `popover` | `Popover` | — required |
+
+### PopoverContent
+
+| Prop | Type | Default |
+|---|---|---|
+| `popover` | `Popover` | — required |
+| `aria-label` | `string` | — |
+| `aria-labelledby` | `string` | — |

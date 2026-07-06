@@ -54,3 +54,12 @@ class BookingForm extends StatefulComponent {
 This is a composition, not a new primitive — [Popover](/docs/components/popover) (Morphos) +
 [Calendar](/docs/components/calendar) (built from scratch). If you need a different trigger
 style or a range picker, compose those two components directly instead of using `DatePicker`.
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `popover` | `Popover` | — required, a Morphos `Popover` instance |
+| `calendar` | `CalendarState` | — required |
+| `placeholder` | `string` | `"Pick a date"` |
+| `class` | `string` | — |

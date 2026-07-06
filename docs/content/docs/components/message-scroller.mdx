@@ -68,3 +68,12 @@ class Chat extends StatefulComponent {
   PraxisJS has no DOM-mutation-observer-style "children changed" hook built in, so
   `scrollToBottom()` is called explicitly after appending a message rather than automatically.
 </Callout>
+
+## Props
+
+`MessageScroller` takes no props beyond `class`/`children` — it auto-scrolls to the bottom on
+mount and exposes one imperative method via `ref`:
+
+| Method | Type | Default |
+|---|---|---|
+| `scrollToBottom(behavior?)` | `(behavior?: ScrollBehavior) => void` | `behavior` defaults to `"auto"` |

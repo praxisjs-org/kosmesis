@@ -71,3 +71,43 @@ class PaymentsTable extends StatefulComponent {
   read from plain arrays and indices. It covers the common 80% (sort a column, page through
   rows); bring your own filtering/row-selection state the same way if you need it.
 </Callout>
+
+## Props
+
+### DataTableColumn
+
+A config object, not a component — passed in `DataTableState`'s `columns` array.
+
+| Prop | Type | Default |
+|---|---|---|
+| `key` | `string` | — required |
+| `header` | `string` | — required |
+| `sortable` | `boolean` | — |
+| `align` | `"left" \| "right" \| "center"` | — |
+| `cell` | `(row: T) => Children` | — |
+| `sortValue` | `(row: T) => string \| number` | — |
+
+### DataTableState
+
+Instantiate directly (`@State() table = new DataTableState<T>({...})`).
+
+| Prop | Type | Default |
+|---|---|---|
+| `data` | `T[]` | `[]` |
+| `columns` | `Array<DataTableColumn<T>>` | `[]` |
+| `pageSize` | `number` | `10` |
+
+### DataTable
+
+| Prop | Type | Default |
+|---|---|---|
+| `state` | `DataTableState<T>` | — required |
+| `getRowKey` | `(row: T) => string` | — required |
+| `class` | `string` | — |
+
+### DataTablePagination
+
+| Prop | Type | Default |
+|---|---|---|
+| `state` | `DataTableState<T>` | — required |
+| `class` | `string` | — |

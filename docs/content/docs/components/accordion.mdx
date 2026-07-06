@@ -67,9 +67,34 @@ class FaqAccordion extends StatefulComponent {
 
 ## Props
 
+### Accordion
+
 | Prop | Type | Default |
 |---|---|---|
 | `type` | `"single" \| "multiple"` | `"single"` |
 | `collapsible` | `boolean` | `true` — only relevant when `type="single"` |
+| `value` | `string \| string[]` | — controlled open value(s) |
 | `defaultValue` | `string \| string[]` | — |
 | `onValueChange` | `(value: string \| string[]) => void` | — |
+
+### AccordionItem
+
+| Prop | Type | Default |
+|---|---|---|
+| `accordion` | `Accordion` | — required, the state instance from `@State()` |
+| `value` | `string` | — required |
+| `disabled` | `boolean` | — |
+
+### AccordionTrigger
+
+| Prop | Type | Default |
+|---|---|---|
+| `accordion` | `Accordion` | — required |
+| `item` | `string` | — required, matching the parent `AccordionItem`'s `value` |
+
+### AccordionContent
+
+| Prop | Type | Default |
+|---|---|---|
+| `accordion` | `Accordion` | — required |
+| `item` | `string` | — required, matching the parent `AccordionItem`'s `value` |

@@ -63,6 +63,16 @@ import { toast } from "@/components/ui/sonner";
 </Button>
 ```
 
+## Props
+
+### Toaster
+
+| Prop | Type | Default |
+|---|---|---|
+| `defaultDuration` | `number` | `5000` |
+| `class` | `string` | — |
+| `id` | `string` | — |
+
 ## API
 
 | Function | Description |
@@ -72,6 +82,8 @@ import { toast } from "@/components/ui/sonner";
 | `toast.error(title, description?)` | Shortcut for `variant: "error"` |
 | `toast.message(title, description?)` | Shortcut for `variant: "info"` |
 | `toast.dismiss(id)` | Dismiss a specific toast early |
+
+`variant` is one of `"info" | "success" | "warning" | "error"` (defaults to `"info"` when omitted).
 
 <Callout type="info">
   Morphos's `ToastProvider` is self-contained — it owns the toast queue *and* renders it (via a

@@ -63,3 +63,36 @@ const data = [
   useful even if you bring your own SVG or another charting library instead of
   `SimpleBarChart`/`SimpleLineChart`.
 </Callout>
+
+## Props
+
+### ChartContainer
+
+| Prop | Type | Default |
+|---|---|---|
+| `config` | `ChartConfig` (`Record<string, { label: string; color: string }>`) | — required |
+| `class` | `string` | — |
+
+### ChartLegend
+
+| Prop | Type | Default |
+|---|---|---|
+| `config` | `ChartConfig` | — required |
+| `class` | `string` | — |
+
+### ChartTooltip
+
+| Prop | Type | Default |
+|---|---|---|
+| `label` | `string` | — required |
+| `items` | `Array<{ key: string; value: string \| number; color: string }>` | — required |
+| `class` | `string` | — |
+
+### SimpleBarChart / SimpleLineChart
+
+| Prop | Type | Default |
+|---|---|---|
+| `data` | `ChartDatum[]` | — required |
+| `config` | `ChartConfig` | — required |
+| `height` | `number` | `240` |
+| `class` | `string` | — |

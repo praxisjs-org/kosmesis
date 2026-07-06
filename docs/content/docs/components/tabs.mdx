@@ -63,3 +63,37 @@ class AccountSettings extends StatefulComponent {
   props (`defaultValue`) — see the same note on [Radio Group](/docs/components/radio-group) for
   why. `TabsList`, `TabsTrigger`, and `TabsContent` all read/drive selection through `this.tabs`.
 </Callout>
+
+## Props
+
+### Tabs
+
+| Prop | Type | Default |
+|---|---|---|
+| `value` | `string` | — |
+| `defaultValue` | `string` | — |
+| `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` |
+| `onValueChange` | `(value: string) => void` | — |
+
+### TabsList
+
+| Prop | Type | Default |
+|---|---|---|
+| `tabs` | `Tabs` | — required |
+| `aria-label` | `string` | — |
+| `aria-labelledby` | `string` | — |
+
+### TabsTrigger
+
+| Prop | Type | Default |
+|---|---|---|
+| `tabs` | `Tabs` | — required |
+| `value` | `string` | — required |
+| `disabled` | `boolean` | — |
+
+### TabsContent
+
+| Prop | Type | Default |
+|---|---|---|
+| `tabs` | `Tabs` | — required |
+| `value` | `string` | — required |

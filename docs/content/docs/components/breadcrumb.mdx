@@ -61,3 +61,27 @@ import {
   </BreadcrumbList>
 </Breadcrumb>
 ```
+
+## Props
+
+### Breadcrumb
+
+| Prop | Type | Default |
+|---|---|---|
+| `aria-label` | `string` | `"breadcrumb"` |
+
+### BreadcrumbLink
+
+| Prop | Type | Default |
+|---|---|---|
+| `href` | `string` | — |
+| `onClick` | `(event: MouseEvent) => void` | — |
+
+### BreadcrumbSeparator
+
+| Prop | Type | Default |
+|---|---|---|
+| `children` | `Children` | `"/"` — overrides the default separator glyph |
+
+`BreadcrumbList`, `BreadcrumbItem`, `BreadcrumbPage`, and `BreadcrumbEllipsis` take no props
+beyond `class`/`children`.

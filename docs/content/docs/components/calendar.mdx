@@ -52,7 +52,9 @@ class BookingCalendar extends StatefulComponent {
 }
 ```
 
-## Props (`CalendarState`)
+## Props
+
+### CalendarState
 
 | Prop | Type | Default |
 |---|---|---|
@@ -60,5 +62,11 @@ class BookingCalendar extends StatefulComponent {
 | `selected` | `Date` | — (controlled) |
 | `onSelect` | `(date: Date) => void` | — |
 | `disabled` | `(date: Date) => boolean` | — |
+
+### Calendar
+
+| Prop | Type | Default |
+|---|---|---|
+| `state` | `CalendarState` | — required |
 
 For a Popover-triggered variant, see [Date Picker](/docs/components/date-picker).
