@@ -1,0 +1,181 @@
+---
+title: Theming
+description: How Kosmesis's design tokens work in both style systems, and how to switch themes at runtime with @praxisjs/css.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## How theming works [#how-theming-works]
+
+Every Kosmesis component reads color, radius, and spacing from a shared set of tokens —
+`background`, `foreground`, `primary`, `secondary`, `muted`, `accent`, `destructive`, `border`,
+`input`, `ring`, `sidebar`, and their `-foreground` counterparts — instead of hardcoding values.
+Both style systems declare the exact same token names, so a project looks identical the moment
+`kosmesis init` finishes, no matter which one was chosen. Only how those tokens reach the DOM
+differs.
+
+### Default token values [#default-token-values]
+
+These are the values `kosmesis init` writes for both style systems — identical either way, just
+expressed as CSS custom properties (Tailwind) or as `LightTheme`/`DarkTheme` class fields
+(`@praxisjs/css`). All colors are [oklch](https://oklch.com).
+
+| Token | Light | Dark |
+| --- | --- | --- |
+| `radius` | `0.625rem` | *(same)* |
+| `background` | `oklch(1 0 0)` | `oklch(0.145 0 0)` |
+| `foreground` | `oklch(0.145 0 0)` | `oklch(0.985 0 0)` |
+| `card` | `oklch(1 0 0)` | `oklch(0.205 0 0)` |
+| `card-foreground` | `oklch(0.145 0 0)` | `oklch(0.985 0 0)` |
+| `popover` | `oklch(1 0 0)` | `oklch(0.205 0 0)` |
+| `popover-foreground` | `oklch(0.145 0 0)` | `oklch(0.985 0 0)` |
+| `primary` | `oklch(0.205 0 0)` | `oklch(0.922 0 0)` |
+| `primary-foreground` | `oklch(0.985 0 0)` | `oklch(0.205 0 0)` |
+| `secondary` | `oklch(0.97 0 0)` | `oklch(0.269 0 0)` |
+| `secondary-foreground` | `oklch(0.205 0 0)` | `oklch(0.985 0 0)` |
+| `muted` | `oklch(0.97 0 0)` | `oklch(0.269 0 0)` |
+| `muted-foreground` | `oklch(0.556 0 0)` | `oklch(0.708 0 0)` |
+| `accent` | `oklch(0.97 0 0)` | `oklch(0.269 0 0)` |
+| `accent-foreground` | `oklch(0.205 0 0)` | `oklch(0.985 0 0)` |
+| `destructive` | `oklch(0.577 0.245 27.325)` | `oklch(0.704 0.191 22.216)` |
+| `destructive-foreground` | `oklch(0.985 0 0)` | `oklch(0.985 0 0)` |
+| `border` | `oklch(0.922 0 0)` | `oklch(1 0 0 / 10%)` |
+| `input` | `oklch(0.922 0 0)` | `oklch(1 0 0 / 15%)` |
+| `ring` | `oklch(0.708 0 0)` | `oklch(0.556 0 0)` |
+| `sidebar` | `oklch(0.985 0 0)` | `oklch(0.205 0 0)` |
+| `sidebar-foreground` | `oklch(0.145 0 0)` | `oklch(0.985 0 0)` |
+| `sidebar-primary` | `oklch(0.205 0 0)` | `oklch(0.488 0.243 264.376)` |
+| `sidebar-primary-foreground` | `oklch(0.985 0 0)` | `oklch(0.985 0 0)` |
+| `sidebar-accent` | `oklch(0.97 0 0)` | `oklch(0.269 0 0)` |
+| `sidebar-accent-foreground` | `oklch(0.205 0 0)` | `oklch(0.985 0 0)` |
+| `sidebar-border` | `oklch(0.922 0 0)` | `oklch(1 0 0 / 10%)` |
+| `sidebar-ring` | `oklch(0.708 0 0)` | `oklch(0.556 0 0)` |
+
+<Callout type="info">
+  These are starting values, not a fixed contract — edit `LightTheme`/`DarkTheme` (or the
+  `:root`/`.dark` blocks in your stylesheet) directly. Nothing about the CLI or the components
+  depends on the specific numbers above, only on the token *names* existing.
+</Callout>
+
+### Tailwind
+
+`kosmesis init` writes the tokens as plain CSS custom properties into your global stylesheet — a
+`:root { --background: ...; }` block for light values, a `.dark { --background: ...; }` block for
+dark ones — plus a `@theme inline` block that maps each one into Tailwind v4's color scale
+(`--color-background: var(--background)`), which is what makes `bg-background`,
+`text-foreground`, etc. resolve.
+
+Dark mode is nothing more than a `.dark` class on an ancestor element (typically `<html>`).
+Kosmesis doesn't ship any JavaScript to toggle it — flip the class however your project already
+handles that (a checkbox bound to `classList.toggle("dark", ...)`, `prefers-color-scheme`, a
+persisted preference, anything).
+
+### `@praxisjs/css`
+
+`kosmesis init` writes a theme module instead (default path `src/lib/kosmesis-theme.ts`)
+declaring:
+
+- **`KosmesisTokens`** — a `TokenSheet` skeleton listing every token *name*, with no values.
+  Reading a static property off it or off anything wrapped in `tokenVars()` returns a CSS
+  variable reference: `KosmesisTokens.primary` → `"var(--primary)"`.
+- **`LightTheme`** — a concrete class extending `KosmesisTokens` that assigns every token an
+  actual value.
+- **`DarkTheme`** — extends `LightTheme` and overrides only what changes between the two.
+
+Every component's `Stylesheet` reads tokens through `tokenVars(KosmesisTokens)`, never a raw
+`"var(--primary)"` string:
+
+```tsx
+import { tokenVars } from "@praxisjs/css";
+import { KosmesisTokens } from "@/lib/kosmesis-theme";
+
+const t = tokenVars(KosmesisTokens);
+
+class ButtonStyles extends Stylesheet {
+  $root = this.css({ background: t.primary, color: t.primaryForeground });
+}
+```
+
+Renaming a token is a type error everywhere it's referenced, not a silent runtime breakage — the
+whole reason this indirection exists instead of writing `"var(--primary)"` by hand.
+
+<Callout type="info">
+  Unlike the Tailwind stylesheet, nothing here is static CSS on disk yet — `LightTheme`'s values
+  only become real `:root` custom properties once something applies the theme at runtime. That's
+  what `@Themed` and `theme()` do, covered next.
+</Callout>
+
+## Switching themes with `@praxisjs/css` [#switching-themes]
+
+This section only applies to `styleSystem: "praxisjs-css"` projects — Tailwind projects toggle
+the `.dark` class directly and don't need a runtime API for it.
+
+### Wiring it up once
+
+`kosmesis init` prints a reminder to add `@Themed` to your root component, above `@Component()`:
+
+```tsx
+import { Themed } from "@praxisjs/css";
+import { Component } from "@praxisjs/decorators";
+import { StatefulComponent } from "@praxisjs/core";
+import { KosmesisTokens, LightTheme } from "@/lib/kosmesis-theme";
+
+@Themed(KosmesisTokens, LightTheme, { persist: true, syncTabs: true })
+@Component()
+class App extends StatefulComponent {
+  render() {
+    return <YourApp />;
+  }
+}
+```
+
+`@Themed` installs a single app-wide `ThemeInstance`, injects `LightTheme`'s values onto `:root`
+as CSS custom properties, and reads two options:
+
+- **`persist`** — saves the active theme's values to `localStorage` and restores them on the next
+  page load, instead of always starting from `LightTheme`.
+- **`syncTabs`** — broadcasts theme changes to every other open tab via `BroadcastChannel`, so
+  switching themes in one tab updates all the others live.
+
+### Switching at runtime
+
+Call `theme().switch(...)` from anywhere, or read the singleton through the `@Theme()` field
+decorator:
+
+```tsx
+import { theme } from "@praxisjs/css";
+import { Button } from "@/components/ui/button";
+import { DarkTheme, LightTheme } from "@/lib/kosmesis-theme";
+
+@Component()
+class ThemeToggle extends StatefulComponent {
+  render() {
+    const isDark = theme().current instanceof DarkTheme;
+    return (
+      <Button onClick={() => theme().switch(isDark ? LightTheme : DarkTheme)}>
+        {isDark ? "Light" : "Dark"} mode
+      </Button>
+    );
+  }
+}
+```
+
+```tsx
+// Equivalent, using the field decorator instead of the theme() function directly:
+import { Theme, type ThemeInstance } from "@praxisjs/css";
+
+@Component()
+class ThemeToggle extends StatefulComponent {
+  @Theme() theme!: ThemeInstance;
+
+  render() {
+    return <Button onClick={() => this.theme.switch(DarkTheme)}>Dark</Button>;
+  }
+}
+```
+
+`switch()` instantiates the given theme class, recomputes every token's CSS variable, re-applies
+them to `:root`, and — per whatever `@Themed` was configured with — persists the result to
+`localStorage` and broadcasts it to other tabs. Any class that extends the same `TokenSheet`
+skeleton works, so a project isn't limited to just `LightTheme`/`DarkTheme` — add a third theme
+class and `switch()` to it the same way.
