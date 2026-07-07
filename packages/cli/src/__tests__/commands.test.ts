@@ -9,6 +9,7 @@ const hoisted = vi.hoisted(() => ({
   confirmMock: vi.fn(),
   selectMock: vi.fn(),
   textMock: vi.fn(),
+  spawnMock: vi.fn(),
   processState: { argv: ["node", "kosmesis"] as string[], cwd: "" },
 }));
 
@@ -16,6 +17,10 @@ vi.mock("node:process", () => ({
   argv: hoisted.processState.argv,
   cwd: () => hoisted.processState.cwd,
   exit: vi.fn(),
+}));
+
+vi.mock("node:child_process", () => ({
+  spawn: hoisted.spawnMock,
 }));
 
 vi.mock("@clack/prompts", () => ({
@@ -38,6 +43,58 @@ const { defaultConfig, writeConfig } = await import("../utils/config");
 const { COMMON_DEPENDENCIES, STYLE_SYSTEM_DEPENDENCIES } = await import("../constants");
 
 let tmpDir: string;
+const originalUserAgent = process.env.npm_config_user_agent;
+
+function mockSuccessfulInstall(): void {
+  hoisted.spawnMock.mockImplementation(() => {
+    const child = {
+      on: vi.fn((event: string, callback: (code?: number) => void) => {
+        if (event === "close") {
+          queueMicrotask(() => {
+            callback(0);
+          });
+        }
+        return child;
+      }),
+    };
+
+    return child;
+  });
+}
+
+function mockInstallExit(code: number): void {
+  hoisted.spawnMock.mockImplementation(() => {
+    const child = {
+      on: vi.fn((event: string, callback: (value?: number) => void) => {
+        if (event === "close") {
+          queueMicrotask(() => {
+            callback(code);
+          });
+        }
+        return child;
+      }),
+    };
+
+    return child;
+  });
+}
+
+function mockInstallError(error: string): void {
+  hoisted.spawnMock.mockImplementation(() => {
+    const child = {
+      on: vi.fn((event: string, callback: (value?: string) => void) => {
+        if (event === "error") {
+          queueMicrotask(() => {
+            callback(error);
+          });
+        }
+        return child;
+      }),
+    };
+
+    return child;
+  });
+}
 
 function setArgv(command: string, args: string[]): void {
   hoisted.processState.argv.length = 0;
@@ -71,10 +128,17 @@ function writeRegistryItem(
 beforeEach(() => {
   tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "kosmesis-cli-cmd-test-"));
   hoisted.processState.cwd = tmpDir;
+  process.env.npm_config_user_agent = "npm/10.0.0 node/20";
   vi.clearAllMocks();
+  mockSuccessfulInstall();
 });
 
 afterEach(() => {
+  if (originalUserAgent === undefined) {
+    delete process.env.npm_config_user_agent;
+  } else {
+    process.env.npm_config_user_agent = originalUserAgent;
+  }
   fs.rmSync(tmpDir, { recursive: true, force: true });
 });
 
@@ -98,7 +162,7 @@ describe("kosmesis add", () => {
     expect(clack.cancel).toHaveBeenCalledWith(expect.stringContaining("No components.json found"));
   });
 
-  it("resolves a single component, writes its files, and lists missing dependencies", async () => {
+  it("resolves a single component, writes its files, and installs missing dependencies", async () => {
     const registryDir = path.join(tmpDir, "registry");
     writeRegistryItem(registryDir, "button", { dependencies: ["clsx"] });
     writeConfig(tmpDir, defaultConfig({ registry: registryDir }));
@@ -109,7 +173,7 @@ describe("kosmesis add", () => {
 
     const written = fs.readFileSync(path.join(tmpDir, "src/components/ui/button.tsx"), "utf-8");
     expect(written).toBe("// button");
-    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("clsx"), expect.any(String));
+    expect(hoisted.spawnMock).toHaveBeenCalledWith("npm", ["install", "clsx"], expect.objectContaining({ cwd: tmpDir }));
   });
 
   it("resolves multiple components via the registryDependencies closure without re-listing missing deps already installed", async () => {
@@ -125,6 +189,37 @@ describe("kosmesis add", () => {
     expect(fs.existsSync(path.join(tmpDir, "src/components/ui/field.tsx"))).toBe(true);
     expect(fs.existsSync(path.join(tmpDir, "src/components/ui/input.tsx"))).toBe(true);
     expect(clack.note).not.toHaveBeenCalled();
+    expect(hoisted.spawnMock).not.toHaveBeenCalled();
+  });
+
+  it("shows the dependency install command when automatic install fails", async () => {
+    mockInstallExit(1);
+
+    const registryDir = path.join(tmpDir, "registry");
+    writeRegistryItem(registryDir, "button", { dependencies: ["clsx"] });
+    writeConfig(tmpDir, defaultConfig({ registry: registryDir }));
+    writePackageJson({});
+
+    setArgv("add", ["button"]);
+    await add();
+
+    expect(clack.log.warn).toHaveBeenCalledWith(expect.stringContaining("Could not install dependencies automatically"));
+    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("clsx"), "Run this command to install new dependencies");
+  });
+
+  it("formats non-Error install failures before showing the fallback command", async () => {
+    mockInstallError("spawn failed");
+
+    const registryDir = path.join(tmpDir, "registry");
+    writeRegistryItem(registryDir, "button", { dependencies: ["clsx"] });
+    writeConfig(tmpDir, defaultConfig({ registry: registryDir }));
+    writePackageJson({});
+
+    setArgv("add", ["button"]);
+    await add();
+
+    expect(clack.log.warn).toHaveBeenCalledWith(expect.stringContaining("spawn failed"));
+    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("clsx"), "Run this command to install new dependencies");
   });
 
   it("honors a --registry override instead of the configured registry", async () => {
@@ -276,13 +371,39 @@ describe("kosmesis init", () => {
     expect(cssContent).toContain("--color-background");
     expect(fs.existsSync(path.join(tmpDir, "src/lib/utils.ts"))).toBe(true);
     expect(clack.log.warn).toHaveBeenCalledWith(expect.stringContaining("No vite.config.ts found"));
-    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("@types/node"), "Next step — install dependencies");
+    expect(hoisted.spawnMock).toHaveBeenCalledWith("npm", expect.arrayContaining(["install", "@types/node"]), expect.objectContaining({ cwd: tmpDir }));
   });
 
-  it("updates existing tailwind config files and reports already-installed dependencies", async () => {
+  it("shows the dependency install command when init cannot install automatically", async () => {
+    mockInstallExit(1);
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    hoisted.selectMock.mockResolvedValueOnce("tailwind");
+    hoisted.textMock.mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    expect(clack.log.warn).toHaveBeenCalledWith(expect.stringContaining("Could not install dependencies automatically"));
+    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("@types/node"), "Run this command to install dependencies");
+  });
+
+  it("formats non-Error init install failures before showing the fallback command", async () => {
+    mockInstallError("spawn failed");
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    hoisted.selectMock.mockResolvedValueOnce("tailwind");
+    hoisted.textMock.mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    expect(clack.log.warn).toHaveBeenCalledWith(expect.stringContaining("spawn failed"));
+    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("@types/node"), "Run this command to install dependencies");
+  });
+
+  it("updates existing tailwind config files without installing already-installed dependencies", async () => {
     writePackageJson({
       "@praxisjs/core": "^2.0.0",
-      ...Object.fromEntries([...COMMON_DEPENDENCIES, ...STYLE_SYSTEM_DEPENDENCIES.tailwind].map((d) => [d, "latest"])),
+      ...Object.fromEntries([...COMMON_DEPENDENCIES, ...STYLE_SYSTEM_DEPENDENCIES.tailwind].map((d) => [d, "1.0.0"])),
     });
     const viteConfigPath = path.join(tmpDir, "vite.config.ts");
     fs.writeFileSync(
@@ -302,7 +423,7 @@ describe("kosmesis init", () => {
     const updatedCss = fs.readFileSync(cssPath, "utf-8");
     expect(updatedCss).toContain("--color-background");
     expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("Wired"));
-    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("install"), "Next step — install dependencies");
+    expect(hoisted.spawnMock).not.toHaveBeenCalled();
   });
 
   it("reports the vite plugin and css file as already configured", async () => {
@@ -377,7 +498,7 @@ describe("kosmesis init", () => {
   it("reports the @praxisjs/css theme and vite plugin as already configured with no missing deps", async () => {
     writePackageJson({
       "@praxisjs/core": "^2.0.0",
-      ...Object.fromEntries([...COMMON_DEPENDENCIES, ...STYLE_SYSTEM_DEPENDENCIES["praxisjs-css"]].map((d) => [d, "latest"])),
+      ...Object.fromEntries([...COMMON_DEPENDENCIES, ...STYLE_SYSTEM_DEPENDENCIES["praxisjs-css"]].map((d) => [d, "1.0.0"])),
     });
     const themePath = path.join(tmpDir, "src", "lib", "kosmesis-theme.ts");
     fs.mkdirSync(path.dirname(themePath), { recursive: true });
@@ -398,6 +519,6 @@ describe("kosmesis init", () => {
     await init();
 
     expect(clack.log.info).toHaveBeenCalledWith(expect.stringContaining("already defines KosmesisTokens"));
-    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("install"), "Next step — install dependencies");
+    expect(hoisted.spawnMock).not.toHaveBeenCalled();
   });
 });

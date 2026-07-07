@@ -8,7 +8,9 @@ import { StorybookEmbed } from './storybook-embed';
 import { PackageInstall } from './package-install';
 import type { MDXComponents } from 'mdx/types';
 import { KosmesisInstall } from './kosmesis-install';
+import { KosmesisInit } from './kosmesis-init';
 import { ManualInstall } from './manual-install';
+import { CreatePraxisProject } from './create-praxis-project';
 import { SlimTabs, SlimTab } from './tabs';
 
 export function getMDXComponents(components?: MDXComponents) {
@@ -26,6 +28,8 @@ export function getMDXComponents(components?: MDXComponents) {
     StorybookLink,
     StorybookEmbed,
     PackageInstall,
+    CreatePraxisProject,
+    KosmesisInit,
     KosmesisInstall,
     ManualInstall,
     ...components,

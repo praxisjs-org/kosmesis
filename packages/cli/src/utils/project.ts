@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { readJsonIfExists, writeJson } from "./fs";
+import { readJsonIfExists } from "./fs";
 
 interface PackageJson {
   name?: string;
@@ -21,28 +21,21 @@ export function isPraxisProject(projectRoot: string): boolean {
 }
 
 /**
- * Adds packages to `dependencies` in the target project's `package.json` if they are not
- * already present (as a dependency or devDependency). Does not run an installer — callers
- * are responsible for prompting/running `pnpm install` (etc.) afterwards.
+ * Returns packages that are not already present in dependencies or devDependencies.
+ * The package manager is responsible for writing package.json and the lockfile.
  */
-export function addMissingDependencies(projectRoot: string, packages: string[], version = "latest"): string[] {
+export function getMissingDependencies(projectRoot: string, packages: string[]): string[] {
   const pkg = readPackageJson(projectRoot);
   if (!pkg) return packages;
 
-  pkg.dependencies ??= {};
-  const added: string[] = [];
+  const missing: string[] = [];
 
   for (const name of packages) {
-    const alreadyPresent = Boolean(pkg.dependencies[name] ?? pkg.devDependencies?.[name]);
+    const alreadyPresent = Boolean(pkg.dependencies?.[name] ?? pkg.devDependencies?.[name]);
     if (!alreadyPresent) {
-      pkg.dependencies[name] = version;
-      added.push(name);
+      missing.push(name);
     }
   }
 
-  if (added.length > 0) {
-    writeJson(path.join(projectRoot, "package.json"), pkg);
-  }
-
-  return added;
+  return missing;
 }

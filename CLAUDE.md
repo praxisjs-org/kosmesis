@@ -178,12 +178,13 @@ Tailwind, theme module path for `@praxisjs/css` — same field, different meanin
   `components.json`, wires theme tokens into the consumer's global CSS (Tailwind) or theme module
   (`@praxisjs/css`), wires the `@tailwindcss/vite` or `praxisjsCSS()` Vite plugin, wires the `@/*`
   import alias into `tsconfig.json`/`vite.config.ts`, writes `lib/utils.ts` (Tailwind only — the
-  `@praxisjs/css` flavor imports `cx` from `@praxisjs/css` directly instead), and lists missing
-  runtime dependencies to install.
+  `@praxisjs/css` flavor imports `cx` from `@praxisjs/css` directly instead), and installs missing
+  runtime dependencies with the detected package manager.
 - **`kosmesis add <component...>`** (`packages/cli/src/commands/add.ts`): reads `components.json`,
   resolves the requested components' registry dependency closure, writes every file into the
-  consumer's `aliases.ui` directory, and lists missing runtime dependencies to install. Accepts
-  `--registry <base>` to override `components.json`'s configured registry for one invocation.
+  consumer's `aliases.ui` directory, and installs missing runtime dependencies with the detected
+  package manager. Accepts `--registry <base>` to override `components.json`'s configured registry
+  for one invocation.
 
 ---
 

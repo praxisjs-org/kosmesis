@@ -4,6 +4,14 @@ import path from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+const hoisted = vi.hoisted(() => ({
+  spawnMock: vi.fn(),
+}));
+
+vi.mock("node:child_process", () => ({
+  spawn: hoisted.spawnMock,
+}));
+
 import { CN_UTIL_SOURCE } from "../utils/cn-template";
 import { defaultConfig, readConfig, resolveAlias, writeConfig } from "../utils/config";
 import { ensureDir, isLocalPath, writeFile } from "../utils/fs";
@@ -12,16 +20,52 @@ import {
   detectPackageManagerFromAgent,
   detectPackageManagerFromLockfile,
   installCommand,
+  installPackages,
 } from "../utils/package-manager";
 import { ensurePraxisjsCssTheme, ensurePraxisjsCssVitePlugin } from "../utils/praxisjs-css";
-import { addMissingDependencies, isPraxisProject, readPackageJson } from "../utils/project";
+import { getMissingDependencies, isPraxisProject } from "../utils/project";
 import { fetchRegistryItem, RegistryFetchError, resolveRegistryTree } from "../utils/registry";
 import { ensureTailwindCss, ensureTailwindVitePlugin } from "../utils/tailwind";
 
 let tmpDir: string;
 
+function mockSpawnClose(code: number): void {
+  hoisted.spawnMock.mockImplementation(() => {
+    const child = {
+      on: vi.fn((event: string, callback: (code?: number) => void) => {
+        if (event === "close") {
+          queueMicrotask(() => {
+            callback(code);
+          });
+        }
+        return child;
+      }),
+    };
+
+    return child;
+  });
+}
+
+function mockSpawnError(error: Error): void {
+  hoisted.spawnMock.mockImplementation(() => {
+    const child = {
+      on: vi.fn((event: string, callback: (error?: Error) => void) => {
+        if (event === "error") {
+          queueMicrotask(() => {
+            callback(error);
+          });
+        }
+        return child;
+      }),
+    };
+
+    return child;
+  });
+}
+
 beforeEach(() => {
   tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "kosmesis-cli-test-"));
+  vi.clearAllMocks();
 });
 
 afterEach(() => {
@@ -148,6 +192,44 @@ describe("package manager detection", () => {
     expect(installCommand("yarn", ["clsx"])).toBe("yarn add clsx");
     expect(installCommand("yarn", [])).toBe("");
   });
+
+  it("installs packages through npm", async () => {
+    mockSpawnClose(0);
+
+    await installPackages(tmpDir, "npm", ["clsx"]);
+
+    expect(hoisted.spawnMock).toHaveBeenCalledWith("npm", ["install", "clsx"], expect.objectContaining({ cwd: tmpDir }));
+  });
+
+  it.each(["pnpm", "yarn", "bun"] as const)("installs packages through %s", async (pm) => {
+    mockSpawnClose(0);
+
+    await installPackages(tmpDir, pm, ["clsx", "tailwind-merge"]);
+
+    expect(hoisted.spawnMock).toHaveBeenCalledWith(
+      pm,
+      ["add", "clsx", "tailwind-merge"],
+      expect.objectContaining({ cwd: tmpDir }),
+    );
+  });
+
+  it("skips installing when there are no packages", async () => {
+    await installPackages(tmpDir, "npm", []);
+
+    expect(hoisted.spawnMock).not.toHaveBeenCalled();
+  });
+
+  it("rejects when the package manager exits with a non-zero code", async () => {
+    mockSpawnClose(1);
+
+    await expect(installPackages(tmpDir, "pnpm", ["clsx"])).rejects.toThrow("pnpm add clsx exited with code 1");
+  });
+
+  it("rejects when spawning the package manager fails", async () => {
+    mockSpawnError(new Error("missing executable"));
+
+    await expect(installPackages(tmpDir, "pnpm", ["clsx"])).rejects.toThrow("missing executable");
+  });
 });
 
 describe("project package.json helpers", () => {
@@ -172,17 +254,17 @@ describe("project package.json helpers", () => {
     expect(isPraxisProject(tmpDir)).toBe(false);
   });
 
-  it("adds only missing dependencies and persists them", () => {
+  it("returns only missing dependencies without rewriting package.json", () => {
     writePkg({ clsx: "^2.0.0" });
-    const added = addMissingDependencies(tmpDir, ["clsx", "tailwind-merge"]);
-    expect(added).toEqual(["tailwind-merge"]);
-    const pkg = readPackageJson(tmpDir);
-    expect(pkg?.dependencies).toMatchObject({ clsx: "^2.0.0", "tailwind-merge": "latest" });
+    const before = fs.readFileSync(path.join(tmpDir, "package.json"), "utf-8");
+    const missing = getMissingDependencies(tmpDir, ["clsx", "tailwind-merge"]);
+    expect(missing).toEqual(["tailwind-merge"]);
+    expect(fs.readFileSync(path.join(tmpDir, "package.json"), "utf-8")).toBe(before);
   });
 
-  it("is a no-op when no package.json exists", () => {
-    const added = addMissingDependencies(tmpDir, ["clsx"]);
-    expect(added).toEqual(["clsx"]);
+  it("returns every requested package when no package.json exists", () => {
+    const missing = getMissingDependencies(tmpDir, ["clsx"]);
+    expect(missing).toEqual(["clsx"]);
   });
 
   it("detects a praxisjs project via a @praxisjs/core devDependency", () => {
@@ -196,8 +278,8 @@ describe("project package.json helpers", () => {
   it("does not rewrite package.json when every dependency is already present", () => {
     writePkg({ clsx: "^2.0.0" });
     const before = fs.readFileSync(path.join(tmpDir, "package.json"), "utf-8");
-    const added = addMissingDependencies(tmpDir, ["clsx"]);
-    expect(added).toEqual([]);
+    const missing = getMissingDependencies(tmpDir, ["clsx"]);
+    expect(missing).toEqual([]);
     expect(fs.readFileSync(path.join(tmpDir, "package.json"), "utf-8")).toBe(before);
   });
 });

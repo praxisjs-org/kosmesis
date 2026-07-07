@@ -15,9 +15,9 @@ import { CN_UTIL_SOURCE } from "../utils/cn-template";
 import { defaultConfig, readConfig, writeConfig } from "../utils/config";
 import { ensureDir, writeFile } from "../utils/fs";
 import { ensureTsconfigAlias, ensureViteAlias } from "../utils/import-alias";
-import { detectPackageManagerFromLockfile, installCommand } from "../utils/package-manager";
+import { detectPackageManagerFromLockfile, installCommand, installPackages } from "../utils/package-manager";
 import { ensurePraxisjsCssTheme, ensurePraxisjsCssVitePlugin } from "../utils/praxisjs-css";
-import { addMissingDependencies, isPraxisProject } from "../utils/project";
+import { getMissingDependencies, isPraxisProject } from "../utils/project";
 import { ensureTailwindCss, ensureTailwindVitePlugin } from "../utils/tailwind";
 
 export async function init(): Promise<void> {
@@ -142,14 +142,16 @@ export async function init(): Promise<void> {
   ensureDir(path.join(projectRoot, config.aliases.ui));
 
   const pm = detectPackageManagerFromLockfile(projectRoot);
-  const toAdd = addMissingDependencies(projectRoot, [...COMMON_DEPENDENCIES, ...STYLE_SYSTEM_DEPENDENCIES[styleSystem]]);
-
-  outro(pc.green("Kosmesis is ready."));
+  const toAdd = getMissingDependencies(projectRoot, [...COMMON_DEPENDENCIES, ...STYLE_SYSTEM_DEPENDENCIES[styleSystem]]);
 
   if (toAdd.length > 0) {
-    note(pc.cyan(installCommand(pm, toAdd)), "Next step — install dependencies");
-  } else {
-    note(pc.cyan(`${pm} install`), "Next step — install dependencies");
+    log.info(`Installing ${pc.cyan(toAdd.join(", "))} with ${pc.cyan(pm)}...`);
+    await installPackages(projectRoot, pm, toAdd).catch((error: unknown) => {
+      log.warn(`Could not install dependencies automatically: ${error instanceof Error ? error.message : String(error)}`);
+      note(pc.cyan(installCommand(pm, toAdd)), "Run this command to install dependencies");
+    });
   }
+
+  outro(pc.green("Kosmesis is ready."));
   note(pc.cyan("kosmesis add button"), "Then, add your first component");
 }

@@ -1,3 +1,4 @@
+import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -35,4 +36,40 @@ export function installCommand(pm: PackageManager, packages: string[]): string {
     default:
       return `npm install ${packages.join(" ")}`;
   }
+}
+
+function installArgs(pm: PackageManager, packages: string[]): string[] {
+  switch (pm) {
+    case "yarn":
+    case "pnpm":
+    case "bun":
+      return ["add", ...packages];
+    case "npm":
+    default:
+      return ["install", ...packages];
+  }
+}
+
+export async function installPackages(projectRoot: string, pm: PackageManager, packages: string[]): Promise<void> {
+  if (packages.length === 0) return;
+
+  const args = installArgs(pm, packages);
+
+  await new Promise<void>((resolve, reject) => {
+    const child = spawn(pm, args, {
+      cwd: projectRoot,
+      shell: process.platform === "win32",
+      stdio: "inherit",
+    });
+
+    child.on("error", reject);
+    child.on("close", (code) => {
+      if (code === 0) {
+        resolve();
+        return;
+      }
+
+      reject(new Error(`${installCommand(pm, packages)} exited with code ${String(code)}`));
+    });
+  });
 }

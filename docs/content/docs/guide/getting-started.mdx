@@ -5,6 +5,8 @@ description: Install the Kosmesis CLI and add your first component.
 
 import { Callout } from 'fumadocs-ui/components/callout';
 import { Steps, Step } from 'fumadocs-ui/components/steps';
+import { CreatePraxisProject } from '@/components/create-praxis-project';
+import { KosmesisInit } from '@/components/kosmesis-init';
 import { KosmesisInstall } from '@/components/kosmesis-install';
 
 ## Prerequisites
@@ -12,10 +14,7 @@ import { KosmesisInstall } from '@/components/kosmesis-install';
 Kosmesis expects a [create-praxisjs](https://praxisjs.org)-scaffolded project (the `minimal`,
 `full`, or `router` template all work) using Vite. If you don't have one yet:
 
-```sh
-npm create praxisjs@latest my-app
-cd my-app
-```
+<CreatePraxisProject />
 
 ## Setup
 
@@ -26,9 +25,7 @@ cd my-app
 
 From the root of your PraxisJS project:
 
-```sh
-npx kosmesis init
-```
+<KosmesisInit />
 
 This will:
 
@@ -46,8 +43,7 @@ This will:
 <KosmesisInstall name="button" />
 
 This copies `button.tsx` into `src/components/ui/button.tsx`. If the component wraps a Morphos
-primitive, its package (e.g. `@morphos/inputs`) is added to your `package.json` automatically —
-run your package manager's install afterwards to fetch it.
+primitive, its package (e.g. `@morphos/inputs`) is installed automatically.
 
 </Step>
 <Step>

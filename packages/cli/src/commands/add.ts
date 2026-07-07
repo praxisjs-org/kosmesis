@@ -6,8 +6,8 @@ import pc from "picocolors";
 
 import { readConfig } from "../utils/config";
 import { writeFile } from "../utils/fs";
-import { detectPackageManagerFromLockfile, installCommand } from "../utils/package-manager";
-import { addMissingDependencies } from "../utils/project";
+import { detectPackageManagerFromLockfile, installCommand, installPackages } from "../utils/package-manager";
+import { getMissingDependencies } from "../utils/project";
 import { resolveRegistryTree } from "../utils/registry";
 
 interface AddOptions {
@@ -75,11 +75,15 @@ export async function add(): Promise<void> {
 
   const runtimeDeps = [...new Set(items.flatMap((item) => item.dependencies ?? []))];
   const pm = detectPackageManagerFromLockfile(projectRoot);
-  const toInstall = addMissingDependencies(projectRoot, runtimeDeps);
-
-  outro(pc.green("Done."));
+  const toInstall = getMissingDependencies(projectRoot, runtimeDeps);
 
   if (toInstall.length > 0) {
-    note(pc.cyan(installCommand(pm, toInstall)), "Next step — install new dependencies");
+    log.info(`Installing ${pc.cyan(toInstall.join(", "))} with ${pc.cyan(pm)}...`);
+    await installPackages(projectRoot, pm, toInstall).catch((error: unknown) => {
+      log.warn(`Could not install dependencies automatically: ${error instanceof Error ? error.message : String(error)}`);
+      note(pc.cyan(installCommand(pm, toInstall)), "Run this command to install new dependencies");
+    });
   }
+
+  outro(pc.green("Done."));
 }

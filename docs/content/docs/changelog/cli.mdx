@@ -3,6 +3,12 @@ title: kosmesis
 description: Changelog for kosmesis.
 ---
 
+## 0.1.1
+
+- `kosmesis init` and `kosmesis add` now install missing runtime dependencies automatically with
+  the detected package manager. If the install fails, the CLI still prints the command to run
+  manually.
+
 ## 0.1.0
 
 Initial release.
@@ -11,7 +17,7 @@ Initial release.
   `@praxisjs/css`), wires theme tokens and the matching Vite plugin into the project, adds the
   `@/*` import alias, and (Tailwind only) writes the `cn()` helper.
 - `kosmesis add <component...>` — resolves a component's `registryDependencies` closure in
-  dependency-first order, writes every file into `src/components/ui/`, and lists any missing
+  dependency-first order, writes every file into `src/components/ui/`, and reports any missing
   runtime dependencies.
 - A registry of 65 components ported from shadcn/ui, each shipped in two independent style
   systems with an identical public prop API — Tailwind CSS + `class-variance-authority`, and
