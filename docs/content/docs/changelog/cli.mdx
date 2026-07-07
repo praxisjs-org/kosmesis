@@ -5,6 +5,12 @@ description: Changelog for kosmesis.
 
 ## 0.1.1
 
+- Removed the unnecessary `baseUrl` assignment from `ensureTsconfigAlias`. This avoids the deprecated
+  `baseUrl` compiler option, which is scheduled to stop working in TypeScript 7.0, while preserving
+  the generated path alias configuration.
+
+## 0.1.1
+
 - `kosmesis init` and `kosmesis add` now install missing runtime dependencies automatically with
   the detected package manager. If the install fails, the CLI still prints the command to run
   manually.

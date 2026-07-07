@@ -2,7 +2,6 @@ import fs from "node:fs";
 
 interface TsconfigLike {
   compilerOptions?: {
-    baseUrl?: string;
     paths?: Record<string, string[]>;
     [key: string]: unknown;
   };
@@ -17,8 +16,6 @@ export function ensureTsconfigAlias(tsconfigPath: string): "updated" | "already-
   tsconfig.compilerOptions ??= {};
 
   if (tsconfig.compilerOptions.paths?.["@/*"]) return "already-configured";
-
-  tsconfig.compilerOptions.baseUrl = tsconfig.compilerOptions.baseUrl ?? ".";
   tsconfig.compilerOptions.paths = {
     ...tsconfig.compilerOptions.paths,
     "@/*": ["./src/*"],
