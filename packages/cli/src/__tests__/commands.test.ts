@@ -36,6 +36,15 @@ vi.mock("@clack/prompts", () => ({
   text: hoisted.textMock,
 }));
 
+// picocolors turns colors on whenever `env.CI` is set (true on every CI provider, usually unset
+// locally), which would otherwise make assertions on log messages depend on where the test runs.
+// Stub every color function as the identity so message content is what we assert on, not ANSI codes.
+vi.mock("picocolors", () => ({
+  default: new Proxy({} as Record<string, (input: unknown) => string>, {
+    get: () => (input: unknown) => String(input),
+  }),
+}));
+
 const { add } = await import("../commands/add");
 const { init } = await import("../commands/init");
 const { registry } = await import("../commands/registry");
