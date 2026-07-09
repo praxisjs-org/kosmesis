@@ -142,15 +142,20 @@ export async function init(): Promise<void> {
   ensureDir(path.join(projectRoot, config.aliases.ui));
 
   const pm = detectPackageManagerFromLockfile(projectRoot);
-  const toAdd = getMissingDependencies(projectRoot, [...COMMON_DEPENDENCIES, ...STYLE_SYSTEM_DEPENDENCIES[styleSystem]]);
 
-  if (toAdd.length > 0) {
-    log.info(`Installing ${pc.cyan(toAdd.join(", "))} with ${pc.cyan(pm)}...`);
-    await installPackages(projectRoot, pm, toAdd).catch((error: unknown) => {
+  const installGroup = async (deps: string[], dev: boolean, noteLabel: string): Promise<void> => {
+    const toAdd = getMissingDependencies(projectRoot, deps);
+    if (toAdd.length === 0) return;
+
+    log.info(`Installing ${pc.cyan(toAdd.join(", "))}${dev ? " (dev)" : ""} with ${pc.cyan(pm)}...`);
+    await installPackages(projectRoot, pm, toAdd, dev).catch((error: unknown) => {
       log.warn(`Could not install dependencies automatically: ${error instanceof Error ? error.message : String(error)}`);
-      note(pc.cyan(installCommand(pm, toAdd)), "Run this command to install dependencies");
+      note(pc.cyan(installCommand(pm, toAdd, dev)), noteLabel);
     });
-  }
+  };
+
+  await installGroup([...STYLE_SYSTEM_DEPENDENCIES[styleSystem]], false, "Run this command to install dependencies");
+  await installGroup([...COMMON_DEPENDENCIES], true, "Run this command to install dev dependencies");
 
   outro(pc.green("Kosmesis is ready."));
   note(pc.cyan("kosmesis add button"), "Then, add your first component");

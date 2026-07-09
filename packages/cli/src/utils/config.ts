@@ -24,6 +24,12 @@ export interface KosmesisConfig {
   css: string;
   aliases: typeof DEFAULT_ALIASES;
   registry: string;
+  /**
+   * Additional registries keyed by `@namespace` (e.g. `"@acme": "https://ui.acme.internal/r"`),
+   * resolved when a component is addressed as `"@acme/button"` in `kosmesis add`. Managed via
+   * `kosmesis registry add|remove|list` — absent until at least one is added.
+   */
+  registries?: Record<string, string>;
 }
 
 export function configPath(projectRoot: string): string {

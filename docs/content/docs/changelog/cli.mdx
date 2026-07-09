@@ -3,6 +3,18 @@ title: kosmesis
 description: Changelog for kosmesis.
 ---
 
+## 0.2.0
+
+- Added a named-registry system: `kosmesis registry add|remove|list` manages a `registries` map
+  in `components.json`, and `kosmesis add @<namespace>/<component>` resolves a component from its
+  namespace's registry instead of the project default.
+- Added `kosmesis registry init` and `kosmesis registry build` to scaffold and build a custom
+  registry — no more hand-writing a `registry.json`-to-inlined-JSON build script. See
+  [Custom Registry](/docs/guide/custom-registry).
+- Registry entries can now declare `devDependencies` alongside `dependencies` — `kosmesis add`
+  installs each group separately, with `devDependencies` getting the package manager's
+  `-D`/`--save-dev` flag.
+
 ## 0.1.2
 
 - Removed the unnecessary `baseUrl` assignment from `ensureTsconfigAlias`. This avoids the deprecated

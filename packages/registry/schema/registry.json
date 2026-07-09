@@ -56,6 +56,11 @@
           "items": { "type": "string" },
           "description": "npm packages this component needs at runtime."
         },
+        "devDependencies": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "npm packages only needed at build/type-check time (e.g. @types/...), installed with -D."
+        },
         "registryDependencies": {
           "type": "array",
           "items": { "type": "string" },

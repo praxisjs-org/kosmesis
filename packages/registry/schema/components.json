@@ -36,6 +36,16 @@
     "registry": {
       "type": "string",
       "description": "Registry base — a local directory path or an http(s):// URL serving `<styleSystem>/<name>.json` files."
+    },
+    "registries": {
+      "type": "object",
+      "description": "Additional registries keyed by \"@namespace\", resolved when a component is addressed as \"@namespace/component\" in `kosmesis add`. Managed via `kosmesis registry add|remove|list`.",
+      "propertyNames": {
+        "pattern": "^@[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+      },
+      "additionalProperties": {
+        "type": "string"
+      }
     }
   },
   "required": ["style", "styleSystem", "css", "aliases", "registry"],

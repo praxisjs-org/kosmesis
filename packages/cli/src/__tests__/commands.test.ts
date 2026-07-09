@@ -38,8 +38,9 @@ vi.mock("@clack/prompts", () => ({
 
 const { add } = await import("../commands/add");
 const { init } = await import("../commands/init");
+const { registry } = await import("../commands/registry");
 const clack = await import("@clack/prompts");
-const { defaultConfig, writeConfig } = await import("../utils/config");
+const { defaultConfig, readConfig, writeConfig } = await import("../utils/config");
 const { COMMON_DEPENDENCIES, STYLE_SYSTEM_DEPENDENCIES } = await import("../constants");
 
 let tmpDir: string;
@@ -108,7 +109,12 @@ function writePackageJson(deps: Record<string, string> = {}): void {
 function writeRegistryItem(
   registryDir: string,
   name: string,
-  options: { registryDependencies?: string[]; dependencies?: string[]; styleSystem?: "tailwind" | "praxisjs-css" } = {},
+  options: {
+    registryDependencies?: string[];
+    dependencies?: string[];
+    devDependencies?: string[];
+    styleSystem?: "tailwind" | "praxisjs-css";
+  } = {},
 ): void {
   const styleSystem = options.styleSystem ?? "tailwind";
   const dir = path.join(registryDir, styleSystem);
@@ -119,6 +125,7 @@ function writeRegistryItem(
       name,
       type: "registry:ui",
       dependencies: options.dependencies ?? [],
+      devDependencies: options.devDependencies ?? [],
       registryDependencies: options.registryDependencies ?? [],
       files: [{ path: `ui/${styleSystem}/${name}.tsx`, content: `// ${name}`, type: "registry:ui", target: `${name}.tsx` }],
     }),
@@ -174,6 +181,54 @@ describe("kosmesis add", () => {
     const written = fs.readFileSync(path.join(tmpDir, "src/components/ui/button.tsx"), "utf-8");
     expect(written).toBe("// button");
     expect(hoisted.spawnMock).toHaveBeenCalledWith("npm", ["install", "clsx"], expect.objectContaining({ cwd: tmpDir }));
+  });
+
+  it("installs devDependencies with a -D flag, separately from runtime dependencies", async () => {
+    const registryDir = path.join(tmpDir, "registry");
+    writeRegistryItem(registryDir, "chart", { dependencies: ["clsx"], devDependencies: ["@types/d3-shape"] });
+    writeConfig(tmpDir, defaultConfig({ registry: registryDir }));
+    writePackageJson({});
+
+    setArgv("add", ["chart"]);
+    await add();
+
+    expect(hoisted.spawnMock).toHaveBeenCalledWith("npm", ["install", "clsx"], expect.objectContaining({ cwd: tmpDir }));
+    expect(hoisted.spawnMock).toHaveBeenCalledWith(
+      "npm",
+      ["install", "-D", "@types/d3-shape"],
+      expect.objectContaining({ cwd: tmpDir }),
+    );
+  });
+
+  it("treats a package as a runtime dependency, never installing it a second time as dev, when another component lists it both ways", async () => {
+    const registryDir = path.join(tmpDir, "registry");
+    writeRegistryItem(registryDir, "field", { dependencies: ["clsx"] });
+    writeRegistryItem(registryDir, "input", { registryDependencies: ["field"], devDependencies: ["clsx"] });
+    writeConfig(tmpDir, defaultConfig({ registry: registryDir }));
+    writePackageJson({});
+
+    setArgv("add", ["input"]);
+    await add();
+
+    expect(hoisted.spawnMock).toHaveBeenCalledWith("npm", ["install", "clsx"], expect.objectContaining({ cwd: tmpDir }));
+    expect(hoisted.spawnMock).not.toHaveBeenCalledWith("npm", ["install", "-D", "clsx"], expect.anything());
+  });
+
+  it("shows the dev-dependency install command, under its own label, when automatic install fails", async () => {
+    mockInstallExit(1);
+
+    const registryDir = path.join(tmpDir, "registry");
+    writeRegistryItem(registryDir, "chart", { devDependencies: ["@types/d3-shape"] });
+    writeConfig(tmpDir, defaultConfig({ registry: registryDir }));
+    writePackageJson({});
+
+    setArgv("add", ["chart"]);
+    await add();
+
+    expect(clack.note).toHaveBeenCalledWith(
+      expect.stringContaining("@types/d3-shape"),
+      "Run this command to install new dev dependencies",
+    );
   });
 
   it("resolves multiple components via the registryDependencies closure without re-listing missing deps already installed", async () => {
@@ -234,6 +289,30 @@ describe("kosmesis add", () => {
     expect(fs.existsSync(path.join(tmpDir, "src/components/ui/button.tsx"))).toBe(true);
   });
 
+  it("resolves a namespaced component against its configured registry", async () => {
+    const acmeDir = path.join(tmpDir, "acme-registry");
+    writeRegistryItem(acmeDir, "fancy-button", { dependencies: ["clsx"] });
+    writeConfig(
+      tmpDir,
+      defaultConfig({ registry: path.join(tmpDir, "does-not-exist"), registries: { "@acme": acmeDir } }),
+    );
+    writePackageJson({});
+
+    setArgv("add", ["@acme/fancy-button"]);
+    await add();
+
+    expect(fs.existsSync(path.join(tmpDir, "src/components/ui/fancy-button.tsx"))).toBe(true);
+    expect(hoisted.spawnMock).toHaveBeenCalledWith("npm", ["install", "clsx"], expect.objectContaining({ cwd: tmpDir }));
+  });
+
+  it("rejects a namespaced component whose namespace isn't configured", async () => {
+    writeConfig(tmpDir, defaultConfig());
+    writePackageJson({});
+
+    setArgv("add", ["@acme/fancy-button"]);
+    await expect(add()).rejects.toThrow(/Unknown registry namespace "@acme"/);
+  });
+
   it("falls back to the file basename and an empty dependency list when a registry file omits them", async () => {
     const registryDir = path.join(tmpDir, "registry");
     const dir = path.join(registryDir, "tailwind");
@@ -263,6 +342,332 @@ describe("kosmesis add", () => {
 
     setArgv("add", ["missing-component"]);
     await expect(add()).rejects.toThrow(/was not found/);
+  });
+});
+
+describe("kosmesis registry", () => {
+  it("cancels when no components.json exists", async () => {
+    setArgv("registry", ["add", "acme", "https://ui.acme.internal/r"]);
+    await registry();
+    expect(clack.cancel).toHaveBeenCalledWith(expect.stringContaining("No components.json found"));
+  });
+
+  it("cancels with usage when add is missing arguments", async () => {
+    writeConfig(tmpDir, defaultConfig());
+
+    setArgv("registry", ["add", "acme"]);
+    await registry();
+
+    expect(clack.cancel).toHaveBeenCalledWith(expect.stringContaining("Usage: kosmesis registry add"));
+  });
+
+  it("rejects a malformed namespace", async () => {
+    writeConfig(tmpDir, defaultConfig());
+
+    setArgv("registry", ["add", "@acme/oops", "https://ui.acme.internal/r"]);
+    await registry();
+
+    expect(clack.cancel).toHaveBeenCalledWith(expect.stringContaining("isn't a valid namespace"));
+  });
+
+  it("adds a namespace, auto-prefixing '@' when the user omits it", async () => {
+    writeConfig(tmpDir, defaultConfig());
+
+    setArgv("registry", ["add", "acme", "https://ui.acme.internal/r"]);
+    await registry();
+
+    const config = readConfig(tmpDir);
+    expect(config?.registries).toEqual({ "@acme": "https://ui.acme.internal/r" });
+    expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("@acme"));
+  });
+
+  it("overwrites an existing namespace when re-added", async () => {
+    writeConfig(tmpDir, defaultConfig({ registries: { "@acme": "https://old.example.com/r" } }));
+
+    setArgv("registry", ["add", "@acme", "https://new.example.com/r"]);
+    await registry();
+
+    expect(readConfig(tmpDir)?.registries).toEqual({ "@acme": "https://new.example.com/r" });
+  });
+
+  it("lists the default registry plus any configured namespaces", async () => {
+    writeConfig(tmpDir, defaultConfig({ registries: { "@acme": "https://ui.acme.internal/r" } }));
+
+    setArgv("registry", ["list"]);
+    await registry();
+
+    expect(clack.log.info).toHaveBeenCalledWith(expect.stringContaining(defaultConfig().registry));
+    expect(clack.log.info).toHaveBeenCalledWith(expect.stringContaining("https://ui.acme.internal/r"));
+  });
+
+  it("defaults to listing when no subcommand is given", async () => {
+    writeConfig(tmpDir, defaultConfig());
+
+    setArgv("registry", []);
+    await registry();
+
+    expect(clack.cancel).not.toHaveBeenCalled();
+  });
+
+  it("cancels with usage when remove is missing its namespace argument", async () => {
+    writeConfig(tmpDir, defaultConfig({ registries: { "@acme": "https://ui.acme.internal/r" } }));
+
+    setArgv("registry", ["remove"]);
+    await registry();
+
+    expect(clack.cancel).toHaveBeenCalledWith("Usage: kosmesis registry remove <namespace>");
+  });
+
+  it("removes a configured namespace", async () => {
+    writeConfig(tmpDir, defaultConfig({ registries: { "@acme": "https://ui.acme.internal/r" } }));
+
+    setArgv("registry", ["remove", "acme"]);
+    await registry();
+
+    expect(readConfig(tmpDir)?.registries).toBeUndefined();
+    expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("Removed registry"));
+  });
+
+  it("keeps the remaining registries when removing one of several", async () => {
+    writeConfig(
+      tmpDir,
+      defaultConfig({
+        registries: { "@acme": "https://ui.acme.internal/r", "@other": "https://ui.other.internal/r" },
+      }),
+    );
+
+    setArgv("registry", ["remove", "acme"]);
+    await registry();
+
+    expect(readConfig(tmpDir)?.registries).toEqual({ "@other": "https://ui.other.internal/r" });
+  });
+
+  it("cancels when removing a namespace that isn't configured", async () => {
+    writeConfig(tmpDir, defaultConfig());
+
+    setArgv("registry", ["remove", "acme"]);
+    await registry();
+
+    expect(clack.cancel).toHaveBeenCalledWith(expect.stringContaining('No registry named "@acme" is configured'));
+  });
+
+  it("cancels on an unknown subcommand", async () => {
+    writeConfig(tmpDir, defaultConfig());
+
+    setArgv("registry", ["bogus"]);
+    await registry();
+
+    expect(clack.cancel).toHaveBeenCalledWith(expect.stringContaining('Unknown subcommand "bogus"'));
+  });
+});
+
+describe("kosmesis registry init", () => {
+  it("scaffolds a registry.json and an example component without needing components.json", async () => {
+    setArgv("registry", ["init"]);
+    await registry();
+
+    expect(fs.existsSync(path.join(tmpDir, "registry.json"))).toBe(true);
+    expect(fs.existsSync(path.join(tmpDir, "src/example-button.tsx"))).toBe(true);
+    const index = JSON.parse(fs.readFileSync(path.join(tmpDir, "registry.json"), "utf-8")) as { items: { name: string }[] };
+    expect(index.items[0]?.name).toBe("example-button");
+    expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("Scaffolded a custom registry"));
+  });
+
+  it("scaffolds into a given directory argument", async () => {
+    setArgv("registry", ["init", "my-registry"]);
+    await registry();
+
+    expect(fs.existsSync(path.join(tmpDir, "my-registry/registry.json"))).toBe(true);
+    expect(fs.existsSync(path.join(tmpDir, "my-registry/src/example-button.tsx"))).toBe(true);
+  });
+
+  it("asks before overwriting an existing registry.json, and cancels when declined", async () => {
+    fs.writeFileSync(path.join(tmpDir, "registry.json"), JSON.stringify({ name: "existing", homepage: "", items: [] }));
+    hoisted.confirmMock.mockResolvedValueOnce(false);
+
+    setArgv("registry", ["init"]);
+    await registry();
+
+    expect(clack.cancel).toHaveBeenCalledWith("Operation cancelled");
+    const index = JSON.parse(fs.readFileSync(path.join(tmpDir, "registry.json"), "utf-8")) as { name: string };
+    expect(index.name).toBe("existing");
+  });
+
+  it("overwrites an existing registry.json once confirmed", async () => {
+    fs.writeFileSync(path.join(tmpDir, "registry.json"), JSON.stringify({ name: "existing", homepage: "", items: [] }));
+    hoisted.confirmMock.mockResolvedValueOnce(true);
+
+    setArgv("registry", ["init"]);
+    await registry();
+
+    const index = JSON.parse(fs.readFileSync(path.join(tmpDir, "registry.json"), "utf-8")) as { name: string };
+    expect(index.name).toBe("my-registry");
+  });
+});
+
+describe("kosmesis registry build", () => {
+  it("builds a scaffolded registry.json into dist/r without needing components.json", async () => {
+    fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
+    fs.writeFileSync(path.join(tmpDir, "src/example-button.tsx"), "// example button");
+    fs.writeFileSync(
+      path.join(tmpDir, "registry.json"),
+      JSON.stringify({
+        name: "my-registry",
+        homepage: "",
+        items: [{ name: "example-button", type: "registry:ui", files: [{ path: "src/example-button.tsx", type: "registry:ui" }] }],
+      }),
+    );
+
+    setArgv("registry", ["build"]);
+    await registry();
+
+    expect(fs.existsSync(path.join(tmpDir, "dist/r/tailwind/example-button.json"))).toBe(true);
+    expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("Built 1 component"));
+  });
+
+  it("respects --out and --style-system", async () => {
+    fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
+    fs.writeFileSync(path.join(tmpDir, "src/card.tsx"), "// card");
+    fs.writeFileSync(
+      path.join(tmpDir, "registry.json"),
+      JSON.stringify({
+        name: "my-registry",
+        homepage: "",
+        items: [{ name: "card", type: "registry:ui", files: [{ path: "src/card.tsx", type: "registry:ui" }] }],
+      }),
+    );
+
+    setArgv("registry", ["build", "--out", "build-output", "--style-system", "praxisjs-css"]);
+    await registry();
+
+    expect(fs.existsSync(path.join(tmpDir, "build-output/praxisjs-css/card.json"))).toBe(true);
+  });
+
+  it("cancels with a descriptive message when no registry index is found", async () => {
+    setArgv("registry", ["build"]);
+    await registry();
+
+    expect(clack.cancel).toHaveBeenCalledWith(expect.stringContaining("No registry index found"));
+  });
+
+  it("logs '.' when --out resolves to the project root itself", async () => {
+    fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
+    fs.writeFileSync(path.join(tmpDir, "src/badge.tsx"), "// badge");
+    fs.writeFileSync(
+      path.join(tmpDir, "registry.json"),
+      JSON.stringify({
+        name: "my-registry",
+        homepage: "",
+        items: [{ name: "badge", type: "registry:ui", files: [{ path: "src/badge.tsx", type: "registry:ui" }] }],
+      }),
+    );
+
+    setArgv("registry", ["build", "--out", "."]);
+    await registry();
+
+    expect(fs.existsSync(path.join(tmpDir, "tailwind/badge.json"))).toBe(true);
+    expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("into tailwind"));
+  });
+
+  it("accepts a positional source directory", async () => {
+    fs.mkdirSync(path.join(tmpDir, "sub/src"), { recursive: true });
+    fs.writeFileSync(path.join(tmpDir, "sub/src/badge.tsx"), "// badge");
+    fs.writeFileSync(
+      path.join(tmpDir, "sub/registry.json"),
+      JSON.stringify({
+        name: "my-registry",
+        homepage: "",
+        items: [{ name: "badge", type: "registry:ui", files: [{ path: "src/badge.tsx", type: "registry:ui" }] }],
+      }),
+    );
+
+    setArgv("registry", ["build", "sub"]);
+    await registry();
+
+    expect(fs.existsSync(path.join(tmpDir, "sub/dist/r/tailwind/badge.json"))).toBe(true);
+  });
+
+  it("cancels with a descriptive message when a referenced file is missing", async () => {
+    fs.writeFileSync(
+      path.join(tmpDir, "registry.json"),
+      JSON.stringify({
+        name: "my-registry",
+        homepage: "",
+        items: [{ name: "ghost", type: "registry:ui", files: [{ path: "src/ghost.tsx", type: "registry:ui" }] }],
+      }),
+    );
+
+    setArgv("registry", ["build"]);
+    await registry();
+
+    expect(clack.cancel).toHaveBeenCalledWith(expect.stringContaining('"ghost" references "src/ghost.tsx"'));
+  });
+
+  it("falls back to the default style system when given an invalid --style-system value", async () => {
+    fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
+    fs.writeFileSync(path.join(tmpDir, "src/badge.tsx"), "// badge");
+    fs.writeFileSync(
+      path.join(tmpDir, "registry.json"),
+      JSON.stringify({
+        name: "my-registry",
+        homepage: "",
+        items: [{ name: "badge", type: "registry:ui", files: [{ path: "src/badge.tsx", type: "registry:ui" }] }],
+      }),
+    );
+
+    setArgv("registry", ["build", "--style-system", "bogus-system"]);
+    await registry();
+
+    expect(fs.existsSync(path.join(tmpDir, "dist/r/tailwind/badge.json"))).toBe(true);
+  });
+
+  it("ignores an unrecognized flag instead of treating it as the source directory", async () => {
+    fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
+    fs.writeFileSync(path.join(tmpDir, "src/badge.tsx"), "// badge");
+    fs.writeFileSync(
+      path.join(tmpDir, "registry.json"),
+      JSON.stringify({
+        name: "my-registry",
+        homepage: "",
+        items: [{ name: "badge", type: "registry:ui", files: [{ path: "src/badge.tsx", type: "registry:ui" }] }],
+      }),
+    );
+
+    setArgv("registry", ["build", "--verbose"]);
+    await registry();
+
+    expect(fs.existsSync(path.join(tmpDir, "dist/r/tailwind/badge.json"))).toBe(true);
+  });
+
+  it("pluralizes the success message when more than one component is built", async () => {
+    fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
+    fs.writeFileSync(path.join(tmpDir, "src/badge.tsx"), "// badge");
+    fs.writeFileSync(path.join(tmpDir, "src/chip.tsx"), "// chip");
+    fs.writeFileSync(
+      path.join(tmpDir, "registry.json"),
+      JSON.stringify({
+        name: "my-registry",
+        homepage: "",
+        items: [
+          { name: "badge", type: "registry:ui", files: [{ path: "src/badge.tsx", type: "registry:ui" }] },
+          { name: "chip", type: "registry:ui", files: [{ path: "src/chip.tsx", type: "registry:ui" }] },
+        ],
+      }),
+    );
+
+    setArgv("registry", ["build"]);
+    await registry();
+
+    expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("Built 2 components"));
+  });
+
+  it("cancels with the raw error message when the failure isn't a RegistryBuildError", async () => {
+    fs.writeFileSync(path.join(tmpDir, "registry.json"), "{ not valid json");
+
+    setArgv("registry", ["build"]);
+    await registry();
+
+    expect(clack.cancel).toHaveBeenCalledWith(expect.stringContaining("JSON"));
   });
 });
 
@@ -384,7 +789,7 @@ describe("kosmesis init", () => {
     await init();
 
     expect(clack.log.warn).toHaveBeenCalledWith(expect.stringContaining("Could not install dependencies automatically"));
-    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("@types/node"), "Run this command to install dependencies");
+    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("@types/node"), "Run this command to install dev dependencies");
   });
 
   it("formats non-Error init install failures before showing the fallback command", async () => {
@@ -397,7 +802,7 @@ describe("kosmesis init", () => {
     await init();
 
     expect(clack.log.warn).toHaveBeenCalledWith(expect.stringContaining("spawn failed"));
-    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("@types/node"), "Run this command to install dependencies");
+    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("@types/node"), "Run this command to install dev dependencies");
   });
 
   it("updates existing tailwind config files without installing already-installed dependencies", async () => {

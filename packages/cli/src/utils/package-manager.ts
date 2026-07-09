@@ -23,37 +23,34 @@ export function detectPackageManagerFromLockfile(projectRoot: string): PackageMa
   return detectPackageManagerFromAgent();
 }
 
-export function installCommand(pm: PackageManager, packages: string[]): string {
+function installArgs(pm: PackageManager, packages: string[], dev: boolean): string[] {
+  const devFlag = dev ? ["-D"] : [];
+  switch (pm) {
+    case "yarn":
+    case "pnpm":
+    case "bun":
+      return ["add", ...devFlag, ...packages];
+    case "npm":
+    default:
+      return ["install", ...devFlag, ...packages];
+  }
+}
+
+export function installCommand(pm: PackageManager, packages: string[], dev = false): string {
   if (packages.length === 0) return "";
-  switch (pm) {
-    case "yarn":
-      return `yarn add ${packages.join(" ")}`;
-    case "pnpm":
-      return `pnpm add ${packages.join(" ")}`;
-    case "bun":
-      return `bun add ${packages.join(" ")}`;
-    case "npm":
-    default:
-      return `npm install ${packages.join(" ")}`;
-  }
+  const binary = pm === "npm" ? "npm" : pm;
+  return `${binary} ${installArgs(pm, packages, dev).join(" ")}`;
 }
 
-function installArgs(pm: PackageManager, packages: string[]): string[] {
-  switch (pm) {
-    case "yarn":
-    case "pnpm":
-    case "bun":
-      return ["add", ...packages];
-    case "npm":
-    default:
-      return ["install", ...packages];
-  }
-}
-
-export async function installPackages(projectRoot: string, pm: PackageManager, packages: string[]): Promise<void> {
+export async function installPackages(
+  projectRoot: string,
+  pm: PackageManager,
+  packages: string[],
+  dev = false,
+): Promise<void> {
   if (packages.length === 0) return;
 
-  const args = installArgs(pm, packages);
+  const args = installArgs(pm, packages, dev);
 
   await new Promise<void>((resolve, reject) => {
     const child = spawn(pm, args, {
@@ -69,7 +66,7 @@ export async function installPackages(projectRoot: string, pm: PackageManager, p
         return;
       }
 
-      reject(new Error(`${installCommand(pm, packages)} exited with code ${String(code)}`));
+      reject(new Error(`${installCommand(pm, packages, dev)} exited with code ${String(code)}`));
     });
   });
 }

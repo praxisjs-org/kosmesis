@@ -1,4 +1,4 @@
 {
   "title": "Guide",
-  "pages": ["introduction", "getting-started", "theming"]
+  "pages": ["introduction", "getting-started", "theming", "custom-registry"]
 }

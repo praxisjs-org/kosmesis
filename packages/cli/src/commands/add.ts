@@ -48,11 +48,11 @@ export async function add(): Promise<void> {
     return;
   }
 
-  const registryBase = options.registry ?? config.registry;
+  const registryConfig = { registry: options.registry ?? config.registry, registries: config.registries };
   const s = spinner();
   s.start(`Resolving ${components.map((c) => pc.cyan(c)).join(", ")} (${config.styleSystem})...`);
 
-  const items = await resolveRegistryTree(registryBase, components, config.styleSystem).catch((error: unknown) => {
+  const items = await resolveRegistryTree(components, registryConfig, config.styleSystem).catch((error: unknown) => {
     s.stop("Failed to resolve components.");
     throw error;
   });
@@ -74,16 +74,26 @@ export async function add(): Promise<void> {
   log.success(`Wrote:\n${writtenFiles.map((f) => `  ${pc.cyan(f)}`).join("\n")}`);
 
   const runtimeDeps = [...new Set(items.flatMap((item) => item.dependencies ?? []))];
+  // A package requested as a runtime dependency by one component always wins over another
+  // component listing it as a devDependency — it needs to ship, not just type-check.
+  const devDeps = [...new Set(items.flatMap((item) => item.devDependencies ?? []))].filter(
+    (dep) => !runtimeDeps.includes(dep),
+  );
   const pm = detectPackageManagerFromLockfile(projectRoot);
-  const toInstall = getMissingDependencies(projectRoot, runtimeDeps);
 
-  if (toInstall.length > 0) {
-    log.info(`Installing ${pc.cyan(toInstall.join(", "))} with ${pc.cyan(pm)}...`);
-    await installPackages(projectRoot, pm, toInstall).catch((error: unknown) => {
+  const installGroup = async (deps: string[], dev: boolean, noteLabel: string): Promise<void> => {
+    const toInstall = getMissingDependencies(projectRoot, deps);
+    if (toInstall.length === 0) return;
+
+    log.info(`Installing ${pc.cyan(toInstall.join(", "))}${dev ? " (dev)" : ""} with ${pc.cyan(pm)}...`);
+    await installPackages(projectRoot, pm, toInstall, dev).catch((error: unknown) => {
       log.warn(`Could not install dependencies automatically: ${error instanceof Error ? error.message : String(error)}`);
-      note(pc.cyan(installCommand(pm, toInstall)), "Run this command to install new dependencies");
+      note(pc.cyan(installCommand(pm, toInstall, dev)), noteLabel);
     });
-  }
+  };
+
+  await installGroup(runtimeDeps, false, "Run this command to install new dependencies");
+  await installGroup(devDeps, true, "Run this command to install new dev dependencies");
 
   outro(pc.green("Done."));
 }

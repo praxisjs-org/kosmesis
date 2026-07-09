@@ -1,0 +1,207 @@
+---
+title: Custom Registry
+description: Serve your own components through kosmesis add, the same way the public Kosmesis registry does.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Steps, Step } from 'fumadocs-ui/components/steps';
+
+A registry is just a folder of JSON files — one `<name>.json` per component, split under a
+`<styleSystem>/` subfolder. `kosmesis add` reads it from a local directory or an `http(s)://` URL;
+there's no server, database, or account required. This is for an internal design system, a
+client's own variant of a Kosmesis component, or trying out a change before publishing it anywhere.
+
+The CLI has three commands for this — you never have to hand-write the inlined JSON `kosmesis add`
+fetches, or the script that builds it:
+
+| Command | What it does |
+| --- | --- |
+| `kosmesis registry init [dir]` | Scaffolds a `registry.json` index plus one example component in `[dir]` (default: here). |
+| `kosmesis registry build [dir]` | Builds `registry.json` (or `registry.<styleSystem>.json`) in `[dir]` into `dist/r/<styleSystem>/<name>.json`. |
+| `kosmesis registry add <namespace> <url>` | Registers the built output (a local path or a deployed URL) under `@<namespace>` in a *consumer* project's `components.json`. |
+
+Neither `init` nor `build` needs an existing `components.json` — they operate on the registry
+you're authoring, not on a Kosmesis app. `add`/`remove`/`list` do need one, since that's where a
+consumer project records which registries it trusts.
+
+## Quickstart: your first component, end to end
+
+<Steps>
+<Step>
+
+### Scaffold it
+
+```bash
+kosmesis registry init my-registry
+```
+
+This writes:
+
+```
+my-registry/
+  registry.json           # the index — one entry per component
+  src/
+    example-button.tsx    # a real, working example component
+```
+
+`registry.json`'s one entry points at `src/example-button.tsx` with an empty `dependencies` /
+`devDependencies` / `registryDependencies`. Edit the example in place, or add more items to
+`registry.json` plus their source files under `src/` — same shape either way.
+
+</Step>
+<Step>
+
+### Build it
+
+```bash
+cd my-registry
+kosmesis registry build
+```
+
+`kosmesis add` doesn't read `registry.json` directly — it fetches
+`<registryBase>/<styleSystem>/<name>.json`, one file per component, with the source already
+inlined as a string. `registry build` reads `registry.json`, inlines every referenced file's
+content, and writes exactly that shape to `dist/r/tailwind/example-button.json` (default style
+system is `tailwind`; pass `--style-system praxisjs-css` for the other one, or write both
+`registry.tailwind.json` and `registry.praxisjs-css.json` to build both in one call). It fails
+loudly — naming the exact component — if a `files[].path` doesn't exist or a
+`registryDependencies` name isn't in the index.
+
+</Step>
+<Step>
+
+### Point a project at it
+
+From inside any Kosmesis project (one that already ran `kosmesis init`):
+
+```bash
+kosmesis registry add acme ./path/to/my-registry/dist/r
+kosmesis add @acme/example-button
+```
+
+`src/components/ui/example-button.tsx` shows up, written straight from your local folder — no
+publishing, no network. Run `kosmesis registry list` any time to see what's registered.
+
+</Step>
+</Steps>
+
+That's the whole loop. Everything below is reference material for scaling this up: serving it over
+HTTP, style-system-specific dependencies, cross-component dependencies, and the exact JSON shape.
+
+## `kosmesis registry build` reference
+
+| Flag | Default | Meaning |
+| --- | --- | --- |
+| `[dir]` (positional) | current directory | Where to look for `registry.json` / `registry.<styleSystem>.json`, and where source `files[].path` entries are resolved from. |
+| `--style-system <tailwind\|praxisjs-css>` | `tailwind` | Only applies to a bare `registry.json` (no style-system suffix). Ignored if `registry.tailwind.json` and/or `registry.praxisjs-css.json` exist — both get built automatically when present. |
+| `--out <dir>` | `<dir>/dist/r` | Where the built `<styleSystem>/<name>.json` files are written. |
+
+## Serving it for real
+
+Once the build output is worth sharing beyond your own machine, upload it to any static file host
+(S3 behind a CDN, GitHub Pages, an internal file server — anything that serves plain files over
+HTTP) and point teammates at the URL instead of a local path:
+
+```bash
+kosmesis registry add acme https://ui.acme.internal/r
+```
+
+Nothing else changes — `kosmesis add @acme/example-button` resolves the same way whether
+`registries["@acme"]` is a path on disk or a URL. This repo's own `docs/public/r` (built by
+`pnpm registry:build`, the same idea as `kosmesis registry build` but wired into this monorepo's
+own scripts) is exercised as a local directory the same way before it's ever deployed to
+`kosmesis.praxisjs.org`.
+
+<Callout type="warn">
+  Whichever registry resolves a component is trusted at install time: its file contents are
+  written to disk as-is, and its `dependencies` are installed with your package manager
+  automatically. Only run `kosmesis registry add` (or pass `--registry`) for a registry you
+  control or trust — the same bar you'd hold an npm registry mirror to.
+</Callout>
+
+## Managing registries
+
+| Command | What it does |
+| --- | --- |
+| `kosmesis registry add <namespace> <url>` | Saves `<url>` as `@<namespace>` in `components.json`. `<namespace>` can be typed with or without the leading `@`. |
+| `kosmesis registry list` | Prints the default registry plus every configured namespace. |
+| `kosmesis registry remove <namespace>` | Forgets a namespace. |
+| `kosmesis add @<namespace>/<component>` | Resolves `<component>` from that namespace instead of the project's default registry. |
+| `kosmesis add <component> --registry <url>` | One-off override of the *default* registry for a single `add` call — doesn't touch `components.json` and doesn't affect namespaced addresses. |
+
+A project can mix addresses freely in one call: `kosmesis add button @acme/example-button` installs
+`button` from the default registry and `example-button` from `@acme` in the same run.
+
+## Dependencies: other components, npm packages, and dev-only npm packages
+
+If one of your components imports another one from the *same* registry, list it under
+`registryDependencies` instead of copying its source in — `kosmesis add` resolves the full closure
+and writes every dependency's files too. Add a second item to the `registry.json` `kosmesis registry init`
+scaffolded, alongside `example-button`:
+
+```json title="registry.json"
+{
+  "name": "example-card",
+  "registryDependencies": ["example-button"],
+  "files": [{ "path": "src/example-card.tsx", "type": "registry:ui" }]
+}
+```
+
+`kosmesis registry build` checks this at build time — it fails loudly, naming the exact component,
+if `registryDependencies` points at a name that isn't also in the index.
+
+`registryDependencies` only resolves within the same registry/namespace — there's no cross-registry
+lookup. If your component depends on something from the public Kosmesis registry, either vendor
+that component's source into your own registry, or note it in your docs so consumers run a second
+`kosmesis add` for it.
+
+npm packages (as opposed to other registry components) go under `dependencies` or
+`devDependencies` instead, and are installed automatically with the consumer's detected package
+manager — `dependencies` ships with the consumer's app, `devDependencies` is for build/type-check-only
+packages (type declarations, codegen tools) and gets installed with `-D`/`--save-dev`:
+
+```json
+{
+  "dependencies": ["some-npm-package"],
+  "devDependencies": ["@types/some-npm-package"]
+}
+```
+
+If a package ends up listed as a runtime `dependencies` entry by one component and a
+`devDependencies` entry by another (in the same `kosmesis add` call), the runtime one wins — it
+needs to ship, not just type-check, so it's installed once, without `-D`.
+
+## The full JSON shape
+
+For reference, here's every field a built `<styleSystem>/<name>.json` can have — this is what
+`kosmesis registry build` produces from a `registry.json` entry, not something you write by hand:
+
+```json title="dist/r/tailwind/example-button.json"
+{
+  "name": "example-button",
+  "type": "registry:ui",
+  "title": "Example Button",
+  "description": "Optional, human-readable.",
+  "dependencies": ["some-npm-package"],
+  "devDependencies": ["@types/some-npm-package"],
+  "registryDependencies": ["some-other-component"],
+  "files": [
+    {
+      "path": "src/example-button.tsx",
+      "type": "registry:ui",
+      "target": "example-button.tsx",
+      "content": "// inlined file source"
+    }
+  ]
+}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `name` | Must match the filename. What consumers type after `kosmesis add` (or `@namespace/`). |
+| `type` | `registry:ui`, `registry:lib`, `registry:hook`, or `registry:block`. |
+| `dependencies` | npm packages needed at runtime, installed automatically. |
+| `devDependencies` | npm packages only needed at build/type-check time, installed automatically with `-D`. |
+| `registryDependencies` | Other component names in this same registry, resolved and written first. |
+| `files[].target` | Where the file lands under the consumer's `aliases.ui` directory. Defaults to the basename of `path`. |
+| `files[].content` | The full file source, inlined as a string — this is what actually gets written to disk. |

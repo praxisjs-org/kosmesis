@@ -14,7 +14,7 @@ instead of Radix UI. Every component ships in **two independent style systems** 
 
 | Package              | Role                                                                                        |
 | --------------------- | --------------------------------------------------------------------------------------------- |
-| `kosmesis`            | The CLI (`packages/cli`) — `kosmesis init` and `kosmesis add <component...>`                 |
+| `kosmesis`            | The CLI (`packages/cli`) — `kosmesis init`, `kosmesis add <component...>`, `kosmesis registry <init\|build\|add\|remove\|list>` |
 | `@kosmesis/registry`  | Source of truth for every component (`packages/registry`, see "Registry" below)              |
 | `@kosmesis/docs`      | Fumadocs + Next.js site (`docs/`) — serves the built registry JSON as static files            |
 | `kosmesis-stories`    | Storybook (`storybook/`) — one story file per component per style system                     |
@@ -80,9 +80,9 @@ To run a single CLI test, use vitest's own filtering against the one test file:
 ## Build system
 
 - **CLI (`packages/cli`)**: `tsdown` bundles `src/index.ts` into a single `dist/index.mjs` (the `bin`
-  entry, dispatched in `src/index.ts` on `argv[2]` — `add` or anything else falls through to
-  `init`). There is no separate module export surface — utils are internal to the bundle, not a
-  public API.
+  entry, dispatched in `src/index.ts` on `argv[2]` — `add` and `registry` route to their own command
+  modules, anything else falls through to `init`). There is no separate module export surface —
+  utils are internal to the bundle, not a public API.
 - **Docs (`docs/`)**: Next.js with `output: export` (static site). `pnpm docs:build` always runs
   `registry:build` first — the static export embeds `public/r/**/*.json`, so a stale build here
   silently ships an outdated registry.
@@ -164,11 +164,23 @@ files on disk that no entry references.
 
 `registryDependencies` in an entry pull in other registry items transitively (e.g. `data-table`
 depends on `table`); `kosmesis add` (`resolveRegistryTree` in `packages/cli/src/utils/registry.ts`)
-resolves this closure in dependency-first order.
+resolves this closure, each item appearing once at first use.
+
+An entry's `dependencies` (npm packages needed at runtime) and `devDependencies` (npm packages only
+needed at build/type-check time, e.g. `@types/...`) are tracked separately end to end: both fields
+on `RegistryItem` (`packages/cli/src/utils/registry.ts`), both in the JSON Schema
+(`packages/registry/schema/registry.json`), and `kosmesis add` installs each group with its own
+`installPackages(..., dev)` call — `devDependencies` get `-D`/`--save-dev`. If a package appears as
+a plain `dependencies` entry on one component and a `devDependencies` entry on another, the runtime
+one wins (it's excluded from the dev install) since it needs to ship, not just type-check.
 
 `components.json` (per consumer project) holds: `styleSystem`, `css` (global stylesheet path for
 Tailwind, theme module path for `@praxisjs/css` — same field, different meaning), `aliases`
-(components/ui/lib/utils dirs), and `registry` (the base to fetch from).
+(components/ui/lib/utils dirs), `registry` (the default base to fetch from), and an optional
+`registries` map of additional `@namespace -> base` entries managed by `kosmesis registry`. A
+component addressed as `@acme/button` in `kosmesis add` resolves against `registries["@acme"]`
+instead of `registry`; its own `registryDependencies` stay within that same namespace (see
+`resolveRegistryBase`/`parseComponentAddress` in `packages/cli/src/utils/registry.ts`).
 
 ---
 
@@ -182,9 +194,31 @@ Tailwind, theme module path for `@praxisjs/css` — same field, different meanin
   runtime dependencies with the detected package manager.
 - **`kosmesis add <component...>`** (`packages/cli/src/commands/add.ts`): reads `components.json`,
   resolves the requested components' registry dependency closure, writes every file into the
-  consumer's `aliases.ui` directory, and installs missing runtime dependencies with the detected
-  package manager. Accepts `--registry <base>` to override `components.json`'s configured registry
-  for one invocation.
+  consumer's `aliases.ui` directory, and installs missing `dependencies` and `devDependencies`
+  (the latter with `-D`) as two separate calls to the detected package manager. Accepts
+  `--registry <base>` to override `components.json`'s configured default
+  registry for one invocation (this override never applies to namespaced `@acme/button` addresses,
+  which always use their configured `registries` entry). A component name may be a bare
+  `<name>` (default registry) or `@namespace/<name>` (a registry added via `kosmesis registry add`).
+- **`kosmesis registry add|remove|list`** (`packages/cli/src/commands/registry.ts`): manages the
+  `registries` map in `components.json`. `add <namespace> <url>` writes/overwrites
+  `registries["@namespace"]` (the `@` is added automatically if omitted); `remove <namespace>`
+  deletes it (and drops the `registries` key entirely once empty); `list` (or no subcommand) prints
+  the default registry plus every configured namespace. `<url>` accepts the same local-directory-or-
+  `http(s)://` shape as `registry`/`--registry`. These three subcommands require a `components.json`
+  in the current directory, since they configure a *consumer* project's registries.
+- **`kosmesis registry init [dir]` / `kosmesis registry build [dir]`** (same file, plus
+  `packages/cli/src/utils/registry-build.ts`): tooling for *authoring* a registry, not for a
+  consumer project — neither requires `components.json`. `init` scaffolds a `registry.json` index
+  and one example component under `[dir]` (default: cwd). `build` reads that index (or
+  `registry.tailwind.json`/`registry.praxisjs-css.json` if either exists — both are built in one
+  call when both are present) from `[dir]`, inlines every referenced file's content, and writes
+  `<dir>/dist/r/<styleSystem>/<name>.json` (override with `--out <dir>`; the bare-`registry.json`
+  case's style system defaults to `tailwind`, override with `--style-system`). `buildRegistry` in
+  `registry-build.ts` fails loudly (`RegistryBuildError`), naming the exact component, on a missing
+  `files[].path` or a `registryDependencies` name absent from the same index — the same checks
+  `packages/registry/scripts/build-registry.mjs` runs for this repo's own registry, generalized so
+  any directory can use them via the CLI instead of hand-rolling a build script.
 
 ---
 

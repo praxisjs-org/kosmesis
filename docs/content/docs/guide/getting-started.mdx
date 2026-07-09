@@ -70,6 +70,45 @@ class MyPage extends StatefulComponent {
   to use relative imports instead.
 </Callout>
 
+## Fetching from another registry
+
+Every component so far came from `components.json`'s default `registry` field
+(`https://kosmesis.praxisjs.org/r`). There are two ways to pull from somewhere else:
+
+**One-off, for a single `add`:**
+
+```bash
+kosmesis add button --registry ./packages/registry/dist/r
+```
+
+**Persistent, addressed by name:** register a namespace once, then reference it directly whenever
+you add a component — no flag needed, and it works alongside the default registry in the same
+`add` call.
+
+```bash
+kosmesis registry add acme https://ui.acme.internal/r
+kosmesis add @acme/button
+kosmesis add @acme/button badge   # mixes a namespaced and a default-registry component
+```
+
+| Command | What it does |
+| --- | --- |
+| `kosmesis registry add <namespace> <url>` | Saves `<url>` under `@<namespace>` in `components.json`, so `@<namespace>/<component>` resolves there from now on. |
+| `kosmesis registry list` | Prints the default registry and every configured namespace. |
+| `kosmesis registry remove <namespace>` | Forgets a namespace. |
+
+`<url>` (for both `--registry` and `kosmesis registry add`) can be a local directory (handy while
+developing components) or an `http(s)://` base serving the same `<styleSystem>/<name>.json` shape.
+
+<Callout type="warn">
+  Whichever registry resolves a component is trusted at install time: its files are written to
+  disk as-is and its dependencies are installed automatically. Only add a namespace, or pass
+  `--registry`, for a registry you trust — the same way you'd only add an npm registry mirror you
+  trust.
+</Callout>
+
+Want to serve your own components this way? See [Custom Registry](/docs/guide/custom-registry).
+
 ## Updating a component
 
 There's no update command — because there's no dependency to update. If a newer version of a

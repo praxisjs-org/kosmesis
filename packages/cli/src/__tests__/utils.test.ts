@@ -25,6 +25,7 @@ import {
 import { ensurePraxisjsCssTheme, ensurePraxisjsCssVitePlugin } from "../utils/praxisjs-css";
 import { getMissingDependencies, isPraxisProject } from "../utils/project";
 import { fetchRegistryItem, RegistryFetchError, resolveRegistryTree } from "../utils/registry";
+import { buildRegistry, RegistryBuildError } from "../utils/registry-build";
 import { ensureTailwindCss, ensureTailwindVitePlugin } from "../utils/tailwind";
 
 let tmpDir: string;
@@ -193,12 +194,40 @@ describe("package manager detection", () => {
     expect(installCommand("yarn", [])).toBe("");
   });
 
+  it("builds a dev install command per package manager", () => {
+    expect(installCommand("pnpm", ["@types/node"], true)).toBe("pnpm add -D @types/node");
+    expect(installCommand("npm", ["@types/node"], true)).toBe("npm install -D @types/node");
+    expect(installCommand("bun", ["@types/node"], true)).toBe("bun add -D @types/node");
+    expect(installCommand("yarn", ["@types/node"], true)).toBe("yarn add -D @types/node");
+    expect(installCommand("yarn", [], true)).toBe("");
+  });
+
   it("installs packages through npm", async () => {
     mockSpawnClose(0);
 
     await installPackages(tmpDir, "npm", ["clsx"]);
 
     expect(hoisted.spawnMock).toHaveBeenCalledWith("npm", ["install", "clsx"], expect.objectContaining({ cwd: tmpDir }));
+  });
+
+  it("installs devDependencies with a -D flag", async () => {
+    mockSpawnClose(0);
+
+    await installPackages(tmpDir, "npm", ["@types/node"], true);
+
+    expect(hoisted.spawnMock).toHaveBeenCalledWith(
+      "npm",
+      ["install", "-D", "@types/node"],
+      expect.objectContaining({ cwd: tmpDir }),
+    );
+  });
+
+  it("includes the -D flag in the rejection message for a failed dev install", async () => {
+    mockSpawnClose(1);
+
+    await expect(installPackages(tmpDir, "pnpm", ["@types/node"], true)).rejects.toThrow(
+      "pnpm add -D @types/node exited with code 1",
+    );
   });
 
   it.each(["pnpm", "yarn", "bun"] as const)("installs packages through %s", async (pm) => {
@@ -524,7 +553,7 @@ describe("registry resolution", () => {
         files: [{ path: "ui/tailwind/standalone.tsx", content: "// standalone", type: "registry:ui" }],
       }),
     );
-    const items = await resolveRegistryTree(tmpDir, ["standalone"], "tailwind");
+    const items = await resolveRegistryTree(["standalone"], { registry: tmpDir }, "tailwind");
     expect(items.map((i) => i.name)).toEqual(["standalone"]);
   });
 
@@ -533,13 +562,73 @@ describe("registry resolution", () => {
     writeRegistryItem(tmpDir, "label", ["field"]);
     writeRegistryItem(tmpDir, "input", ["field"]);
 
-    const items = await resolveRegistryTree(tmpDir, ["label", "input"], "tailwind");
+    const items = await resolveRegistryTree(["label", "input"], { registry: tmpDir }, "tailwind");
     const names = items.map((i) => i.name);
 
     expect(names).toContain("field");
     expect(names).toContain("label");
     expect(names).toContain("input");
     expect(names.filter((n) => n === "field")).toHaveLength(1);
+  });
+
+  describe("namespaced registries", () => {
+    it("resolves a bare name against the default registry and a namespaced address against its configured registry", async () => {
+      const acmeDir = path.join(tmpDir, "acme-registry");
+      writeRegistryItem(tmpDir, "button");
+      writeRegistryItem(acmeDir, "button");
+      fs.writeFileSync(path.join(acmeDir, "tailwind", "button.json"), JSON.stringify({
+        name: "button",
+        type: "registry:ui",
+        dependencies: [],
+        registryDependencies: [],
+        files: [{ path: "ui/tailwind/button.tsx", content: "// acme button", type: "registry:ui", target: "button.tsx" }],
+      }));
+
+      const items = await resolveRegistryTree(
+        ["button", "@acme/button"],
+        { registry: tmpDir, registries: { "@acme": acmeDir } },
+        "tailwind",
+      );
+
+      expect(items.map((i) => i.files[0]?.content)).toEqual(["// button", "// acme button"]);
+    });
+
+    it("keeps a namespaced item's registryDependencies within the same namespace", async () => {
+      const acmeDir = path.join(tmpDir, "acme-registry");
+      writeRegistryItem(acmeDir, "field");
+      writeRegistryItem(acmeDir, "input", ["field"]);
+      // A same-named "field" in the default registry, with different content, must never be
+      // picked up when resolving the @acme namespace's "field" dependency.
+      const defaultDir = path.join(tmpDir, "tailwind");
+      fs.mkdirSync(defaultDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(defaultDir, "field.json"),
+        JSON.stringify({
+          name: "field",
+          type: "registry:ui",
+          dependencies: [],
+          registryDependencies: [],
+          files: [{ path: "ui/tailwind/field.tsx", content: "// WRONG field", type: "registry:ui", target: "field.tsx" }],
+        }),
+      );
+
+      const items = await resolveRegistryTree(
+        ["@acme/input"],
+        { registry: tmpDir, registries: { "@acme": acmeDir } },
+        "tailwind",
+      );
+
+      const contents = items.map((i) => i.files[0]?.content);
+      expect(contents).toContain("// field");
+      expect(contents).toContain("// input");
+      expect(contents).not.toContain("// WRONG field");
+    });
+
+    it("throws a descriptive error for an unconfigured namespace", async () => {
+      await expect(resolveRegistryTree(["@acme/button"], { registry: tmpDir }, "tailwind")).rejects.toThrow(
+        /Unknown registry namespace "@acme"\. Add it first with "kosmesis registry add acme <url>"/,
+      );
+    });
   });
 
   describe("remote registries", () => {
@@ -577,5 +666,115 @@ describe("registry resolution", () => {
         RegistryFetchError,
       );
     });
+  });
+});
+
+describe("buildRegistry", () => {
+  function writeSource(sourceDir: string, relativePath: string, content: string): void {
+    const filePath = path.join(sourceDir, relativePath);
+    ensureDir(path.dirname(filePath));
+    fs.writeFileSync(filePath, content);
+  }
+
+  it("builds a bare registry.json under the fallback style system", () => {
+    writeSource(tmpDir, "registry.json", JSON.stringify({
+      name: "acme-ui",
+      homepage: "",
+      items: [{ name: "example-button", type: "registry:ui", files: [{ path: "src/example-button.tsx", type: "registry:ui" }] }],
+    }));
+    writeSource(tmpDir, "src/example-button.tsx", "// example button");
+
+    const outDir = path.join(tmpDir, "dist");
+    const results = buildRegistry(tmpDir, outDir, "tailwind");
+
+    expect(results).toEqual([{ styleSystem: "tailwind", count: 1 }]);
+    const built = JSON.parse(fs.readFileSync(path.join(outDir, "tailwind", "example-button.json"), "utf-8")) as {
+      files: { content: string; target: string }[];
+    };
+    expect(built.files[0]?.content).toBe("// example button");
+    expect(built.files[0]?.target).toBe("example-button.tsx");
+  });
+
+  it("builds both style systems when both registry.<styleSystem>.json indexes exist", () => {
+    for (const styleSystem of ["tailwind", "praxisjs-css"] as const) {
+      writeSource(tmpDir, `registry.${styleSystem}.json`, JSON.stringify({
+        name: "acme-ui",
+        homepage: "",
+        items: [{ name: "button", type: "registry:ui", files: [{ path: `ui/${styleSystem}/button.tsx`, type: "registry:ui" }] }],
+      }));
+      writeSource(tmpDir, `ui/${styleSystem}/button.tsx`, `// ${styleSystem} button`);
+    }
+
+    const outDir = path.join(tmpDir, "dist");
+    const results = buildRegistry(tmpDir, outDir, "tailwind");
+
+    expect(results).toEqual(
+      expect.arrayContaining([
+        { styleSystem: "tailwind", count: 1 },
+        { styleSystem: "praxisjs-css", count: 1 },
+      ]),
+    );
+    expect(fs.existsSync(path.join(outDir, "tailwind", "button.json"))).toBe(true);
+    expect(fs.existsSync(path.join(outDir, "praxisjs-css", "button.json"))).toBe(true);
+  });
+
+  it("throws when no registry index is found", () => {
+    expect(() => buildRegistry(tmpDir, path.join(tmpDir, "dist"), "tailwind")).toThrow(RegistryBuildError);
+    expect(() => buildRegistry(tmpDir, path.join(tmpDir, "dist"), "tailwind")).toThrow(/No registry index found/);
+  });
+
+  it("throws when a file referenced by an item doesn't exist", () => {
+    writeSource(tmpDir, "registry.json", JSON.stringify({
+      name: "acme-ui",
+      homepage: "",
+      items: [{ name: "ghost", type: "registry:ui", files: [{ path: "src/ghost.tsx", type: "registry:ui" }] }],
+    }));
+
+    expect(() => buildRegistry(tmpDir, path.join(tmpDir, "dist"), "tailwind")).toThrow(
+      /"ghost" references "src\/ghost\.tsx", which does not exist/,
+    );
+  });
+
+  it("builds an item whose registryDependencies point at another item in the same index", () => {
+    writeSource(tmpDir, "registry.json", JSON.stringify({
+      name: "acme-ui",
+      homepage: "",
+      items: [
+        { name: "button", type: "registry:ui", files: [{ path: "src/button.tsx", type: "registry:ui" }] },
+        {
+          name: "card",
+          type: "registry:ui",
+          registryDependencies: ["button"],
+          files: [{ path: "src/card.tsx", type: "registry:ui" }],
+        },
+      ],
+    }));
+    writeSource(tmpDir, "src/button.tsx", "// button");
+    writeSource(tmpDir, "src/card.tsx", "// card");
+
+    const outDir = path.join(tmpDir, "dist");
+    expect(() => buildRegistry(tmpDir, outDir, "tailwind")).not.toThrow();
+    expect(fs.existsSync(path.join(outDir, "tailwind", "button.json"))).toBe(true);
+    expect(fs.existsSync(path.join(outDir, "tailwind", "card.json"))).toBe(true);
+  });
+
+  it("throws when registryDependencies references a name that doesn't exist in the index", () => {
+    writeSource(tmpDir, "registry.json", JSON.stringify({
+      name: "acme-ui",
+      homepage: "",
+      items: [
+        {
+          name: "card",
+          type: "registry:ui",
+          registryDependencies: ["missing-dep"],
+          files: [{ path: "src/card.tsx", type: "registry:ui" }],
+        },
+      ],
+    }));
+    writeSource(tmpDir, "src/card.tsx", "// card");
+
+    expect(() => buildRegistry(tmpDir, path.join(tmpDir, "dist"), "tailwind")).toThrow(
+      /"card" declares registryDependency "missing-dep", which does not exist/,
+    );
   });
 });

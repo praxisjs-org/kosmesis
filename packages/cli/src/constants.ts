@@ -42,10 +42,11 @@ export const STYLE_SYSTEM_DEPENDENCIES: Record<StyleSystem, readonly string[]> =
 };
 
 /**
- * npm packages every Kosmesis project needs regardless of style system. `@types/node` backs the
- * `import path from "node:path"` + `__dirname` usage `ensureViteAlias` (`utils/import-alias.ts`)
- * always wires into `vite.config.ts` — without it, `tsc --noEmit` fails on a fresh project even
- * though nothing style-specific was touched.
+ * npm devDependencies every Kosmesis project needs regardless of style system. `@types/node`
+ * backs the `import path from "node:path"` + `__dirname` usage `ensureViteAlias`
+ * (`utils/import-alias.ts`) always wires into `vite.config.ts` — without it, `tsc --noEmit` fails
+ * on a fresh project even though nothing style-specific was touched. Type-only, so it's installed
+ * with `-D` rather than alongside runtime dependencies.
  */
 export const COMMON_DEPENDENCIES = ["@types/node"] as const;
 
