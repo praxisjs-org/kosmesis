@@ -1,5 +1,6 @@
 {
   "title": "Components",
+  "icon": "Blocks",
   "pages": [
     "---Actions---",
     "button",

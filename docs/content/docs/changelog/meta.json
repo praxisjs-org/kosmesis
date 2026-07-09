@@ -1,6 +1,7 @@
 {
   "title": "Changelog",
   "description": "Release history for the kosmesis CLI",
+  "icon": "Clock",
   "root": true,
   "pages": ["index", "cli"]
 }

@@ -1,4 +1,5 @@
 {
   "title": "Guide",
+  "icon": "Map",
   "pages": ["introduction", "getting-started", "theming", "custom-registry"]
 }
