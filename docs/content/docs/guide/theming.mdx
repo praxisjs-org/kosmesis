@@ -113,7 +113,8 @@ the `.dark` class directly and don't need a runtime API for it.
 
 ### Wiring it up once
 
-`kosmesis init` prints a reminder to add `@Themed` to your root component, above `@Component()`:
+`kosmesis init` asks where your root component lives (default `src/app.tsx`) and wires this in for
+you automatically, above `@Component()`:
 
 ```tsx
 import { Themed } from "@praxisjs/css";
@@ -129,6 +130,9 @@ class App extends StatefulComponent {
   }
 }
 ```
+
+If it can't find that file (unusual path, or run from the wrong directory), it prints this snippet
+as a note instead of guessing where to edit.
 
 `@Themed` installs a single app-wide `ThemeInstance`, injects `LightTheme`'s values onto `:root`
 as CSS custom properties, and reads two options:

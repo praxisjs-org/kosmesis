@@ -4,8 +4,15 @@ import path from "node:path";
 import { ensureDir } from "./fs";
 import { KOSMESIS_THEME_CSS } from "../templates/kosmesis-theme-css";
 
-/** Appends the `@import "tailwindcss";` line and the Kosmesis theme tokens to the project stylesheet. */
-export function ensureTailwindCss(cssPath: string): "created" | "updated" | "already-configured" {
+/**
+ * Appends the `@import "tailwindcss";` line and the Kosmesis theme tokens to the project
+ * stylesheet. By default the file's existing content is kept below the new tokens; pass
+ * `eraseExisting: true` (after confirming with the user) to discard it instead.
+ */
+export function ensureTailwindCss(
+  cssPath: string,
+  options: { eraseExisting?: boolean } = {},
+): "created" | "updated" | "already-configured" {
   const exists = fs.existsSync(cssPath);
   const current = exists ? fs.readFileSync(cssPath, "utf-8") : "";
 
@@ -13,8 +20,9 @@ export function ensureTailwindCss(cssPath: string): "created" | "updated" | "alr
     return "already-configured";
   }
 
-  const importLine = current.includes('@import "tailwindcss"') ? "" : '@import "tailwindcss";\n\n';
-  const next = `${importLine}${KOSMESIS_THEME_CSS}\n${current}`;
+  const rest = options.eraseExisting ? "" : current;
+  const importLine = rest.includes('@import "tailwindcss"') ? "" : '@import "tailwindcss";\n\n';
+  const next = `${importLine}${KOSMESIS_THEME_CSS}\n${rest}`;
   ensureDir(path.dirname(cssPath));
   fs.writeFileSync(cssPath, next, "utf-8");
   return exists ? "updated" : "created";

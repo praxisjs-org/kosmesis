@@ -191,7 +191,16 @@ instead of `registry`; its own `registryDependencies` stay within that same name
   (`@praxisjs/css`), wires the `@tailwindcss/vite` or `praxisjsCSS()` Vite plugin, wires the `@/*`
   import alias into `tsconfig.json`/`vite.config.ts`, writes `lib/utils.ts` (Tailwind only — the
   `@praxisjs/css` flavor imports `cx` from `@praxisjs/css` directly instead), and installs missing
-  runtime dependencies with the detected package manager.
+  `dependencies` (per style system) and `devDependencies` (`@types/node`) as two separate calls to
+  the detected package manager. If the target CSS/theme-module file already has non-trivial content
+  that isn't already Kosmesis's own, prompts (`promptEraseExisting` in `init.ts`, default: erase)
+  before deciding whether to keep it below the new tokens or discard it — same question for
+  `@praxisjs/css`'s create-praxisjs-template default stylesheet (`DEFAULT_CSS_PATH`), which is a
+  separate file from the theme module and otherwise never touched. For `@praxisjs/css`, also
+  prompts for the project's root component path (default `DEFAULT_MAIN_COMPONENT_PATH`,
+  `src/app.tsx`) and wires `@Themed(KosmesisTokens, LightTheme, { persist: true, syncTabs: true })`
+  above its `@Component()` via `ensureThemedDecorator` (`utils/praxisjs-css.ts`) — falls back to a
+  manual `note()` only if that file can't be found.
 - **`kosmesis add <component...>`** (`packages/cli/src/commands/add.ts`): reads `components.json`,
   resolves the requested components' registry dependency closure, writes every file into the
   consumer's `aliases.ui` directory, and installs missing `dependencies` and `devDependencies`

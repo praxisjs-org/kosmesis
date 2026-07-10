@@ -22,7 +22,7 @@ import {
   installCommand,
   installPackages,
 } from "../utils/package-manager";
-import { ensurePraxisjsCssTheme, ensurePraxisjsCssVitePlugin } from "../utils/praxisjs-css";
+import { ensurePraxisjsCssTheme, ensurePraxisjsCssVitePlugin, ensureThemedDecorator } from "../utils/praxisjs-css";
 import { getMissingDependencies, isPraxisProject } from "../utils/project";
 import { fetchRegistryItem, RegistryFetchError, resolveRegistryTree } from "../utils/registry";
 import { buildRegistry, RegistryBuildError } from "../utils/registry-build";
@@ -367,6 +367,24 @@ describe("tailwind helpers", () => {
     expect(content.match(/@import "tailwindcss";/g)).toHaveLength(1);
     expect(content).toContain("--color-background");
   });
+
+  it("keeps the existing stylesheet content below the theme tokens by default", () => {
+    const cssPath = path.join(tmpDir, "style.css");
+    fs.writeFileSync(cssPath, ".custom { color: red; }\n");
+    ensureTailwindCss(cssPath);
+    const content = fs.readFileSync(cssPath, "utf-8");
+    expect(content).toContain("--color-background");
+    expect(content).toContain(".custom { color: red; }");
+  });
+
+  it("discards the existing stylesheet content when eraseExisting is true", () => {
+    const cssPath = path.join(tmpDir, "style.css");
+    fs.writeFileSync(cssPath, ".custom { color: red; }\n");
+    ensureTailwindCss(cssPath, { eraseExisting: true });
+    const content = fs.readFileSync(cssPath, "utf-8");
+    expect(content).toContain("--color-background");
+    expect(content).not.toContain(".custom { color: red; }");
+  });
 });
 
 describe("praxisjs-css helpers", () => {
@@ -387,10 +405,22 @@ describe("praxisjs-css helpers", () => {
     expect(ensurePraxisjsCssTheme(themePath)).toBe("already-configured");
   });
 
-  it("overwrites an existing theme module that lacks KosmesisTokens", () => {
+  it("keeps the existing module content below the theme module by default", () => {
     const themePath = path.join(tmpDir, "kosmesis-theme.ts");
     fs.writeFileSync(themePath, "export const somethingElse = true;\n");
     expect(ensurePraxisjsCssTheme(themePath)).toBe("updated");
+    const content = fs.readFileSync(themePath, "utf-8");
+    expect(content).toContain("KosmesisTokens");
+    expect(content).toContain("somethingElse");
+  });
+
+  it("discards the existing module content when eraseExisting is true", () => {
+    const themePath = path.join(tmpDir, "kosmesis-theme.ts");
+    fs.writeFileSync(themePath, "export const somethingElse = true;\n");
+    expect(ensurePraxisjsCssTheme(themePath, { eraseExisting: true })).toBe("updated");
+    const content = fs.readFileSync(themePath, "utf-8");
+    expect(content).toContain("KosmesisTokens");
+    expect(content).not.toContain("somethingElse");
   });
 
   it("wires praxisjsCSS() into an existing @praxisjs/vite-plugin import", () => {
@@ -430,6 +460,73 @@ describe("praxisjs-css helpers", () => {
     const updated = fs.readFileSync(viteConfigPath, "utf-8");
     expect(updated).toContain('import { praxisjsCSS } from "@praxisjs/vite-plugin";');
     expect(updated).toContain("plugins: [praxisjsCSS(), ]");
+  });
+
+  it("reports not-found when the root component file doesn't exist", () => {
+    expect(ensureThemedDecorator(path.join(tmpDir, "app.tsx"), "@/lib/kosmesis-theme")).toBe("not-found");
+  });
+
+  it("reports not-found when the file has no @Component() to anchor on", () => {
+    const mainPath = path.join(tmpDir, "app.tsx");
+    fs.writeFileSync(mainPath, "export function App() { return null; }\n");
+    expect(ensureThemedDecorator(mainPath, "@/lib/kosmesis-theme")).toBe("not-found");
+  });
+
+  it("is idempotent once @Themed(...) is already wired", () => {
+    const mainPath = path.join(tmpDir, "app.tsx");
+    fs.writeFileSync(
+      mainPath,
+      `import { Themed } from "@praxisjs/css";\nimport { Component } from "@praxisjs/decorators";\n\n@Themed(KosmesisTokens, LightTheme, { persist: true, syncTabs: true })\n@Component()\nclass App {}\n`,
+    );
+    expect(ensureThemedDecorator(mainPath, "@/lib/kosmesis-theme")).toBe("already-configured");
+  });
+
+  it("wires @Themed(...) above @Component(), adding fresh imports", () => {
+    const mainPath = path.join(tmpDir, "app.tsx");
+    fs.writeFileSync(
+      mainPath,
+      `import { Component } from "@praxisjs/decorators";\nimport { StatefulComponent } from "@praxisjs/core";\n\n@Component()\nclass App extends StatefulComponent {\n  render() {\n    return null;\n  }\n}\n`,
+    );
+
+    const result = ensureThemedDecorator(mainPath, "@/lib/kosmesis-theme");
+    expect(result).toBe("updated");
+
+    const updated = fs.readFileSync(mainPath, "utf-8");
+    expect(updated).toContain('import { Themed } from "@praxisjs/css";');
+    expect(updated).toContain('import { KosmesisTokens, LightTheme } from "@/lib/kosmesis-theme";');
+    expect(updated).toContain(
+      "@Themed(KosmesisTokens, LightTheme, { persist: true, syncTabs: true })\n@Component()",
+    );
+  });
+
+  it("merges into an existing @praxisjs/css import instead of adding a duplicate one", () => {
+    const mainPath = path.join(tmpDir, "app.tsx");
+    fs.writeFileSync(
+      mainPath,
+      `import { cx } from "@praxisjs/css";\nimport { Component } from "@praxisjs/decorators";\n\n@Component()\nclass App {}\n`,
+    );
+
+    const result = ensureThemedDecorator(mainPath, "@/lib/kosmesis-theme");
+    expect(result).toBe("updated");
+
+    const updated = fs.readFileSync(mainPath, "utf-8");
+    expect(updated).toContain('import { cx, Themed } from "@praxisjs/css";');
+    expect(updated.match(/from "@praxisjs\/css"/g)).toHaveLength(1);
+  });
+
+  it("merges into an existing theme-module import instead of adding a duplicate one", () => {
+    const mainPath = path.join(tmpDir, "app.tsx");
+    fs.writeFileSync(
+      mainPath,
+      `import { DarkTheme } from "@/lib/kosmesis-theme";\nimport { Component } from "@praxisjs/decorators";\n\n@Component()\nclass App {}\n`,
+    );
+
+    const result = ensureThemedDecorator(mainPath, "@/lib/kosmesis-theme");
+    expect(result).toBe("updated");
+
+    const updated = fs.readFileSync(mainPath, "utf-8");
+    expect(updated).toContain('import { DarkTheme, KosmesisTokens, LightTheme } from "@/lib/kosmesis-theme";');
+    expect(updated.match(/from "@\/lib\/kosmesis-theme"/g)).toHaveLength(1);
   });
 });
 

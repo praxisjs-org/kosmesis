@@ -27,6 +27,9 @@ export const DEFAULT_CSS_PATH = "src/style.css";
 /** Default path to the generated `@praxisjs/css` theme module, relative to the project root. */
 export const DEFAULT_THEME_MODULE_PATH = "src/lib/kosmesis-theme.ts";
 
+/** Default path to the project's root component, relative to the project root (`@praxisjs/css` only — that's where `@Themed(...)` gets wired in). */
+export const DEFAULT_MAIN_COMPONENT_PATH = "src/app.tsx";
+
 /**
  * npm packages to add per style system when running `kosmesis init`. `clsx`/`tailwind-merge`
  * back the `cn()` helper written to the project's utils file; `tw-animate-css` is the plain-CSS

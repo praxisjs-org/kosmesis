@@ -771,6 +771,17 @@ describe("kosmesis init", () => {
     expect(clack.cancel).toHaveBeenCalledWith("Operation cancelled");
   });
 
+  it("cancels when the root component path prompt is cancelled", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce(hoisted.CANCEL);
+
+    setArgv("init", []);
+    await init();
+
+    expect(clack.cancel).toHaveBeenCalledWith("Operation cancelled");
+  });
+
   it("scaffolds a fresh tailwind project end to end", async () => {
     // No existing components.json, no vite.config.ts/tsconfig.json — exercises the "not-found"
     // branches and the toAdd.length > 0 branch since only @praxisjs/core is already installed.
@@ -786,6 +797,7 @@ describe("kosmesis init", () => {
     expect(fs.existsSync(path.join(tmpDir, "src/lib/utils.ts"))).toBe(true);
     expect(clack.log.warn).toHaveBeenCalledWith(expect.stringContaining("No vite.config.ts found"));
     expect(hoisted.spawnMock).toHaveBeenCalledWith("npm", expect.arrayContaining(["install", "@types/node"]), expect.objectContaining({ cwd: tmpDir }));
+    expect(hoisted.confirmMock).not.toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("already has content") }));
   });
 
   it("shows the dependency install command when init cannot install automatically", async () => {
@@ -827,6 +839,33 @@ describe("kosmesis init", () => {
     const cssPath = path.join(tmpDir, "src", "style.css");
     fs.mkdirSync(path.dirname(cssPath), { recursive: true });
     fs.writeFileSync(cssPath, "/* custom rules */\n");
+    hoisted.confirmMock.mockResolvedValueOnce(false);
+
+    hoisted.selectMock.mockResolvedValueOnce("tailwind");
+    hoisted.textMock.mockResolvedValueOnce("src/style.css");
+
+    setArgv("init", []);
+    await init();
+
+    expect(hoisted.confirmMock).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.stringContaining("already has content") }),
+    );
+    const updatedCss = fs.readFileSync(cssPath, "utf-8");
+    expect(updatedCss).toContain("--color-background");
+    expect(updatedCss).toContain("/* custom rules */");
+    expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("Wired"));
+    expect(hoisted.spawnMock).not.toHaveBeenCalled();
+  });
+
+  it("erases the existing stylesheet content when the user confirms", async () => {
+    writePackageJson({
+      "@praxisjs/core": "^2.0.0",
+      ...Object.fromEntries([...COMMON_DEPENDENCIES, ...STYLE_SYSTEM_DEPENDENCIES.tailwind].map((d) => [d, "1.0.0"])),
+    });
+    const cssPath = path.join(tmpDir, "src", "style.css");
+    fs.mkdirSync(path.dirname(cssPath), { recursive: true });
+    fs.writeFileSync(cssPath, "/* custom rules */\n");
+    hoisted.confirmMock.mockResolvedValueOnce(true);
 
     hoisted.selectMock.mockResolvedValueOnce("tailwind");
     hoisted.textMock.mockResolvedValueOnce("src/style.css");
@@ -836,8 +875,24 @@ describe("kosmesis init", () => {
 
     const updatedCss = fs.readFileSync(cssPath, "utf-8");
     expect(updatedCss).toContain("--color-background");
-    expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("Wired"));
-    expect(hoisted.spawnMock).not.toHaveBeenCalled();
+    expect(updatedCss).not.toContain("/* custom rules */");
+  });
+
+  it("cancels when declining the erase-existing-css prompt via the cancel symbol", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    const cssPath = path.join(tmpDir, "src", "style.css");
+    fs.mkdirSync(path.dirname(cssPath), { recursive: true });
+    fs.writeFileSync(cssPath, "/* custom rules */\n");
+    hoisted.confirmMock.mockResolvedValueOnce(hoisted.CANCEL);
+
+    hoisted.selectMock.mockResolvedValueOnce("tailwind");
+    hoisted.textMock.mockResolvedValueOnce("src/style.css");
+
+    setArgv("init", []);
+    await init();
+
+    expect(clack.cancel).toHaveBeenCalledWith("Operation cancelled");
+    expect(fs.readFileSync(cssPath, "utf-8")).toBe("/* custom rules */\n");
   });
 
   it("reports the vite plugin and css file as already configured", async () => {
@@ -858,6 +913,9 @@ describe("kosmesis init", () => {
     await init();
 
     expect(clack.log.info).toHaveBeenCalledWith(expect.stringContaining("already has Kosmesis theme tokens"));
+    expect(hoisted.confirmMock).not.toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.stringContaining("already has content") }),
+    );
   });
 
   it("scaffolds a fresh @praxisjs/css project and wires the alias into existing config files", async () => {
@@ -881,11 +939,12 @@ describe("kosmesis init", () => {
     expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("import alias"));
   });
 
-  it("updates an existing theme module that predates KosmesisTokens", async () => {
+  it("updates an existing theme module that predates KosmesisTokens, keeping its content by default", async () => {
     writePackageJson({ "@praxisjs/core": "^2.0.0" });
     const themePath = path.join(tmpDir, "src", "lib", "kosmesis-theme.ts");
     fs.mkdirSync(path.dirname(themePath), { recursive: true });
     fs.writeFileSync(themePath, "export const somethingElse = true;\n");
+    hoisted.confirmMock.mockResolvedValueOnce(false);
 
     hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
     hoisted.textMock.mockResolvedValueOnce("");
@@ -893,8 +952,152 @@ describe("kosmesis init", () => {
     setArgv("init", []);
     await init();
 
+    expect(hoisted.confirmMock).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.stringContaining("already has content") }),
+    );
     expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("Updated"));
-    expect(fs.readFileSync(themePath, "utf-8")).toContain("KosmesisTokens");
+    const themeContent = fs.readFileSync(themePath, "utf-8");
+    expect(themeContent).toContain("KosmesisTokens");
+    expect(themeContent).toContain("somethingElse");
+  });
+
+  it("erases an existing theme module's content when the user confirms", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    const themePath = path.join(tmpDir, "src", "lib", "kosmesis-theme.ts");
+    fs.mkdirSync(path.dirname(themePath), { recursive: true });
+    fs.writeFileSync(themePath, "export const somethingElse = true;\n");
+    hoisted.confirmMock.mockResolvedValueOnce(true);
+
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.textMock.mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    const themeContent = fs.readFileSync(themePath, "utf-8");
+    expect(themeContent).toContain("KosmesisTokens");
+    expect(themeContent).not.toContain("somethingElse");
+  });
+
+  it("asks to clear the default stylesheet left over from create-praxisjs, and does so when confirmed", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    const defaultCssPath = path.join(tmpDir, "src", "style.css");
+    fs.mkdirSync(path.dirname(defaultCssPath), { recursive: true });
+    fs.writeFileSync(defaultCssPath, "body { margin: 0; }\n");
+    hoisted.confirmMock.mockResolvedValueOnce(true);
+
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.textMock.mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    expect(hoisted.confirmMock).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.stringContaining("src/style.css") }),
+    );
+    expect(fs.readFileSync(defaultCssPath, "utf-8")).toBe("");
+    expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("Cleared"));
+  });
+
+  it("keeps the default stylesheet when the user declines to clear it", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    const defaultCssPath = path.join(tmpDir, "src", "style.css");
+    fs.mkdirSync(path.dirname(defaultCssPath), { recursive: true });
+    fs.writeFileSync(defaultCssPath, "body { margin: 0; }\n");
+    hoisted.confirmMock.mockResolvedValueOnce(false);
+
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.textMock.mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    expect(fs.readFileSync(defaultCssPath, "utf-8")).toBe("body { margin: 0; }\n");
+  });
+
+  it("cancels when declining the default-stylesheet erase prompt via the cancel symbol", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    const defaultCssPath = path.join(tmpDir, "src", "style.css");
+    fs.mkdirSync(path.dirname(defaultCssPath), { recursive: true });
+    fs.writeFileSync(defaultCssPath, "body { margin: 0; }\n");
+    hoisted.confirmMock.mockResolvedValueOnce(hoisted.CANCEL);
+
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.textMock.mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    expect(clack.cancel).toHaveBeenCalledWith("Operation cancelled");
+    expect(fs.readFileSync(defaultCssPath, "utf-8")).toBe("body { margin: 0; }\n");
+  });
+
+  it("wires @Themed(...) into the root component at the default path", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
+    fs.writeFileSync(
+      path.join(tmpDir, "src/app.tsx"),
+      `import { Component } from "@praxisjs/decorators";\nimport { StatefulComponent } from "@praxisjs/core";\n\n@Component()\nclass App extends StatefulComponent {\n  render() {\n    return null;\n  }\n}\n`,
+    );
+
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    const appContent = fs.readFileSync(path.join(tmpDir, "src/app.tsx"), "utf-8");
+    expect(appContent).toContain('import { Themed } from "@praxisjs/css";');
+    expect(appContent).toContain("@Themed(KosmesisTokens, LightTheme, { persist: true, syncTabs: true })\n@Component()");
+    expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("Wired"));
+  });
+
+  it("wires @Themed(...) into a custom root component path", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
+    fs.writeFileSync(
+      path.join(tmpDir, "src/root.tsx"),
+      `import { Component } from "@praxisjs/decorators";\n\n@Component()\nclass Root {}\n`,
+    );
+
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce("src/root.tsx");
+
+    setArgv("init", []);
+    await init();
+
+    expect(fs.readFileSync(path.join(tmpDir, "src/root.tsx"), "utf-8")).toContain("@Themed(");
+  });
+
+  it("reports @Themed(...) as already configured without rewriting the root component", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
+    const appSource =
+      `import { Themed } from "@praxisjs/css";\nimport { Component } from "@praxisjs/decorators";\n\n` +
+      `@Themed(KosmesisTokens, LightTheme, { persist: true, syncTabs: true })\n@Component()\nclass App {}\n`;
+    fs.writeFileSync(path.join(tmpDir, "src/app.tsx"), appSource);
+
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    expect(fs.readFileSync(path.join(tmpDir, "src/app.tsx"), "utf-8")).toBe(appSource);
+    expect(clack.log.info).toHaveBeenCalledWith(expect.stringContaining("already has @Themed(...)"));
+  });
+
+  it("falls back to a manual note when the root component can't be found", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    expect(clack.log.warn).toHaveBeenCalledWith(expect.stringContaining("Couldn't find"));
+    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("@Themed"), "One more step");
   });
 
   it("warns when there is no vite.config.ts to wire the praxisjsCSS() plugin into", async () => {

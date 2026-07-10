@@ -3,9 +3,10 @@
  * by `kosmesis init` when `styleSystem: "praxisjs-css"`. Declares the same token set as
  * `KOSMESIS_THEME_CSS` (`./kosmesis-theme-css.ts`), but as a `TokenSheet` skeleton plus
  * `LightTheme`/`DarkTheme` value classes, and applies the base reset through `preflight()` +
- * `globalStyle()` instead of a `@layer base` block. The project's root component still needs
- * `@Themed(KosmesisTokens, LightTheme, { persist: true })` wired in by hand — `kosmesis init`
- * prints that step as a note rather than editing an arbitrary component.
+ * `globalStyle()` instead of a `@layer base` block. `kosmesis init` also wires
+ * `@Themed(KosmesisTokens, LightTheme, { persist: true, syncTabs: true })` onto the project's root
+ * component (see `ensureThemedDecorator` in `../utils/praxisjs-css.ts`), which is what actually
+ * applies `LightTheme`'s values to `:root` at runtime.
  */
 export const KOSMESIS_TOKENS_TS = `import { globalStyle, preflight, TokenSheet } from "@praxisjs/css";
 
