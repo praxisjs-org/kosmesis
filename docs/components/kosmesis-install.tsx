@@ -20,7 +20,7 @@ export function KosmesisInstall({ name }: KosmesisInstallProps) {
   };
 
   return (
-    <Tabs items={['pnpm', 'npm', 'yarn', 'bun']}>
+    <Tabs items={['npm', 'pnpm', 'yarn', 'bun']}>
       {(Object.entries(commands) as [string, string][]).map(([manager, command]) => (
         <Tab key={manager} value={manager}>
           <DynamicCodeBlock lang="sh" code={command} />
