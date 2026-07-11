@@ -57,6 +57,37 @@ export function ensurePraxisjsCssVitePlugin(viteConfigPath: string): "updated" |
   return "updated";
 }
 
+/**
+ * Adds `import "virtual:praxisjs/styles.css";` to the project's Vite entry file so the CSS
+ * `praxisjsCSS()` extracts at build time actually reaches the bundle — the plugin only computes
+ * the styles and emits the virtual module, nothing else pulls it into the output on its own.
+ */
+export function ensureVirtualStylesImport(entryFilePath: string): "updated" | "already-configured" | "not-found" {
+  if (!fs.existsSync(entryFilePath)) return "not-found";
+
+  const content = fs.readFileSync(entryFilePath, "utf-8");
+  if (content.includes("virtual:praxisjs/styles.css")) return "already-configured";
+
+  fs.writeFileSync(entryFilePath, `import "virtual:praxisjs/styles.css";\n${content}`, "utf-8");
+  return "updated";
+}
+
+/**
+ * Declares the `virtual:praxisjs/styles.css` ambient module so TypeScript doesn't error on the
+ * side-effect import `ensureVirtualStylesImport` writes into the entry file.
+ */
+export function ensureVirtualStylesTypeDeclaration(viteEnvPath: string): "updated" | "already-configured" | "not-found" {
+  if (!fs.existsSync(viteEnvPath)) return "not-found";
+
+  const content = fs.readFileSync(viteEnvPath, "utf-8");
+  if (content.includes("virtual:praxisjs/styles.css")) return "already-configured";
+
+  const declaration = 'declare module "virtual:praxisjs/styles.css" {}\n';
+  const separator = content.endsWith("\n") ? "" : "\n";
+  fs.writeFileSync(viteEnvPath, `${content}${separator}${declaration}`, "utf-8");
+  return "updated";
+}
+
 /** Merges `name` into an existing `import { ... } from "from"` statement in `content`, or adds a new one at the top if there isn't one yet. */
 function ensureNamedImport(content: string, names: string[], from: string): string {
   const existingImport = new RegExp(`import\\s+\\{([^}]*)\\}\\s+from\\s+["']${from.replace(/[/\\.]/g, "\\$&")}["'];?`).exec(

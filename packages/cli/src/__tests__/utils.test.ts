@@ -22,7 +22,13 @@ import {
   installCommand,
   installPackages,
 } from "../utils/package-manager";
-import { ensurePraxisjsCssTheme, ensurePraxisjsCssVitePlugin, ensureThemedDecorator } from "../utils/praxisjs-css";
+import {
+  ensurePraxisjsCssTheme,
+  ensurePraxisjsCssVitePlugin,
+  ensureThemedDecorator,
+  ensureVirtualStylesImport,
+  ensureVirtualStylesTypeDeclaration,
+} from "../utils/praxisjs-css";
 import { getMissingDependencies, isPraxisProject } from "../utils/project";
 import { fetchRegistryItem, RegistryFetchError, resolveRegistryTree } from "../utils/registry";
 import { buildRegistry, RegistryBuildError } from "../utils/registry-build";
@@ -527,6 +533,67 @@ describe("praxisjs-css helpers", () => {
     const updated = fs.readFileSync(mainPath, "utf-8");
     expect(updated).toContain('import { DarkTheme, KosmesisTokens, LightTheme } from "@/lib/kosmesis-theme";');
     expect(updated.match(/from "@\/lib\/kosmesis-theme"/g)).toHaveLength(1);
+  });
+
+  it("reports not-found when the entry file doesn't exist", () => {
+    expect(ensureVirtualStylesImport(path.join(tmpDir, "main.tsx"))).toBe("not-found");
+  });
+
+  it("adds the virtual styles import to the top of the entry file", () => {
+    const entryPath = path.join(tmpDir, "main.tsx");
+    fs.writeFileSync(
+      entryPath,
+      `import { render } from "@praxisjs/runtime";\n\nimport "./style.css";\nimport { App } from "./app";\n\nrender(() => <App />, document.getElementById("app")!);\n`,
+    );
+
+    const result = ensureVirtualStylesImport(entryPath);
+    expect(result).toBe("updated");
+
+    const updated = fs.readFileSync(entryPath, "utf-8");
+    expect(updated.startsWith('import "virtual:praxisjs/styles.css";\n')).toBe(true);
+  });
+
+  it("is idempotent once the virtual styles import is already present", () => {
+    const entryPath = path.join(tmpDir, "main.tsx");
+    fs.writeFileSync(entryPath, `import "virtual:praxisjs/styles.css";\nimport "./style.css";\n`);
+    expect(ensureVirtualStylesImport(entryPath)).toBe("already-configured");
+  });
+
+  it("reports not-found when vite-env.d.ts doesn't exist", () => {
+    expect(ensureVirtualStylesTypeDeclaration(path.join(tmpDir, "vite-env.d.ts"))).toBe("not-found");
+  });
+
+  it("declares the virtual styles module in vite-env.d.ts", () => {
+    const viteEnvPath = path.join(tmpDir, "vite-env.d.ts");
+    fs.writeFileSync(viteEnvPath, `/// <reference types="vite/client" />\n`);
+
+    const result = ensureVirtualStylesTypeDeclaration(viteEnvPath);
+    expect(result).toBe("updated");
+
+    const updated = fs.readFileSync(viteEnvPath, "utf-8");
+    expect(updated).toContain('declare module "virtual:praxisjs/styles.css" {}');
+  });
+
+  it("inserts a newline before the declaration when the file has no trailing newline", () => {
+    const viteEnvPath = path.join(tmpDir, "vite-env.d.ts");
+    fs.writeFileSync(viteEnvPath, '/// <reference types="vite/client" />');
+
+    const result = ensureVirtualStylesTypeDeclaration(viteEnvPath);
+    expect(result).toBe("updated");
+
+    const updated = fs.readFileSync(viteEnvPath, "utf-8");
+    expect(updated).toBe(
+      '/// <reference types="vite/client" />\ndeclare module "virtual:praxisjs/styles.css" {}\n',
+    );
+  });
+
+  it("is idempotent once the virtual styles module is already declared", () => {
+    const viteEnvPath = path.join(tmpDir, "vite-env.d.ts");
+    fs.writeFileSync(
+      viteEnvPath,
+      `/// <reference types="vite/client" />\ndeclare module "virtual:praxisjs/styles.css" {}\n`,
+    );
+    expect(ensureVirtualStylesTypeDeclaration(viteEnvPath)).toBe("already-configured");
   });
 });
 

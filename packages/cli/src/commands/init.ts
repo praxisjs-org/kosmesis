@@ -9,7 +9,9 @@ import {
   COMMON_DEPENDENCIES,
   DEFAULT_CSS_PATH,
   DEFAULT_MAIN_COMPONENT_PATH,
+  DEFAULT_MAIN_ENTRY_PATH,
   DEFAULT_THEME_MODULE_PATH,
+  DEFAULT_VITE_ENV_PATH,
   STYLE_SYSTEM_DEPENDENCIES,
   type StyleSystem,
 } from "../constants";
@@ -18,7 +20,13 @@ import { defaultConfig, readConfig, writeConfig } from "../utils/config";
 import { ensureDir, writeFile } from "../utils/fs";
 import { ensureTsconfigAlias, ensureViteAlias } from "../utils/import-alias";
 import { detectPackageManagerFromLockfile, installCommand, installPackages } from "../utils/package-manager";
-import { ensurePraxisjsCssTheme, ensurePraxisjsCssVitePlugin, ensureThemedDecorator } from "../utils/praxisjs-css";
+import {
+  ensurePraxisjsCssTheme,
+  ensurePraxisjsCssVitePlugin,
+  ensureThemedDecorator,
+  ensureVirtualStylesImport,
+  ensureVirtualStylesTypeDeclaration,
+} from "../utils/praxisjs-css";
 import { getMissingDependencies, isPraxisProject } from "../utils/project";
 import { ensureTailwindCss, ensureTailwindVitePlugin } from "../utils/tailwind";
 
@@ -183,6 +191,28 @@ export async function init(): Promise<void> {
       log.success(`Wired ${pc.cyan("praxisjsCSS()")} into ${pc.cyan("vite.config.ts")}.`);
     } else if (viteResult === "not-found") {
       log.warn("No vite.config.ts found — add the praxisjsCSS() plugin to your build config manually if you want static extraction.");
+    }
+
+    if (viteResult === "updated" || viteResult === "already-configured") {
+      const entryFilePath = path.join(projectRoot, DEFAULT_MAIN_ENTRY_PATH);
+      const importResult = ensureVirtualStylesImport(entryFilePath);
+      if (importResult === "updated") {
+        log.success(`Wired the ${pc.cyan("virtual:praxisjs/styles.css")} import into ${pc.cyan(DEFAULT_MAIN_ENTRY_PATH)}.`);
+      } else if (importResult === "not-found") {
+        log.warn(
+          `No ${pc.cyan(DEFAULT_MAIN_ENTRY_PATH)} found — add ${pc.cyan('import "virtual:praxisjs/styles.css";')} to your entry file manually.`,
+        );
+      }
+
+      const viteEnvPath = path.join(projectRoot, DEFAULT_VITE_ENV_PATH);
+      const typeResult = ensureVirtualStylesTypeDeclaration(viteEnvPath);
+      if (typeResult === "updated") {
+        log.success(`Declared the ${pc.cyan("virtual:praxisjs/styles.css")} module in ${pc.cyan(DEFAULT_VITE_ENV_PATH)}.`);
+      } else if (typeResult === "not-found") {
+        log.warn(
+          `No ${pc.cyan(DEFAULT_VITE_ENV_PATH)} found — declare ${pc.cyan('"virtual:praxisjs/styles.css"')} manually: ${pc.cyan('declare module "virtual:praxisjs/styles.css" {}')}`,
+        );
+      }
     }
 
     const mainFilePath = path.join(projectRoot, mainFilePathResult || DEFAULT_MAIN_COMPONENT_PATH);

@@ -925,6 +925,12 @@ describe("kosmesis init", () => {
       path.join(tmpDir, "vite.config.ts"),
       `import { defineConfig } from "vite";\n\nexport default defineConfig({\n  plugins: [],\n});\n`,
     );
+    fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
+    fs.writeFileSync(
+      path.join(tmpDir, "src", "main.tsx"),
+      `import { render } from "@praxisjs/runtime";\n\nimport "./style.css";\nimport { App } from "./app";\n\nrender(() => <App />, document.getElementById("app")!);\n`,
+    );
+    fs.writeFileSync(path.join(tmpDir, "src", "vite-env.d.ts"), `/// <reference types="vite/client" />\n`);
 
     hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
     hoisted.textMock.mockResolvedValueOnce("src/lib/kosmesis-theme.ts");
@@ -937,6 +943,59 @@ describe("kosmesis init", () => {
     expect(clack.log.info).toHaveBeenCalledWith(expect.stringContaining("Skipping"));
     expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("@Themed"), "One more step");
     expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("import alias"));
+
+    const mainEntryContent = fs.readFileSync(path.join(tmpDir, "src", "main.tsx"), "utf-8");
+    expect(mainEntryContent.startsWith('import "virtual:praxisjs/styles.css";\n')).toBe(true);
+    expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("virtual:praxisjs/styles.css"));
+
+    const viteEnvContent = fs.readFileSync(path.join(tmpDir, "src", "vite-env.d.ts"), "utf-8");
+    expect(viteEnvContent).toContain('declare module "virtual:praxisjs/styles.css" {}');
+    expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("Declared the"));
+  });
+
+  it("skips logging when the virtual styles import and type declaration are already configured", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    fs.writeFileSync(
+      path.join(tmpDir, "vite.config.ts"),
+      `import { defineConfig } from "vite";\n\nexport default defineConfig({\n  plugins: [],\n});\n`,
+    );
+    fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
+    fs.writeFileSync(
+      path.join(tmpDir, "src", "main.tsx"),
+      `import "virtual:praxisjs/styles.css";\nimport "./style.css";\n`,
+    );
+    fs.writeFileSync(
+      path.join(tmpDir, "src", "vite-env.d.ts"),
+      `/// <reference types="vite/client" />\ndeclare module "virtual:praxisjs/styles.css" {}\n`,
+    );
+
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.textMock.mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    expect(clack.log.success).not.toHaveBeenCalledWith(expect.stringContaining("virtual:praxisjs/styles.css"));
+    expect(clack.log.success).not.toHaveBeenCalledWith(expect.stringContaining("Declared the"));
+    expect(clack.log.warn).not.toHaveBeenCalledWith(expect.stringContaining("No src/main.tsx found"));
+    expect(clack.log.warn).not.toHaveBeenCalledWith(expect.stringContaining("No src/vite-env.d.ts found"));
+  });
+
+  it("warns when the entry file and vite-env.d.ts are missing for a fresh @praxisjs/css project", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    fs.writeFileSync(
+      path.join(tmpDir, "vite.config.ts"),
+      `import { defineConfig } from "vite";\n\nexport default defineConfig({\n  plugins: [],\n});\n`,
+    );
+
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.textMock.mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    expect(clack.log.warn).toHaveBeenCalledWith(expect.stringContaining("No src/main.tsx found"));
+    expect(clack.log.warn).toHaveBeenCalledWith(expect.stringContaining("No src/vite-env.d.ts found"));
   });
 
   it("updates an existing theme module that predates KosmesisTokens, keeping its content by default", async () => {

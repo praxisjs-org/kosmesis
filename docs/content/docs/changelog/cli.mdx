@@ -4,6 +4,14 @@ description: Changelog for kosmesis.
 icon: Terminal
 ---
 
+## 0.3.2
+
+- `kosmesis init` now wires the `virtual:praxisjs/styles.css` import into `@praxisjs/css`
+  projects: it adds `import "virtual:praxisjs/styles.css";` to the entry file (`src/main.tsx`)
+  after wiring `praxisjsCSS()` into `vite.config.ts`, and declares the module in
+  `src/vite-env.d.ts` so TypeScript doesn't error on it. Previously this step was missing, so the
+  CSS the Vite plugin extracts at build time never reached the production bundle.
+
 ## 0.3.1
 
 - Bumped `tsdown` to `0.22.4`, resolving a peer dependency mismatch with `typescript`.

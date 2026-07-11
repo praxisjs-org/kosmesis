@@ -30,6 +30,12 @@ export const DEFAULT_THEME_MODULE_PATH = "src/lib/kosmesis-theme.ts";
 /** Default path to the project's root component, relative to the project root (`@praxisjs/css` only — that's where `@Themed(...)` gets wired in). */
 export const DEFAULT_MAIN_COMPONENT_PATH = "src/app.tsx";
 
+/** Default path to the project's Vite entry file, relative to the project root (`@praxisjs/css` only — that's where the `virtual:praxisjs/styles.css` import gets wired in). */
+export const DEFAULT_MAIN_ENTRY_PATH = "src/main.tsx";
+
+/** Default path to the project's Vite ambient type declarations file, relative to the project root (`@praxisjs/css` only — that's where the `virtual:praxisjs/styles.css` module gets declared). */
+export const DEFAULT_VITE_ENV_PATH = "src/vite-env.d.ts";
+
 /**
  * npm packages to add per style system when running `kosmesis init`. `clsx`/`tailwind-merge`
  * back the `cn()` helper written to the project's utils file; `tw-animate-css` is the plain-CSS
