@@ -1,6 +1,6 @@
 {
   "name": "kosmesis",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "CLI to add Kosmesis components — the shadcn/ui equivalent for PraxisJS — into your project",
   "type": "module",
   "bin": {
