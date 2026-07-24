@@ -19,7 +19,7 @@ import { CN_UTIL_SOURCE } from "../utils/cn-template";
 import { defaultConfig, readConfig, writeConfig } from "../utils/config";
 import { ensureDir, writeFile } from "../utils/fs";
 import { ensureTsconfigAlias, ensureViteAlias } from "../utils/import-alias";
-import { detectPackageManagerFromLockfile, installCommand, installPackages } from "../utils/package-manager";
+import { detectPackageManagerFromLockfile, execCommand, installCommand, installPackages } from "../utils/package-manager";
 import {
   ensurePraxisjsCssTheme,
   ensurePraxisjsCssVitePlugin,
@@ -266,5 +266,5 @@ export async function init(): Promise<void> {
   await installGroup([...COMMON_DEPENDENCIES], true, "Run this command to install dev dependencies");
 
   outro(pc.green("Kosmesis is ready."));
-  note(pc.cyan("kosmesis add button"), "Then, add your first component");
+  note(pc.cyan(execCommand(pm, "kosmesis", ["add", "button"])), "Then, add your first component");
 }

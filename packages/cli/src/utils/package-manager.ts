@@ -42,6 +42,22 @@ export function installCommand(pm: PackageManager, packages: string[], dev = fal
   return `${binary} ${installArgs(pm, packages, dev).join(" ")}`;
 }
 
+/** Builds the `<pm> dlx <bin> <args...>` invocation for running a package binary without installing it. */
+export function execCommand(pm: PackageManager, bin: string, args: string[] = []): string {
+  const rest = [bin, ...args].join(" ");
+  switch (pm) {
+    case "pnpm":
+      return `pnpm dlx ${rest}`;
+    case "yarn":
+      return `yarn dlx ${rest}`;
+    case "bun":
+      return `bunx ${rest}`;
+    case "npm":
+    default:
+      return `npx ${rest}`;
+  }
+}
+
 export async function installPackages(
   projectRoot: string,
   pm: PackageManager,
