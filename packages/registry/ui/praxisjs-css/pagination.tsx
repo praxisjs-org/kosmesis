@@ -3,6 +3,8 @@ import { cx, Stylesheet, Styled } from "@praxisjs/css";
 import { Component } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
+import { Icon } from "@morphos/icons";
+
 import { ButtonStyles } from "./button";
 
 
@@ -12,6 +14,18 @@ class PaginationStyles extends Stylesheet {
   $previous = this.css({ gap: "0.25rem", paddingLeft: "0.625rem" });
   $next = this.css({ gap: "0.25rem", paddingRight: "0.625rem" });
   $ellipsis = this.css({ display: "flex", width: "2.25rem", height: "2.25rem", alignItems: "center", justifyContent: "center" });
+  /** Visually-hidden-but-accessible text — the `@praxisjs/css` equivalent of Tailwind's `sr-only` utility. */
+  $srOnly = this.css({
+    position: "absolute",
+    width: "1px",
+    height: "1px",
+    padding: "0",
+    margin: "-1px",
+    overflow: "hidden",
+    clip: "rect(0, 0, 0, 0)",
+    whiteSpace: "nowrap",
+    border: "0",
+  });
 }
 
 export interface PaginationProps {
@@ -19,7 +33,6 @@ export interface PaginationProps {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. Composes `Button` for its links. */
 @Component()
 export class Pagination extends StatelessComponent<PaginationProps> {
   @Styled(PaginationStyles) $s!: PaginationStyles;
@@ -99,7 +112,8 @@ export class PaginationPrevious extends StatelessComponent<Omit<PaginationLinkPr
     const { href, onClick, class: cls, children } = this.props;
     return (
       <PaginationLink href={href} onClick={onClick} aria-label="Go to previous page" size="default" class={cx(this.$s.$previous, cls)}>
-        ‹ {children ?? "Previous"}
+        <Icon name="ChevronLeft" size={16} />
+        {children ?? "Previous"}
       </PaginationLink>
     );
   }
@@ -113,7 +127,8 @@ export class PaginationNext extends StatelessComponent<Omit<PaginationLinkProps,
     const { href, onClick, class: cls, children } = this.props;
     return (
       <PaginationLink href={href} onClick={onClick} aria-label="Go to next page" size="default" class={cx(this.$s.$next, cls)}>
-        {children ?? "Next"} ›
+        {children ?? "Next"}
+        <Icon name="ChevronRight" size={16} />
       </PaginationLink>
     );
   }
@@ -127,7 +142,8 @@ export class PaginationEllipsis extends StatelessComponent<{ class?: string }> {
     const { class: cls } = this.props;
     return (
       <span aria-hidden={"true" as const} class={cx(this.$s.$ellipsis, cls)}>
-        …
+        <Icon name="Ellipsis" size={16} />
+        <span class={this.$s.$srOnly}>More pages</span>
       </span>
     );
   }

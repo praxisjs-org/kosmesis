@@ -2,6 +2,8 @@ import { StatelessComponent } from "@praxisjs/core";
 import { Component } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
+import { Icon } from "@morphos/icons";
+
 import { cn } from "@/lib/utils";
 
 
@@ -11,7 +13,6 @@ export interface BreadcrumbProps {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. */
 @Component()
 export class Breadcrumb extends StatelessComponent<BreadcrumbProps> {
   render() {
@@ -103,7 +104,8 @@ export class BreadcrumbEllipsis extends StatelessComponent<{ class?: string }> {
     const { class: cls } = this.props;
     return (
       <span role="presentation" aria-hidden={"true" as const} class={cn("flex size-9 items-center justify-center", cls)}>
-        …
+        <Icon name="Ellipsis" size={16} />
+        <span class="sr-only">More</span>
       </span>
     );
   }

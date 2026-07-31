@@ -2,6 +2,7 @@ import { StatelessComponent } from "@praxisjs/core";
 import { Component } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
+import { Icon } from "@morphos/icons";
 import {
   DialogClose as MorphosDialogClose,
   DialogContent as MorphosDialogContent,
@@ -16,29 +17,12 @@ import {
 import { cn } from "@/lib/utils";
 
 
-/**
- * `Dialog` and `DialogTrigger` are re-exported directly from `@morphos/overlays` — their
- * `render()` is a no-op Fragment (`<>{children}</>` / a plain trigger button), and real usage
- * never mounts `Dialog` itself: you instantiate it directly (`@State() dialog = new Dialog()`)
- * and pass that instance to `DialogTrigger`/`DialogContent`/etc. as a prop. Wrapping it in a new
- * component class here would break `new Dialog()` — it would no longer have `.isOpen`,
- * `.openDialog()`, `.closeDialog()`.
- */
+// Re-exported directly: `Dialog` is instantiated directly (`@State() dialog = new Dialog()`), not
+// mounted via JSX, so wrapping it here would break `.isOpen`/`.openDialog()`/`.closeDialog()`.
 export { Dialog, DialogTrigger, type DialogProps, type DialogTriggerProps } from "@morphos/overlays";
 
-/**
- * Morphos's `DialogContent` renders its own backdrop element (`[data-morphos-backdrop]`) — there
- * is no separate `DialogOverlay` part to compose. Style the backdrop globally instead:
- *
- * ```css
- * [data-morphos-backdrop] {
- *   position: fixed;
- *   inset: 0;
- *   z-index: 50;
- *   background: color-mix(in oklab, var(--foreground) 50%, transparent);
- * }
- * ```
- */
+// `DialogContent` renders its own backdrop (`[data-morphos-backdrop]`) — there is no separate
+// `DialogOverlay` part; style the backdrop globally.
 export interface DialogContentProps extends MorphosDialogContentProps {
   showCloseButton?: boolean;
 }
@@ -64,7 +48,7 @@ export class DialogContent extends StatelessComponent<DialogContentProps> {
             dialog={dialog}
             class="absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
           >
-            ✕
+            <Icon name="X" size={16} />
           </DialogClose>
         )}
       </MorphosDialogContent>

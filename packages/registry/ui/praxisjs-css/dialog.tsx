@@ -3,6 +3,7 @@ import { cx, keyframes, Stylesheet, Styled, tokenVars } from "@praxisjs/css";
 import { Component } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
+import { Icon } from "@morphos/icons";
 import {
   DialogClose as MorphosDialogClose,
   DialogContent as MorphosDialogContent,
@@ -72,21 +73,12 @@ class DialogStyles extends Stylesheet {
   $description = this.css({ fontSize: "0.875rem", color: t.mutedForeground });
 }
 
-/**
- * `Dialog` and `DialogTrigger` are re-exported directly from `@morphos/overlays` — their
- * `render()` is a no-op Fragment (`<>{children}</>` / a plain trigger button), and real usage
- * never mounts `Dialog` itself: you instantiate it directly (`@State() dialog = new Dialog()`)
- * and pass that instance to `DialogTrigger`/`DialogContent`/etc. as a prop. Wrapping it in a new
- * component class here would break `new Dialog()` — it would no longer have `.isOpen`,
- * `.openDialog()`, `.closeDialog()`.
- */
+// Re-exported directly: `Dialog` is instantiated directly (`@State() dialog = new Dialog()`), not
+// mounted via JSX, so wrapping it here would break `.isOpen`/`.openDialog()`/`.closeDialog()`.
 export { Dialog, DialogTrigger, type DialogProps, type DialogTriggerProps } from "@morphos/overlays";
 
-/**
- * Morphos's `DialogContent` renders its own backdrop element (`[data-morphos-backdrop]`) — there
- * is no separate `DialogOverlay` part to compose. The theme module's `globalStyle()` call already
- * styles that backdrop globally (see `@/lib/kosmesis-theme`).
- */
+// `DialogContent` renders its own backdrop (`[data-morphos-backdrop]`) — there is no separate
+// `DialogOverlay` part; the theme module's `globalStyle()` call styles it (see `@/lib/kosmesis-theme`).
 export interface DialogContentProps extends MorphosDialogContentProps {
   showCloseButton?: boolean;
 }
@@ -103,7 +95,7 @@ export class DialogContent extends StatelessComponent<DialogContentProps> {
         {children}
         {showCloseButton && (
           <DialogClose dialog={dialog} class={this.$s.$close}>
-            ✕
+            <Icon name="X" size={16} />
           </DialogClose>
         )}
       </MorphosDialogContent>

@@ -6,26 +6,11 @@ import { Portal } from "@praxisjs/runtime";
 import type { Children } from "@praxisjs/shared";
 
 import { Keys } from "@morphos/core";
+import { Icon } from "@morphos/icons";
 
 import { cn } from "@/lib/utils";
 
 
-/**
- * Purely presentational + a small state container — no Morphos equivalent. Radix doesn't have a
- * sidebar primitive either; shadcn/ui's own `Sidebar` is a composition of `Sheet` (mobile),
- * `Button`, `Separator`, and plain divs, which is exactly what this does. There's no context
- * system in PraxisJS, so `SidebarState` follows the same "instantiate once, pass to every part
- * as a prop" pattern as every Morphos compound component:
- *
- * ```tsx
- * @State() sidebar = new SidebarState()
- * // ...
- * <SidebarProvider sidebar={this.sidebar}>
- *   <Sidebar sidebar={this.sidebar}>...</Sidebar>
- *   <SidebarInset>...</SidebarInset>
- * </SidebarProvider>
- * ```
- */
 @Component()
 export class SidebarState extends StatefulComponent {
   @Prop() defaultOpen = true;
@@ -74,7 +59,6 @@ export class SidebarState extends StatefulComponent {
     this._openMobile = value;
   }
 
-  /** Pure state container — never mounted via JSX, only instantiated directly. */
   render() {
     return null;
   }
@@ -212,7 +196,7 @@ export class SidebarTrigger extends StatelessComponent<SidebarTriggerProps> {
         )}
         onClick={() => { sidebar.toggleResponsive(); }}
       >
-        {children ?? "☰"}
+        {children ?? <Icon name="PanelLeft" size={16} />}
       </button>
     );
   }

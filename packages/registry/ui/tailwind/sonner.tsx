@@ -1,17 +1,11 @@
 import { Component } from "@praxisjs/decorators";
 
 import { ToastProvider as MorphosToastProvider, type ToastItem  } from "@morphos/feedback";
+import { Icon } from "@morphos/icons";
 
 import { cn } from "@/lib/utils";
 
-/**
- * Morphos's `ToastProvider` is self-contained — it owns the toast queue *and* renders it (via a
- * `Portal`) from the same instance, so unlike Dialog/Popover/etc. there's no separate "content"
- * part to mount elsewhere. That means the single `<Toaster />` you mount once near your app root
- * has to be reachable from anywhere else in the app to call `.add()` — there's no PraxisJS
- * equivalent of a global ref, so this module tracks "the currently mounted `Toaster`" itself
- * (last one mounted wins, mirroring how sonner's own global `toast()` function behaves).
- */
+/** Tracks the currently mounted `Toaster` (last-mounted wins) so it's reachable from anywhere to call `.add()` — there's no context/global-ref equivalent in PraxisJS. */
 let activeToaster: Toaster | null = null;
 
 export interface ToasterProps {
@@ -65,7 +59,7 @@ export class Toaster extends MorphosToastProvider {
                 class="text-muted-foreground transition-colors hover:text-foreground"
                 onClick={() => { this.dismiss(toast.id); }}
               >
-                ✕
+                <Icon name="X" size={16} />
               </button>
             </div>
           ))

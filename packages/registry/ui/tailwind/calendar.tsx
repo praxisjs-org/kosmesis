@@ -1,6 +1,8 @@
 import { StatefulComponent, StatelessComponent } from "@praxisjs/core";
 import { Component, Emit, FunctionProp, Prop, State } from "@praxisjs/decorators";
 
+import { Icon } from "@morphos/icons";
+
 import { cn } from "@/lib/utils";
 
 const WEEKDAY_LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -17,7 +19,7 @@ function startOfMonth(year: number, month: number): Date {
   return new Date(year, month, 1);
 }
 
-/** Builds a 6-row (42-cell) month grid, including the trailing/leading days of adjacent months. */
+// Always 6 rows (42 cells), including leading/trailing days of adjacent months.
 function buildMonthGrid(year: number, month: number): Array<{ date: Date; inMonth: boolean }> {
   const first = startOfMonth(year, month);
   const gridStart = new Date(year, month, 1 - first.getDay());
@@ -35,20 +37,12 @@ export interface CalendarStateProps {
   disabled?: (date: Date) => boolean;
 }
 
-/**
- * Purely presentational + date math — no Morphos equivalent (Radix has no calendar primitive
- * either). `CalendarState` owns the visible month and selection; `Calendar` renders the grid it
- * computes. Both instantiated directly + rendered, the same pattern as every other compound
- * component here.
- */
 @Component()
 export class CalendarState extends StatefulComponent {
   @Prop() defaultMonth?: Date;
   @Prop() selected?: Date;
-  // `@Prop()`'s getter auto-invokes any raw value that is itself a function, treating it as a
-  // reactive `() => T` binding (see `selected` in the Calendar stories, which relies on exactly
-  // that to stay controlled). `onSelect`/`disabled` are real callbacks, not value-returning
-  // thunks — `@FunctionProp()` returns them as-is instead of calling them.
+  // `@FunctionProp()` (not `@Prop()`) — `onSelect`/`disabled` are real callbacks, and `@Prop()`
+  // would auto-invoke a function value instead of passing it through.
   @FunctionProp() onSelect?: CalendarStateProps["onSelect"];
   @FunctionProp() disabled?: CalendarStateProps["disabled"];
 
@@ -111,7 +105,7 @@ export class CalendarState extends StatefulComponent {
     return date;
   }
 
-  /** Pure state container — never mounted via JSX, only instantiated directly. */
+  // Never mounted via JSX — only instantiated directly.
   render() {
     return null;
   }
@@ -136,7 +130,7 @@ export class Calendar extends StatelessComponent<CalendarProps> {
             class="inline-flex size-7 items-center justify-center rounded-md border hover:bg-accent hover:text-accent-foreground"
             onClick={() => { state.goToPrevMonth(); }}
           >
-            ‹
+            <Icon name="ChevronLeft" size={14} />
           </button>
           <span class="text-sm font-medium">{() => state.monthLabel}</span>
           <button
@@ -145,7 +139,7 @@ export class Calendar extends StatelessComponent<CalendarProps> {
             class="inline-flex size-7 items-center justify-center rounded-md border hover:bg-accent hover:text-accent-foreground"
             onClick={() => { state.goToNextMonth(); }}
           >
-            ›
+            <Icon name="ChevronRight" size={14} />
           </button>
         </div>
 

@@ -3,6 +3,8 @@ import { cx, Stylesheet, Styled, tokenVars } from "@praxisjs/css";
 import { Component } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
+import { Icon } from "@morphos/icons";
+
 import { KosmesisTokens } from "@/lib/kosmesis-theme";
 
 
@@ -28,6 +30,18 @@ class BreadcrumbStyles extends Stylesheet {
   $separator = this.css({}).on("& > svg", { width: "0.875rem", height: "0.875rem" });
 
   $ellipsis = this.css({ display: "flex", width: "2.25rem", height: "2.25rem", alignItems: "center", justifyContent: "center" });
+
+  $srOnly = this.css({
+    position: "absolute",
+    width: "1px",
+    height: "1px",
+    padding: "0",
+    margin: "-1px",
+    overflow: "hidden",
+    clip: "rect(0, 0, 0, 0)",
+    whiteSpace: "nowrap",
+    border: "0",
+  });
 }
 
 export interface BreadcrumbProps {
@@ -36,7 +50,6 @@ export interface BreadcrumbProps {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. */
 @Component()
 export class Breadcrumb extends StatelessComponent<BreadcrumbProps> {
   render() {
@@ -131,7 +144,8 @@ export class BreadcrumbEllipsis extends StatelessComponent<{ class?: string }> {
     const { class: cls } = this.props;
     return (
       <span role="presentation" aria-hidden={"true" as const} class={cx(this.$s.$ellipsis, cls)}>
-        …
+        <Icon name="Ellipsis" size={16} />
+        <span class={this.$s.$srOnly}>More</span>
       </span>
     );
   }

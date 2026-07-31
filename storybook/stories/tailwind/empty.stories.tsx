@@ -2,6 +2,8 @@ import { StatelessComponent } from "@praxisjs/core";
 import { Component } from "@praxisjs/decorators";
 import type { Meta, StoryObj } from "@praxisjs/storybook";
 
+import { Icon } from "@morphos/icons";
+
 import { Button } from "@/ui/tailwind/button";
 import {
   Empty,
@@ -56,7 +58,9 @@ export const Default: Story = {
     <div style="width:400px">
       <Empty>
         <EmptyHeader>
-          <EmptyMedia variant="icon">🔍</EmptyMedia>
+          <EmptyMedia variant="icon">
+            <Icon name="Search" />
+          </EmptyMedia>
           <EmptyTitle>{args.title}</EmptyTitle>
           <EmptyDescription>{args.description}</EmptyDescription>
         </EmptyHeader>
@@ -72,7 +76,9 @@ class WithActionDemo extends StatelessComponent {
       <div style="width:400px">
         <Empty>
           <EmptyHeader>
-            <EmptyMedia variant="icon">📭</EmptyMedia>
+            <EmptyMedia variant="icon">
+              <Icon name="Inbox" />
+            </EmptyMedia>
             <EmptyTitle>No messages yet</EmptyTitle>
             <EmptyDescription>When you receive messages, they'll show up here.</EmptyDescription>
           </EmptyHeader>

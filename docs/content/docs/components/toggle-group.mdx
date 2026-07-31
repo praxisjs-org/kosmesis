@@ -28,12 +28,21 @@ import { Callout } from 'fumadocs-ui/components/callout';
   <Tab value="Tailwind">
     <StorybookEmbed story="tailwind-togglegroup--single" title="Single select" height={380} />
     <StorybookEmbed story="tailwind-togglegroup--multiple" title="Multiple select" height={380} />
+    <StorybookEmbed story="tailwind-togglegroup--product-variants" title="Product variants" height={380} />
+    <StorybookEmbed story="tailwind-togglegroup--feedback" title="Icon-only (feedback thumbs)" height={200} />
   </Tab>
   <Tab value="PraxisCSS">
     <StorybookEmbed story="praxiscss-togglegroup--single" title="Single select" height={380} />
     <StorybookEmbed story="praxiscss-togglegroup--multiple" title="Multiple select" height={380} />
+    <StorybookEmbed story="praxiscss-togglegroup--product-variants" title="Product variants" height={380} />
+    <StorybookEmbed story="praxiscss-togglegroup--feedback" title="Icon-only (feedback thumbs)" height={200} />
   </Tab>
 </Tabs>
+
+A single-select `ToggleGroup` with `variant="outline"` items is also the pattern for a product
+variant picker (size, color, ...) — no separate component needed for that use case. A two-item,
+icon-only single-select group covers a thumbs up/down feedback control the same way: `type="single"`
+already deselects on a repeat click of the pressed item.
 
 ## Usage
 
@@ -57,9 +66,8 @@ class TextAlignPicker extends StatefulComponent {
 ```
 
 <Callout type="warning">
-  Unlike shadcn/ui's React version, `variant`/`size` aren't inherited from the group via context —
-  pass the same `variant`/`size` to `ToggleGroup` and every `ToggleGroupItem` to keep them visually
-  consistent.
+  `variant`/`size` aren't inherited from the group via context — pass the same `variant`/`size`
+  to `ToggleGroup` and every `ToggleGroupItem` to keep them visually consistent.
 </Callout>
 
 ## Props

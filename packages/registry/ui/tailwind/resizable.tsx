@@ -2,6 +2,8 @@ import { StatefulComponent, StatelessComponent } from "@praxisjs/core";
 import { Component, Prop, Ref, State, type Ref as RefType } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
+import { Icon } from "@morphos/icons";
+
 import { cn } from "@/lib/utils";
 
 
@@ -12,14 +14,7 @@ export interface ResizablePanelGroupProps {
   children?: Children;
 }
 
-/**
- * Purely presentational — no Morphos equivalent (Radix has no resizable primitive either).
- * Unlike Dialog/Tabs/Accordion, there's no separate state instance to instantiate: the whole
- * group is a single JSX tree, and `ResizableHandle` finds its neighboring panels by walking the
- * DOM (`closest()`/`previousElementSibling`/`nextElementSibling`) at drag time instead of
- * requiring an external instance reference — sidestepping the "two different instances" pattern
- * entirely, since a live DOM node (not just component state) is what the drag math needs.
- */
+/** No separate state instance: `ResizableHandle` walks the DOM (`closest()`/sibling refs) at drag time since the drag math needs a live DOM node. */
 @Component()
 export class ResizablePanelGroup extends StatelessComponent<ResizablePanelGroupProps> {
   render() {
@@ -140,6 +135,7 @@ export class ResizableHandle extends StatefulComponent {
       >
         {this.withHandle && (
           <div class="z-10 flex h-4 w-3 items-center justify-center rounded-xs border bg-border">
+            <Icon name="GripVertical" size={10} />
             <span class="sr-only">Drag to resize</span>
           </div>
         )}

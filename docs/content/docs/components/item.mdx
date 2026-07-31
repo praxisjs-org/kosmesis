@@ -37,6 +37,8 @@ import { StorybookEmbed } from '@/components/storybook-embed';
 ## Usage
 
 ```tsx
+import { Icon } from "@morphos/icons";
+
 import { Button } from "@/components/ui/button";
 import {
   Item,
@@ -51,7 +53,9 @@ import {
 
 <ItemGroup>
   <Item variant="outline">
-    <ItemMedia>🔔</ItemMedia>
+    <ItemMedia>
+      <Icon name="Bell" />
+    </ItemMedia>
     <ItemContent>
       <ItemTitle>New comment</ItemTitle>
       <ItemDescription>Someone replied to your post.</ItemDescription>
@@ -62,7 +66,9 @@ import {
   </Item>
   <ItemSeparator />
   <Item variant="outline">
-    <ItemMedia>⭐</ItemMedia>
+    <ItemMedia>
+      <Icon name="Star" />
+    </ItemMedia>
     <ItemContent>
       <ItemTitle>New star</ItemTitle>
       <ItemDescription>Your repository got a new star.</ItemDescription>

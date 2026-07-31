@@ -2,6 +2,8 @@ import { StatelessComponent } from "@praxisjs/core";
 import { Component } from "@praxisjs/decorators";
 import type { Meta, StoryObj } from "@praxisjs/storybook";
 
+import { Icon } from "@morphos/icons";
+
 import { Button } from "@/ui/praxisjs-css/button";
 import {
   Item,
@@ -55,7 +57,9 @@ export const Default: Story = {
   render: (args) => (
     <div style="width:360px">
       <Item variant={args.variant} size={args.size}>
-        <ItemMedia>🔔</ItemMedia>
+        <ItemMedia>
+          <Icon name="Bell" />
+        </ItemMedia>
         <ItemContent>
           <ItemTitle>New comment</ItemTitle>
           <ItemDescription>Someone replied to your post.</ItemDescription>

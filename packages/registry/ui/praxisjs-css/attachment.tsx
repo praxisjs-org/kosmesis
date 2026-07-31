@@ -3,6 +3,8 @@ import { cx, Stylesheet, Styled, tokenVars } from "@praxisjs/css";
 import { Component } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
+import { Icon } from "@morphos/icons";
+
 import { KosmesisTokens } from "@/lib/kosmesis-theme";
 
 
@@ -51,7 +53,6 @@ export interface AttachmentProps {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent. A file/media chip, typically used inside `Message`/`Bubble`. */
 @Component()
 export class Attachment extends StatelessComponent<AttachmentProps> {
   @Styled(AttachmentStyles) $s!: AttachmentStyles;
@@ -60,14 +61,14 @@ export class Attachment extends StatelessComponent<AttachmentProps> {
     const { name, size, onRemove, class: cls, children } = this.props;
     return (
       <div class={cx(this.$s.$root, cls)}>
-        <span class={this.$s.$icon}>{children ?? "📎"}</span>
+        <span class={this.$s.$icon}>{children ?? <Icon name="Paperclip" size={16} />}</span>
         <div class={this.$s.$info}>
           <span class={this.$s.$name}>{name}</span>
           {size && <span class={this.$s.$size}>{size}</span>}
         </div>
         {onRemove && (
           <button type="button" aria-label={`Remove ${name}`} class={this.$s.$remove} onClick={onRemove}>
-            ✕
+            <Icon name="X" size={14} />
           </button>
         )}
       </div>

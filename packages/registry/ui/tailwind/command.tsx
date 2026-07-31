@@ -3,6 +3,7 @@ import { Component, Emit, Prop, State } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
 import { Keys } from "@morphos/core";
+import { Icon } from "@morphos/icons";
 import type { Dialog } from "@morphos/overlays";
 
 import { DialogContent } from "./dialog";
@@ -23,13 +24,7 @@ export interface CommandStateProps {
   onSelect?: (item: CommandItemDef) => void;
 }
 
-/**
- * A composition, not a new Morphos primitive: Morphos has no cmdk-style "type to jump anywhere"
- * component, so `CommandState` implements the always-visible filtered list + roving keyboard
- * navigation directly (closer to Morphos's own `Combobox` internals than to a wrap of it, since
- * Command's list is always rendered rather than toggled open/closed). `CommandDialog` composes
- * this with Morphos's `Dialog` for the "⌘K" palette variant.
- */
+// Not a wrap of Morphos's `Combobox` — the list here is always rendered, never toggled open/closed.
 @Component()
 export class CommandState extends StatefulComponent {
   @Prop() items: CommandItemDef[] = [];
@@ -75,7 +70,7 @@ export class CommandState extends StatefulComponent {
     return this.filtered[this._activeIndex] === item;
   }
 
-  /** Mouse-driven equivalent of `moveActive` — makes hover and keyboard navigation share the same active item instead of only the keyboard state ever setting `data-active`. */
+  // Mouse-driven equivalent of `moveActive`, so hover and keyboard nav share the same active item.
   setActive(item: CommandItemDef): void {
     if (item.disabled) return;
     const index = this.filtered.indexOf(item);
@@ -98,7 +93,7 @@ export class CommandState extends StatefulComponent {
     return item;
   }
 
-  /** Pure state container — never mounted via JSX, only instantiated directly. */
+  // Never mounted via JSX — only instantiated directly.
   render() {
     return null;
   }
@@ -126,7 +121,7 @@ export class Command extends StatelessComponent<CommandProps> {
         }}
       >
         <div class="flex items-center gap-2 border-b px-3">
-          <span aria-hidden class="text-muted-foreground">⌕</span>
+          <Icon name="Search" size={16} class="shrink-0 text-muted-foreground" />
           <input
             autoFocus
             role="combobox"

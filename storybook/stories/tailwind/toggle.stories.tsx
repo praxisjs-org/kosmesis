@@ -1,6 +1,8 @@
-import { StatelessComponent } from "@praxisjs/core";
-import { Component } from "@praxisjs/decorators";
+import { StatefulComponent, StatelessComponent } from "@praxisjs/core";
+import { Component, State } from "@praxisjs/decorators";
 import type { Meta, StoryObj } from "@praxisjs/storybook";
+
+import { Icon } from "@morphos/icons";
 
 import { Toggle, type ToggleProps } from "@/ui/tailwind/toggle";
 
@@ -88,4 +90,40 @@ class AllVariantsDemo extends StatelessComponent {
 export const AllVariants: Story = {
   name: "All variants",
   render: () => <AllVariantsDemo />,
+};
+
+@Component()
+class WishlistDemo extends StatefulComponent {
+  @State() active = false;
+
+  render() {
+    return (
+      <Toggle
+        aria-label="Add to wishlist"
+        pressed={() => this.active}
+        onPressedChange={(pressed) => { this.active = pressed; }}
+        class={() =>
+          `size-8 rounded-full border p-0 text-muted-foreground hover:text-destructive ${
+            this.active ? "border-destructive text-destructive" : ""
+          }`
+        }
+      >
+        <Icon name="Heart" size={16} class={() => (this.active ? "fill-current" : "")} />
+      </Toggle>
+    );
+  }
+}
+
+export const Wishlist: Story = {
+  name: "Icon-only (wishlist button)",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "An icon-only, round `Toggle` with `pressed`/`onPressedChange` is the pattern for a " +
+          "wishlist/favorite button — no separate component needed.",
+      },
+    },
+  },
+  render: () => <WishlistDemo />,
 };

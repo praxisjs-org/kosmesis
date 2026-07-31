@@ -2,6 +2,8 @@ import { StatelessComponent } from "@praxisjs/core";
 import { Component } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
+import { Icon } from "@morphos/icons";
+
 import { buttonVariants } from "./button";
 
 import { cn } from "@/lib/utils";
@@ -13,7 +15,6 @@ export interface PaginationProps {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. Composes `Button` for its links. */
 @Component()
 export class Pagination extends StatelessComponent<PaginationProps> {
   render() {
@@ -81,7 +82,8 @@ export class PaginationPrevious extends StatelessComponent<Omit<PaginationLinkPr
     const { href, onClick, class: cls, children } = this.props;
     return (
       <PaginationLink href={href} onClick={onClick} aria-label="Go to previous page" size="default" class={cn("gap-1 pl-2.5", cls)}>
-        ‹ {children ?? "Previous"}
+        <Icon name="ChevronLeft" size={16} />
+        {children ?? "Previous"}
       </PaginationLink>
     );
   }
@@ -93,7 +95,8 @@ export class PaginationNext extends StatelessComponent<Omit<PaginationLinkProps,
     const { href, onClick, class: cls, children } = this.props;
     return (
       <PaginationLink href={href} onClick={onClick} aria-label="Go to next page" size="default" class={cn("gap-1 pr-2.5", cls)}>
-        {children ?? "Next"} ›
+        {children ?? "Next"}
+        <Icon name="ChevronRight" size={16} />
       </PaginationLink>
     );
   }
@@ -105,7 +108,8 @@ export class PaginationEllipsis extends StatelessComponent<{ class?: string }> {
     const { class: cls } = this.props;
     return (
       <span aria-hidden={"true" as const} class={cn("flex size-9 items-center justify-center", cls)}>
-        …
+        <Icon name="Ellipsis" size={16} />
+        <span class="sr-only">More pages</span>
       </span>
     );
   }

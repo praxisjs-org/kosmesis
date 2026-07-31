@@ -37,6 +37,8 @@ import { StorybookEmbed } from '@/components/storybook-embed';
 ## Usage
 
 ```tsx
+import { Icon } from "@morphos/icons";
+
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -49,7 +51,9 @@ import {
 
 <Empty>
   <EmptyHeader>
-    <EmptyMedia variant="icon">📭</EmptyMedia>
+    <EmptyMedia variant="icon">
+      <Icon name="Inbox" />
+    </EmptyMedia>
     <EmptyTitle>No messages yet</EmptyTitle>
     <EmptyDescription>When you receive a message, it'll show up here.</EmptyDescription>
   </EmptyHeader>

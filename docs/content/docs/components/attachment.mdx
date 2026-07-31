@@ -55,7 +55,7 @@ import { Attachment, AttachmentGroup } from "@/components/ui/attachment";
 |---|---|---|
 | `name` | `string` | — required |
 | `size` | `string` | — display-only size label (e.g. `"248 KB"`) |
-| `onRemove` | `() => void` | — when set, renders a remove (✕) button |
-| `children` | `Children` | `"📎"` — overrides the default icon slot |
+| `onRemove` | `() => void` | — when set, renders a remove (`X` icon) button |
+| `children` | `Children` | `<Icon name="Paperclip" />` — overrides the default icon slot |
 
 `AttachmentGroup` takes no props beyond `class`/`children`.

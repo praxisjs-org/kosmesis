@@ -2,6 +2,8 @@ import { StatelessComponent } from "@praxisjs/core";
 import { Component } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
+import { Icon } from "@morphos/icons";
+
 import { cn } from "@/lib/utils";
 
 
@@ -13,7 +15,6 @@ export interface AttachmentProps {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent. A file/media chip, typically used inside `Message`/`Bubble`. */
 @Component()
 export class Attachment extends StatelessComponent<AttachmentProps> {
   render() {
@@ -26,7 +27,7 @@ export class Attachment extends StatelessComponent<AttachmentProps> {
         )}
       >
         <span class="flex size-8 shrink-0 items-center justify-center rounded bg-background text-muted-foreground">
-          {children ?? "📎"}
+          {children ?? <Icon name="Paperclip" size={16} />}
         </span>
         <div class="flex min-w-0 flex-1 flex-col">
           <span class="truncate font-medium">{name}</span>
@@ -39,7 +40,7 @@ export class Attachment extends StatelessComponent<AttachmentProps> {
             class="shrink-0 text-muted-foreground transition-colors hover:text-foreground"
             onClick={onRemove}
           >
-            ✕
+            <Icon name="X" size={14} />
           </button>
         )}
       </div>

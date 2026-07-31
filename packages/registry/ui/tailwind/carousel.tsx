@@ -2,6 +2,8 @@ import { StatefulComponent, StatelessComponent } from "@praxisjs/core";
 import { Component, Prop, Ref, State, type Ref as RefType } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
+import { Icon } from "@morphos/icons";
+
 import { cn } from "@/lib/utils";
 
 
@@ -11,12 +13,8 @@ export interface CarouselProps {
   children?: Children;
 }
 
-/**
- * Purely presentational + scroll-snap — no Morphos equivalent, and deliberately avoids a heavy
- * dependency like Embla: native CSS scroll-snap plus `scrollBy` handles the sliding, dragging,
- * and snapping for free. `CarouselState` owns just enough to know whether prev/next are
- * available and to expose `.scrollPrev()`/`.scrollNext()` to `CarouselPrevious`/`CarouselNext`.
- */
+// Deliberately avoids a heavy dependency like Embla: native CSS scroll-snap plus `scrollBy`
+// handles sliding, dragging, and snapping for free.
 @Component()
 export class CarouselState extends StatefulComponent {
   @Prop() orientation: CarouselProps["orientation"] = "horizontal";
@@ -53,7 +51,7 @@ export class CarouselState extends StatefulComponent {
     el.scrollBy(this.orientation === "horizontal" ? { left: amount, behavior: "smooth" } : { top: amount, behavior: "smooth" });
   }
 
-  /** Pure state container — never mounted via JSX, only instantiated directly. */
+  // Never mounted via JSX — only instantiated directly.
   render() {
     return null;
   }
@@ -134,12 +132,12 @@ export class CarouselPrevious extends StatelessComponent<CarouselControlProps> {
         aria-label="Previous slide"
         disabled={() => !carousel.canScrollPrev}
         class={cn(
-          "absolute top-1/2 left-2 size-8 -translate-y-1/2 rounded-full border bg-background shadow-xs disabled:pointer-events-none disabled:opacity-50",
+          "absolute top-1/2 left-2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full border bg-background shadow-xs disabled:pointer-events-none disabled:opacity-50",
           cls,
         )}
         onClick={() => { carousel.scrollPrev(); }}
       >
-        {children ?? "‹"}
+        {children ?? <Icon name="ChevronLeft" size={16} />}
       </button>
     );
   }
@@ -155,12 +153,12 @@ export class CarouselNext extends StatelessComponent<CarouselControlProps> {
         aria-label="Next slide"
         disabled={() => !carousel.canScrollNext}
         class={cn(
-          "absolute top-1/2 right-2 size-8 -translate-y-1/2 rounded-full border bg-background shadow-xs disabled:pointer-events-none disabled:opacity-50",
+          "absolute top-1/2 right-2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full border bg-background shadow-xs disabled:pointer-events-none disabled:opacity-50",
           cls,
         )}
         onClick={() => { carousel.scrollNext(); }}
       >
-        {children ?? "›"}
+        {children ?? <Icon name="ChevronRight" size={16} />}
       </button>
     );
   }

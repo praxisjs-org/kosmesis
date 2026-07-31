@@ -3,6 +3,8 @@ import { cx, Stylesheet, Styled, tokenVars } from "@praxisjs/css";
 import { Component, Prop, State } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
+import { Icon } from "@morphos/icons";
+
 import { TableBody, TableCell, TableHead, TableHeader, TableRow, Table as UiTable } from "./table";
 
 import { KosmesisTokens } from "@/lib/kosmesis-theme";
@@ -10,7 +12,6 @@ import { KosmesisTokens } from "@/lib/kosmesis-theme";
 
 const t = tokenVars(KosmesisTokens);
 
-/** Default renderer for a column with no `cell` override — safe for arbitrary row values. */
 function formatCellValue(value: unknown): string {
   if (value === null || value === undefined) return "";
   if (typeof value === "string") return value;
@@ -24,7 +25,6 @@ export interface DataTableColumn<T> {
   sortable?: boolean;
   align?: "left" | "right" | "center";
   cell?: (row: T) => Children;
-  /** Reads the raw sort value for a row. Defaults to `row[key]`. */
   sortValue?: (row: T) => string | number;
 }
 
@@ -34,12 +34,6 @@ export interface DataTableStateProps<T> {
   pageSize?: number;
 }
 
-/**
- * Purely presentational + a small table-model helper — no Morphos equivalent, and deliberately
- * no `@tanstack/table`-style dependency: `DataTableState` owns sorting and pagination as plain
- * arrays/indices, computed on read. Bring your own filtering/selection state the same way if you
- * need it — this covers the common 80% (sort a column, page through rows).
- */
 @Component()
 export class DataTableState<T> extends StatefulComponent {
   @Prop() data: T[] = [];
@@ -108,7 +102,7 @@ export class DataTableState<T> extends StatefulComponent {
     return this._sorted.slice(start, start + this.pageSize);
   }
 
-  /** Pure state container — never mounted via JSX, only instantiated directly. */
+  // Never mounted via JSX — only instantiated directly.
   render() {
     return null;
   }
@@ -118,6 +112,8 @@ class DataTableStyles extends Stylesheet {
   $alignRight = this.css({ textAlign: "right" });
   $alignCenter = this.css({ textAlign: "center" });
   $sortable = this.css({ cursor: "pointer", userSelect: "none" });
+
+  $sortIcon = this.css({ display: "inline-block", marginLeft: "0.25rem", verticalAlign: "text-bottom" });
 
   $pagination = this.css({ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.5rem", padding: "1rem 0" });
 
@@ -157,7 +153,9 @@ export class DataTable<T> extends StatelessComponent<DataTableProps<T>> {
                 }}
               >
                 {column.header}
-                {column.sortable && state.sortKey === column.key && (state.sortDirection === "asc" ? " ↑" : " ↓")}
+                {column.sortable && state.sortKey === column.key && (
+                  <Icon name={state.sortDirection === "asc" ? "ArrowUp" : "ArrowDown"} size={12} class={this.$s.$sortIcon} />
+                )}
               </TableHead>
             ))}
           </TableRow>
