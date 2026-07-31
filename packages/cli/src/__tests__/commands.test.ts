@@ -1249,4 +1249,33 @@ describe("kosmesis init", () => {
     expect(clack.log.warn).toHaveBeenCalledWith(expect.stringContaining("Couldn't find"));
     expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("@IconProvider"), "One more step");
   });
+
+  it("reports that @IconProvider(...) is already wired instead of adding it again", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
+    fs.writeFileSync(
+      path.join(tmpDir, "src/app.tsx"),
+      `import { IconProvider, LucideSource } from "@morphos/icons";\nimport { Component } from "@praxisjs/decorators";\nimport { StatefulComponent } from "@praxisjs/core";\n\n@IconProvider(LucideSource)\n@Component()\nclass App extends StatefulComponent {\n  render() {\n    return null;\n  }\n}\n`,
+    );
+
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("lucide");
+    hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    expect(clack.log.info).toHaveBeenCalledWith(expect.stringContaining("already has @IconProvider(...)"));
+    expect(clack.log.success).not.toHaveBeenCalledWith(expect.stringContaining("Wired"));
+  });
+
+  it("cancels when the icon library prompt is cancelled", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce(hoisted.CANCEL);
+
+    setArgv("init", []);
+    await init();
+
+    expect(clack.cancel).toHaveBeenCalledWith("Operation cancelled");
+    expect(hoisted.textMock).not.toHaveBeenCalled();
+  });
 });

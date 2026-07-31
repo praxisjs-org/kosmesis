@@ -15,10 +15,12 @@ vi.mock("node:child_process", () => ({
 import { CN_UTIL_SOURCE } from "../utils/cn-template";
 import { defaultConfig, readConfig, resolveAlias, writeConfig } from "../utils/config";
 import { ensureDir, isLocalPath, writeFile } from "../utils/fs";
+import { ensureIconProviderDecorator } from "../utils/icons";
 import { ensureTsconfigAlias, ensureViteAlias } from "../utils/import-alias";
 import {
   detectPackageManagerFromAgent,
   detectPackageManagerFromLockfile,
+  execCommand,
   installCommand,
   installPackages,
 } from "../utils/package-manager";
@@ -206,6 +208,14 @@ describe("package manager detection", () => {
     expect(installCommand("bun", ["@types/node"], true)).toBe("bun add -D @types/node");
     expect(installCommand("yarn", ["@types/node"], true)).toBe("yarn add -D @types/node");
     expect(installCommand("yarn", [], true)).toBe("");
+  });
+
+  it("builds a dlx/exec invocation per package manager", () => {
+    expect(execCommand("pnpm", "kosmesis", ["add", "button"])).toBe("pnpm dlx kosmesis add button");
+    expect(execCommand("yarn", "kosmesis", ["add", "button"])).toBe("yarn dlx kosmesis add button");
+    expect(execCommand("bun", "kosmesis", ["add", "button"])).toBe("bunx kosmesis add button");
+    expect(execCommand("npm", "kosmesis", ["add", "button"])).toBe("npx kosmesis add button");
+    expect(execCommand("npm", "kosmesis")).toBe("npx kosmesis");
   });
 
   it("installs packages through npm", async () => {
@@ -533,6 +543,40 @@ describe("praxisjs-css helpers", () => {
     const updated = fs.readFileSync(mainPath, "utf-8");
     expect(updated).toContain('import { DarkTheme, KosmesisTokens, LightTheme } from "@/lib/kosmesis-theme";');
     expect(updated.match(/from "@\/lib\/kosmesis-theme"/g)).toHaveLength(1);
+  });
+
+  it("reports not-found when the root component file doesn't exist (icon provider)", () => {
+    expect(ensureIconProviderDecorator(path.join(tmpDir, "app.tsx"))).toBe("not-found");
+  });
+
+  it("reports not-found when the file has no @Component() to anchor on (icon provider)", () => {
+    const mainPath = path.join(tmpDir, "app.tsx");
+    fs.writeFileSync(mainPath, "export function App() { return null; }\n");
+    expect(ensureIconProviderDecorator(mainPath)).toBe("not-found");
+  });
+
+  it("is idempotent once @IconProvider(...) is already wired", () => {
+    const mainPath = path.join(tmpDir, "app.tsx");
+    fs.writeFileSync(
+      mainPath,
+      `import { IconProvider, LucideSource } from "@morphos/icons";\nimport { Component } from "@praxisjs/decorators";\n\n@IconProvider(LucideSource)\n@Component()\nclass App {}\n`,
+    );
+    expect(ensureIconProviderDecorator(mainPath)).toBe("already-configured");
+  });
+
+  it("wires @IconProvider(LucideSource) above @Component(), adding fresh imports", () => {
+    const mainPath = path.join(tmpDir, "app.tsx");
+    fs.writeFileSync(
+      mainPath,
+      `import { Component } from "@praxisjs/decorators";\nimport { StatefulComponent } from "@praxisjs/core";\n\n@Component()\nclass App extends StatefulComponent {\n  render() {\n    return null;\n  }\n}\n`,
+    );
+
+    const result = ensureIconProviderDecorator(mainPath);
+    expect(result).toBe("updated");
+
+    const updated = fs.readFileSync(mainPath, "utf-8");
+    expect(updated).toContain('import { IconProvider, LucideSource } from "@morphos/icons";');
+    expect(updated).toContain("@IconProvider(LucideSource)\n@Component()");
   });
 
   it("reports not-found when the entry file doesn't exist", () => {
