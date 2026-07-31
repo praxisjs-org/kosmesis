@@ -13,7 +13,6 @@ export interface AspectRatioProps {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. */
 @Component()
 export class AspectRatio extends StatelessComponent<AspectRatioProps> {
   render() {

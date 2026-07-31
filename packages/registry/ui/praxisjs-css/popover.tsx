@@ -28,11 +28,7 @@ class PopoverStyles extends Stylesheet {
   }).on("&[data-open]", { animation: `${popIn} 100ms ease-out` });
 }
 
-/**
- * `Popover` and `PopoverTrigger` are re-exported directly — same reasoning as `Tooltip`: the root
- * is always instantiated directly (`@State() popover = new Popover()`), never mounted via JSX, so
- * wrapping it would break `.isOpen`/`.toggle()`/`.closePopover()`.
- */
+// Re-exported directly: Popover is instantiated directly by consumers, so wrapping would break .isOpen()/.toggle()/.closePopover().
 export { Popover, PopoverTrigger, type PopoverProps, type PopoverTriggerProps } from "@morphos/overlays";
 
 export type PopoverContentProps = MorphosPopoverContentProps;

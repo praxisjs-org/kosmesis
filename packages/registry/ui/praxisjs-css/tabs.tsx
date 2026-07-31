@@ -49,11 +49,7 @@ class TabsStyles extends Stylesheet {
   $content = this.css({ flex: "1 1 0%", outline: "none" });
 }
 
-/**
- * Extends (not wraps) Morphos's `Tabs` so `new Tabs({ defaultValue: "a" })` still yields a real
- * instance with `.selectedValue`/`.select()`/`.navigate()` — what `TabsList`/`Trigger`/`Content`
- * need via their `tabs` prop.
- */
+/** Subclasses Morphos's `Tabs` so instances still expose `.selectedValue`/`.select()`/`.navigate()`. */
 @Component()
 export class Tabs extends MorphosTabs {
   @Styled(TabsStyles) $s!: TabsStyles;

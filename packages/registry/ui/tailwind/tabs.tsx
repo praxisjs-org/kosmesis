@@ -11,11 +11,7 @@ import { cn } from "@/lib/utils";
 
 export type TabsProps = MorphosTabsProps;
 
-/**
- * Extends (not wraps) Morphos's `Tabs` so `new Tabs({ defaultValue: "a" })` still yields a real
- * instance with `.selectedValue`/`.select()`/`.navigate()` — what `TabsList`/`Trigger`/`Content`
- * need via their `tabs` prop.
- */
+/** Subclasses Morphos's `Tabs` so instances still expose `.selectedValue`/`.select()`/`.navigate()`. */
 @Component()
 export class Tabs extends MorphosTabs {
   render() {

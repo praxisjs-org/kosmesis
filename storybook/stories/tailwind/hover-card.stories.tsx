@@ -12,10 +12,10 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "shadcn/ui's `HoverCard`/`HoverCardTrigger` map to Morphos's `PreviewCard`/" +
-          "`PreviewCardTrigger`, re-exported directly and renamed. The root is always instantiated " +
-          "directly (`@State() card = new HoverCard()`), never mounted via JSX, so wrapping it " +
-          "would break `.isOpen`/`.openCard()`/`.closeCard()`.",
+          "`HoverCard`/`HoverCardTrigger` map to Morphos's `PreviewCard`/`PreviewCardTrigger`, " +
+          "re-exported directly and renamed. The root is always instantiated directly " +
+          "(`@State() card = new HoverCard()`), never mounted via JSX, so wrapping it would break " +
+          "`.isOpen`/`.openCard()`/`.closeCard()`.",
       },
     },
   },
@@ -43,7 +43,7 @@ class DefaultDemo extends StatefulComponent {
           <div style="display:flex;flex-direction:column;gap:4px">
             <h4 style="margin:0;font-size:.875rem;font-weight:600">@kosmesis</h4>
             <p style="margin:0;font-size:.8rem;color:var(--muted-foreground)">
-              The shadcn/ui equivalent for the PraxisJS ecosystem.
+              Copy-paste UI components for PraxisJS.
             </p>
           </div>
         </HoverCardContent>

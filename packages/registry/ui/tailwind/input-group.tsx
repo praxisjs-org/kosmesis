@@ -11,7 +11,6 @@ export interface InputGroupProps {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. Pair with `Input`. */
 @Component()
 export class InputGroup extends StatelessComponent<InputGroupProps> {
   render() {

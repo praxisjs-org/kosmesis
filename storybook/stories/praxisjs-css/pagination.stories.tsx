@@ -20,7 +20,7 @@ const meta: Meta = {
       description: {
         component:
           "Purely presentational — no Morphos equivalent. A `<nav aria-label=\"pagination\">` " +
-          "reusing `Button`'s own `ButtonStyles` for its links, same as upstream shadcn/ui.",
+          "reusing `Button`'s own `ButtonStyles` for its links.",
       },
     },
   },

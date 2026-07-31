@@ -4,14 +4,18 @@ import { Component } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
 import {
+  Drawer,
   DrawerClose as MorphosDrawerClose,
   DrawerContent as MorphosDrawerContent,
   DrawerDescription as MorphosDrawerDescription,
   DrawerTitle as MorphosDrawerTitle,
+  DrawerTrigger,
   type DrawerCloseProps as MorphosDrawerCloseProps,
   type DrawerContentProps as MorphosDrawerContentProps,
   type DrawerDescriptionProps as MorphosDrawerDescriptionProps,
-  type DrawerTitleProps as MorphosDrawerTitleProps
+  type DrawerTitleProps as MorphosDrawerTitleProps,
+  type DrawerProps,
+  type DrawerTriggerProps
 } from "@morphos/overlays";
 
 import { KosmesisTokens } from "@/lib/kosmesis-theme";
@@ -33,10 +37,7 @@ class DrawerStyles extends Stylesheet {
   })
     .on('&[data-side="top"]', { insetInline: "0", top: "0", borderBottom: `1px solid ${t.border}` })
     .on('&[data-side="bottom"]', { insetInline: "0", bottom: "0", borderTop: `1px solid ${t.border}` })
-    // Capped at 24rem regardless of viewport — a simpler equivalent of Tailwind's
-    // `sm:max-w-sm` (only capping above the `sm` breakpoint), since the effect is barely
-    // distinguishable in practice and this avoids a media query nested inside a data-attribute
-    // selector, which the CSS builder's `.media()` doesn't compose with `.on()` for.
+    // Capped at 24rem regardless of viewport — `.media()` doesn't compose with `.on()` here.
     .on('&[data-side="right"]', { insetBlock: "0", right: "0", height: "100%", width: "75%", maxWidth: "24rem", borderLeft: `1px solid ${t.border}` })
     .on('&[data-side="left"]', { insetBlock: "0", left: "0", height: "100%", width: "75%", maxWidth: "24rem", borderRight: `1px solid ${t.border}` });
 
@@ -49,12 +50,9 @@ class DrawerStyles extends Stylesheet {
   $description = this.css({ fontSize: "0.875rem", color: t.mutedForeground });
 }
 
-/**
- * `Drawer` and `DrawerTrigger` are re-exported directly — see the note in `dialog.tsx` for why:
- * `new Drawer()` must produce a real instance with `.isOpen`/`.openDrawer()`, which a wrapping
- * component class would not have.
- */
-export { Drawer, DrawerTrigger, type DrawerProps, type DrawerTriggerProps } from "@morphos/overlays";
+// Re-exported directly, same reason as `Dialog` in `dialog.tsx`: `new Drawer()` must keep
+// `.isOpen`/`.openDrawer()`, which a wrapping component class would not have.
+export { Drawer, DrawerTrigger, type DrawerProps, type DrawerTriggerProps };
 
 export type DrawerContentProps = MorphosDrawerContentProps;
 

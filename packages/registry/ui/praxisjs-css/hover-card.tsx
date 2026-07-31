@@ -27,12 +27,9 @@ class HoverCardStyles extends Stylesheet {
   }).on("&[data-open]", { animation: `${popIn} 100ms ease-out` });
 }
 
-/**
- * shadcn/ui's `HoverCard`/`HoverCardTrigger` map to Morphos's `PreviewCard`/`PreviewCardTrigger`,
- * re-exported directly and renamed — the root is always instantiated directly
- * (`@State() card = new HoverCard()`), never mounted via JSX, so wrapping it would break
- * `.isOpen`/`.openCard()`/`.closeCard()`.
- */
+// Morphos's `PreviewCard`/`PreviewCardTrigger` are re-exported here renamed to `HoverCard`/
+// `HoverCardTrigger` — the root is instantiated directly, not mounted via JSX, so wrapping it
+// would break `.isOpen`/`.openCard()`/`.closeCard()`.
 export { PreviewCard as HoverCard, PreviewCardTrigger as HoverCardTrigger };
 export type { PreviewCardProps as HoverCardProps, PreviewCardTriggerProps as HoverCardTriggerProps };
 

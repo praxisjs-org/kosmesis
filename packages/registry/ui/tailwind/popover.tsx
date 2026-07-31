@@ -5,11 +5,7 @@ import { PopoverContent as MorphosPopoverContent, type PopoverContentProps as Mo
 
 import { cn } from "@/lib/utils";
 
-/**
- * `Popover` and `PopoverTrigger` are re-exported directly — same reasoning as `Tooltip`: the root
- * is always instantiated directly (`@State() popover = new Popover()`), never mounted via JSX, so
- * wrapping it would break `.isOpen`/`.toggle()`/`.closePopover()`.
- */
+// Re-exported directly: Popover is instantiated directly by consumers, so wrapping would break .isOpen()/.toggle()/.closePopover().
 export {
   Popover,
   PopoverTrigger,

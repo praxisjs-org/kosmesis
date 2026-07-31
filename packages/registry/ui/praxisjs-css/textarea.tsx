@@ -7,9 +7,7 @@ import { KosmesisTokens } from "@/lib/kosmesis-theme";
 const t = tokenVars(KosmesisTokens);
 
 class TextareaStyles extends Stylesheet {
-  // Note: the Tailwind version also sets `field-sizing: content` (auto-grow to fit content) —
-  // omitted here since it isn't in csstype's typed CSS properties yet; the textarea still works
-  // fine, it just doesn't auto-grow without a manual `rows` bump or your own resize handling.
+  // `field-sizing: content` omitted — not yet in csstype's typed CSS properties.
   $root = this.css({
     display: "flex",
     minHeight: "4rem",
@@ -43,7 +41,6 @@ export interface TextareaProps {
   onChange?: (value: string, event: Event) => void;
 }
 
-/** Purely presentational — no Morphos equivalent (Radix has no textarea primitive either). */
 @Component()
 export class Textarea extends StatefulComponent {
   @Prop() value?: string;

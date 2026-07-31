@@ -16,11 +16,8 @@ import {
 
 import { cn } from "@/lib/utils";
 
-/**
- * Extends (not wraps) Morphos's `NavigationMenu` so `new NavigationMenu()` still yields a real
- * instance with `.activeItem`/`.open()`/`.close()` — what `NavigationMenuItem` needs via its
- * `nav` prop.
- */
+// Extends (not wraps) Morphos's `NavigationMenu` so instances keep `.activeItem`/`.open()`/
+// `.close()`, which `NavigationMenuItem` needs via its `nav` prop.
 @Component()
 export class NavigationMenu extends MorphosNavigationMenu {
   render() {
@@ -47,11 +44,7 @@ export class NavigationMenuList extends StatelessComponent<NavigationMenuListPro
   }
 }
 
-/**
- * Extends (not wraps) Morphos's `NavigationMenuItem` — its `Trigger`/`Content` reference this
- * exact instance via their `item` prop, the same "instantiate once, pass to siblings" pattern as
- * the top-level `nav` root (see the real usage note on `NavigationMenuTrigger` below).
- */
+// Its `Trigger`/`Content` reference this exact instance via their `item` prop.
 @Component()
 export class NavigationMenuItem extends MorphosNavigationMenuItem {
   render() {
@@ -66,11 +59,7 @@ export class NavigationMenuItem extends MorphosNavigationMenuItem {
 export const navigationMenuTriggerStyle = () =>
   "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-active:bg-accent/50 disabled:pointer-events-none disabled:opacity-50";
 
-/**
- * `item` must be the same `NavigationMenuItem` instance mounted as the enclosing `<li>` — create
- * it once (`@State() productsItem = new NavigationMenuItem({ nav: this.nav, value: "products" })`)
- * and pass it to `NavigationMenuItem`, `NavigationMenuTrigger`, and `NavigationMenuContent` alike.
- */
+// `item` must be the same `NavigationMenuItem` instance mounted as the enclosing `<li>`.
 export type NavigationMenuTriggerProps = MorphosNavigationMenuTriggerProps;
 
 @Component()

@@ -13,8 +13,7 @@ const meta: Meta = {
         component:
           "`ScrollArea` extends (not wraps) `@morphos/layout`'s `ScrollArea` so `this` can be " +
           "passed directly as the `scrollArea` prop `ScrollAreaViewport`/`ScrollAreaScrollbar`/" +
-          "`ScrollAreaThumb` all require — composing all four parts into the single-component " +
-          "surface shadcn/ui's `ScrollArea` has.",
+          "`ScrollAreaThumb` all require — composing all four parts into a single component.",
       },
     },
   },

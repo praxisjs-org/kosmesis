@@ -25,10 +25,7 @@ class SpinnerStyles extends Stylesheet {
 
 export type SpinnerProps = MorphosSpinnerProps;
 
-/**
- * Morphos's `Spinner` sets `role="status"`/`aria-busy` but renders no visual content itself
- * (it's an empty `<span>`) — the spin animation and icon are pure CSS/SVG background here.
- */
+/** Morphos's `Spinner` renders an empty `<span>` (just `role="status"`/`aria-busy`) — the spin visual is pure CSS here. */
 @Component()
 export class Spinner extends StatelessComponent<SpinnerProps> {
   @Styled(SpinnerStyles) $s!: SpinnerStyles;

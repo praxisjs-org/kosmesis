@@ -11,7 +11,6 @@ export interface EmptySlotProps {
   children?: Children;
 }
 
-/** Purely presentational empty/blank-state primitives — no Morphos equivalent, same as upstream shadcn/ui. */
 @Component()
 export class Empty extends StatelessComponent<EmptySlotProps> {
   render() {

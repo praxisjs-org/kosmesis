@@ -7,10 +7,7 @@ import { cn } from "@/lib/utils";
 
 export type SwitchProps = MorphosSwitchProps;
 
-/**
- * The thumb is a plain `span` (not a Morphos part) driven purely by the `data-checked`
- * attribute Morphos sets on the root, so no extra JS is needed to slide it.
- */
+/** Thumb slides via CSS off the root's `data-checked` attribute — no extra JS needed. */
 @Component()
 export class Switch extends StatelessComponent<SwitchProps> {
   render() {

@@ -12,11 +12,7 @@ export interface LabelProps {
   children?: Children;
 }
 
-/**
- * Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. Pairs naturally
- * with Morphos's `Field` (pass `field.fieldId` as `htmlFor`) but isn't coupled to it, so it also
- * works as a plain standalone label.
- */
+// Pairs with Morphos's `Field` (`field.fieldId` as `htmlFor`) but works standalone too.
 @Component()
 export class Label extends StatelessComponent<LabelProps> {
   render() {

@@ -58,7 +58,6 @@ export interface CardSlotProps {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. */
 @Component()
 export class Card extends StatelessComponent<CardSlotProps> {
   @Styled(CardStyles) $s!: CardStyles;
@@ -143,12 +142,7 @@ export class CardContent extends StatelessComponent<CardSlotProps> {
   }
 }
 
-/**
- * Tailwind's version conditions the top border/padding on a `.border-t` utility class being
- * present (`[.border-t]:pt-6`). There's no arbitrary-class selector equivalent in
- * `@praxisjs/css`, so pass a literal `class="kosmesis-bordered"` (instead of `border-t`) to opt
- * into the same spacing when you add a top border yourself.
- */
+// Pass `class="kosmesis-bordered"` (not `border-t`) to opt into top-border spacing.
 @Component()
 export class CardFooter extends StatelessComponent<CardSlotProps> {
   @Styled(CardStyles) $s!: CardStyles;

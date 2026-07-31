@@ -36,11 +36,6 @@ export interface MarkerProps {
   children?: Children;
 }
 
-/**
- * A small positional dot/pin — used to annotate a point on a chart, timeline, or list (e.g. an
- * unread indicator, a status dot on an avatar, a data point on a `Chart`). Purely presentational
- * — no Morphos equivalent.
- */
 @Component()
 export class Marker extends StatelessComponent<MarkerProps> {
   @Styled(MarkerStyles) $s!: MarkerStyles;

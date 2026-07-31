@@ -11,7 +11,6 @@ export interface CardSlotProps {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. */
 @Component()
 export class Card extends StatelessComponent<CardSlotProps> {
   render() {

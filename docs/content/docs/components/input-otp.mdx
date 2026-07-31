@@ -45,10 +45,9 @@ import { InputOTP } from "@/components/ui/input-otp";
 
 <Callout type="info">
   Morphos's `OtpField` renders every cell itself (owning per-cell focus/paste/backspace logic
-  internally) rather than exposing an `InputOTPSlot`-style compound API like shadcn/ui's — so
-  there's just one component here, not a slot/group/separator composition. Target individual
-  cells with the `data-index` attribute Morphos sets on each `<input>` if you need per-cell
-  styling beyond what's built in.
+  internally) rather than exposing a slot-based compound API — so there's just one component
+  here, not a slot/group/separator composition. Target individual cells with the `data-index`
+  attribute Morphos sets on each `<input>` if you need per-cell styling beyond what's built in.
 </Callout>
 
 ## Props

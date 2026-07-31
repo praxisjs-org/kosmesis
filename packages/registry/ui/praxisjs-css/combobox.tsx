@@ -49,9 +49,7 @@ class ComboboxStyles extends Stylesheet {
       fontSize: "0.875rem",
       outline: "none",
     })
-    // Morphos's `Combobox` only sets `data-active` from keyboard navigation (arrow keys) — there's
-    // no `onMouseEnter` wiring, so mouse hover needs its own plain `:hover` rule to get any visual
-    // feedback at all.
+    // `data-active` only comes from keyboard nav — hover needs its own `:hover` rule.
     .on("& li:hover", { backgroundColor: t.accent, color: t.accentForeground })
     .on("& li[data-active]", { backgroundColor: t.accent, color: t.accentForeground })
     .on("& li[data-disabled]", { pointerEvents: "none", opacity: 0.5 });
@@ -59,12 +57,8 @@ class ComboboxStyles extends Stylesheet {
 
 export type ComboboxProps = MorphosComboboxProps;
 
-/**
- * Morphos's `Combobox` takes a flat `options` array rather than a `CommandItem`-style children
- * composition — it renders the input, listbox, and filtered options itself. If you need
- * multi-section, keyboard-first "type to jump anywhere" UI (like shadcn/ui's `Command`), see
- * `./command.tsx`, which composes this same primitive with `Dialog`.
- */
+// For multi-section, keyboard-first "type to jump anywhere" UI, see `./command.tsx`, which
+// composes this same primitive with `Dialog`.
 @Component()
 export class Combobox extends StatelessComponent<ComboboxProps> {
   @Styled(ComboboxStyles) $s!: ComboboxStyles;

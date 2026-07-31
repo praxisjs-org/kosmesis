@@ -86,9 +86,9 @@ class AppShell extends StatefulComponent {
 
 <Callout type="info">
   No Morphos primitive to wrap here — Radix doesn't have a sidebar primitive either, so
-  shadcn/ui's own `Sidebar` is a composition of `Sheet` (mobile), buttons, and plain divs, and
-  this mirrors that. `SidebarState` is a small custom state container (not a Morphos class) —
-  it's fully self-contained, no dual-instantiation concerns.
+  `Sidebar` is a composition of `Sheet` (mobile), buttons, and plain divs. `SidebarState` is a
+  small custom state container (not a Morphos class) — it's fully self-contained, no
+  dual-instantiation concerns.
 </Callout>
 
 ## Notes
@@ -130,7 +130,7 @@ every part below.
 | Prop | Type | Default |
 |---|---|---|
 | `sidebar` | `SidebarState` | — required |
-| `children` | `Children` | `"☰"` |
+| `children` | `Children` | `<Icon name="PanelLeft" />` |
 
 ### SidebarMenuButton
 

@@ -7,12 +7,8 @@ import { cn } from "@/lib/utils";
 
 export type InputOTPProps = MorphosOtpFieldProps;
 
-/**
- * Morphos's `OtpField` renders every cell itself (it owns per-cell focus/paste/backspace logic
- * internally) rather than exposing an `InputOTPSlot`-style compound API — so unlike shadcn/ui's
- * version there's no separate slot/group/separator composition, just one styled component.
- * Target individual cells with the `data-index` attribute Morphos sets on each `<input>`.
- */
+// `OtpField` renders every cell itself, with no `InputOTPSlot`-style compound API — target
+// individual cells with the `data-index` attribute it sets on each `<input>`.
 @Component()
 export class InputOTP extends StatelessComponent<InputOTPProps> {
   render() {

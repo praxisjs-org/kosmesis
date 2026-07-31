@@ -9,12 +9,8 @@ import { KosmesisTokens } from "@/lib/kosmesis-theme";
 const t = tokenVars(KosmesisTokens);
 
 class ButtonGroupStyles extends Stylesheet {
-  // `& > *[class]` (not plain `& > *`): every real child here (`Button`, `ButtonGroupText`,
-  // `ButtonGroupSeparator`) sets its own `border-radius` at the same specificity as a bare
-  // descendant-class selector (one class each). Without the `[class]` attribute bump, this reset
-  // ties with the child's own rule and the winner is decided by `@Styled` injection order — which
-  // component class happens to be defined first in its file — instead of by which rule is actually
-  // meant to win. The attribute selector adds specificity so the group's reset always wins.
+  // `[class]` attribute bump needed so this reset always outranks each child's own border-radius
+  // rule, which is otherwise the same specificity.
   $root = this.css({ display: "flex", width: "fit-content", alignItems: "stretch" })
     .on("& > *[class]", { borderRadius: "0" })
     .on("& > *:first-child", { borderTopLeftRadius: "0.375rem", borderBottomLeftRadius: "0.375rem" })
@@ -59,7 +55,6 @@ export interface ButtonGroupProps {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. */
 @Component()
 export class ButtonGroup extends StatelessComponent<ButtonGroupProps> {
   @Styled(ButtonGroupStyles) $s!: ButtonGroupStyles;

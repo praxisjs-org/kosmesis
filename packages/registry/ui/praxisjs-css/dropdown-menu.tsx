@@ -59,13 +59,9 @@ class DropdownMenuStyles extends Stylesheet {
   $shortcut = this.css({ marginLeft: "auto", fontSize: "0.75rem", letterSpacing: "0.05em", color: t.mutedForeground });
 }
 
-/**
- * shadcn/ui's `DropdownMenu`/`DropdownMenuTrigger` map to Morphos's `Dropdown`/`DropdownTrigger`
- * (Morphos aliases the whole component `Menu` internally, but exports it as `Dropdown`). Both are
- * re-exported directly, renamed — the root is always instantiated directly
- * (`@State() dropdown = new DropdownMenu()`), never mounted via JSX, so wrapping it would break
- * `.isOpen`/`.toggle()`/`.closeDropdown()`.
- */
+// Morphos's `Dropdown`/`DropdownTrigger` are re-exported here renamed to `DropdownMenu`/
+// `DropdownMenuTrigger` — the root is instantiated directly, not mounted via JSX, so wrapping it
+// would break `.isOpen`/`.toggle()`/`.closeDropdown()`.
 export { Dropdown as DropdownMenu, DropdownTrigger as DropdownMenuTrigger };
 export type { DropdownProps as DropdownMenuProps, DropdownTriggerProps as DropdownMenuTriggerProps };
 

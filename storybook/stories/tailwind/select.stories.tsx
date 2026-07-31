@@ -23,8 +23,7 @@ const meta: Meta<Args> = {
         component:
           "Morphos's `Select` takes a flat `options` array and renders its own trigger + listbox " +
           "as one unit — there's no `SelectTrigger`/`SelectContent`/`SelectItem` compound API to " +
-          "wrap (unlike shadcn/ui's Radix-backed version). See `Combobox` for search-filtered " +
-          "lists, or `NativeSelect` for a plain `<select>`.",
+          "wrap. See `Combobox` for search-filtered lists, or `NativeSelect` for a plain `<select>`.",
       },
     },
   },

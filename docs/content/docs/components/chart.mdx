@@ -1,6 +1,6 @@
 ---
 title: Chart
-description: A lightweight SVG bar/line chart with the shadcn-style ChartConfig CSS-variable convention. No Recharts dependency.
+description: A lightweight SVG bar/line chart with a ChartConfig CSS-variable convention for per-series colors. No Recharts dependency.
 icon: ChartBar
 ---
 
@@ -58,9 +58,8 @@ const data = [
 ```
 
 <Callout type="info">
-  shadcn/ui's `Chart` wraps Recharts, a React-only dependency. Rather than pull in an equivalent
-  library, this ships a small SVG bar/line renderer plus the same `ChartConfig`
-  `--color-<key>`-per-series convention, so `ChartContainer`/`ChartTooltip`/`ChartLegend` stay
+  Rather than pull in a chart library, this ships a small SVG bar/line renderer plus a
+  `ChartConfig` `--color-<key>`-per-series convention, so `ChartContainer`/`ChartTooltip`/`ChartLegend` stay
   useful even if you bring your own SVG or another charting library instead of
   `SimpleBarChart`/`SimpleLineChart`.
 </Callout>

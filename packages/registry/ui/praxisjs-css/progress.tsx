@@ -32,11 +32,7 @@ class ProgressStyles extends Stylesheet {
 
 export type ProgressProps = MorphosProgressProps;
 
-/**
- * Morphos's `Progress` sets `role="progressbar"` and the `--progress` custom property on the
- * same root element (it does not render children), so the ARIA element doubles as the visual
- * fill here — wrapped in a track `div` for the background/rounding.
- */
+// Morphos's Progress sets `--progress` on its own root and renders no children, so it doubles as the fill; wrapped here just for the track.
 @Component()
 export class Progress extends StatelessComponent<ProgressProps> {
   @Styled(ProgressStyles) $s!: ProgressStyles;

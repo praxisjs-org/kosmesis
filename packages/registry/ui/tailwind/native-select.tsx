@@ -17,11 +17,8 @@ export interface NativeSelectProps {
   children?: Children;
 }
 
-/**
- * A plain, styled native `<select>` — purely presentational, no Morphos wrap. Prefer `Select`
- * (which wraps Morphos's custom listbox) for a fully styleable dropdown; reach for this when you
- * specifically want native OS select behavior (e.g. on mobile, or for very long option lists).
- */
+// Prefer `Select` (Morphos's custom listbox) for a fully styleable dropdown; reach for this
+// when you specifically want native OS select behavior (mobile, very long option lists).
 @Component()
 export class NativeSelect extends StatelessComponent<NativeSelectProps> {
   render() {

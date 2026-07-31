@@ -8,7 +8,6 @@ export interface SkeletonProps {
   id?: string;
 }
 
-/** Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. */
 @Component()
 export class Skeleton extends StatelessComponent<SkeletonProps> {
   render() {

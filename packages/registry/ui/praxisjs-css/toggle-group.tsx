@@ -10,11 +10,7 @@ class ToggleGroupRootStyles extends Stylesheet {
   $root = this.css({ display: "flex", width: "fit-content", alignItems: "center", gap: "0.25rem", borderRadius: "0.375rem" });
 }
 
-/**
- * Extends (not wraps) Morphos's `ToggleGroup` so `new ToggleGroup({ type: "single" })` still
- * yields a real instance with `.isPressed()`/`.toggle()` — what `ToggleGroupItem` needs via its
- * `group` prop.
- */
+/** Subclasses Morphos's `ToggleGroup` so instances still expose `.isPressed()`/`.toggle()`. */
 @Component()
 export class ToggleGroup extends MorphosToggleGroup {
   @Styled(ToggleGroupRootStyles) $s!: ToggleGroupRootStyles;
@@ -38,11 +34,7 @@ export class ToggleGroup extends MorphosToggleGroup {
   }
 }
 
-/**
- * Unlike shadcn/ui's React version, `variant`/`size` aren't inherited from the group via context
- * (Morphos/PraxisJS compound components pass explicit props instead) — pass the same `variant`
- * and `size` to `ToggleGroup` and every `ToggleGroupItem` to keep them visually consistent.
- */
+/** `variant`/`size` aren't inherited from the group via context — pass the same values to `ToggleGroup` and every item. */
 export interface ToggleGroupItemProps extends MorphosToggleGroupItemProps {
   variant?: ToggleVariant;
   size?: ToggleSize;

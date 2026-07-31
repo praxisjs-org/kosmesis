@@ -7,12 +7,7 @@ import { cn } from "@/lib/utils";
 
 export type SelectProps = MorphosSelectProps;
 
-/**
- * Morphos's `Select` takes a flat `options` array and renders its own trigger + listbox as one
- * unit — there's no `SelectTrigger`/`SelectContent`/`SelectItem` compound API to wrap (unlike
- * shadcn/ui's Radix-backed version). If you need children-based composition, see `Combobox` for
- * search-filtered lists, or `NativeSelect` for a plain `<select>`.
- */
+/** Morphos's `Select` takes a flat `options` array and renders its own trigger + listbox as one unit — no `SelectTrigger`/`SelectContent`/`SelectItem` compound API to wrap. */
 @Component()
 export class Select extends StatelessComponent<SelectProps> {
   render() {

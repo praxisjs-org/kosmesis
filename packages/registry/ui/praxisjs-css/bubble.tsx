@@ -24,7 +24,6 @@ export interface BubbleProps {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent. A single chat message bubble, used by `Message`. */
 @Component()
 export class Bubble extends StatelessComponent<BubbleProps> {
   @Styled(BubbleStyles) $s!: BubbleStyles;

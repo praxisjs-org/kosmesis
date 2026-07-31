@@ -11,7 +11,6 @@ export interface TypographyProps {
   children?: Children;
 }
 
-/** Purely presentational text primitives — no Morphos equivalent, same as upstream shadcn/ui. */
 @Component()
 export class TypographyH1 extends StatelessComponent<TypographyProps> {
   render() {

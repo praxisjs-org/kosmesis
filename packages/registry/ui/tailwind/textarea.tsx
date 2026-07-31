@@ -18,7 +18,6 @@ export interface TextareaProps {
   onChange?: (value: string, event: Event) => void;
 }
 
-/** Purely presentational — no Morphos equivalent (Radix has no textarea primitive either). */
 @Component()
 export class Textarea extends StatefulComponent {
   @Prop() value?: string;

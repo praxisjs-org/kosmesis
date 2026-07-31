@@ -85,7 +85,7 @@ class NoCloseButtonDemo extends StatefulComponent {
     return (
       <>
         <DialogTrigger dialog={this.dialog} class={buttonVariants({ variant: "outline" })}>
-          Open (no ✕ button)
+          Open (no close button)
         </DialogTrigger>
         <DialogContent dialog={this.dialog} showCloseButton={false}>
           <DialogHeader>

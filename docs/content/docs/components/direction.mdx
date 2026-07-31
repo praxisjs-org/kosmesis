@@ -44,8 +44,7 @@ import { DirectionProvider } from "@/components/ui/direction";
 ```
 
 <Callout type="info">
-  shadcn/ui's `DirectionProvider` relies on React Context so every descendant primitive reads the
-  ambient direction. PraxisJS/Morphos have no context system, so this is a plain element setting
+  PraxisJS/Morphos have no context system, so `DirectionProvider` is a plain element setting
   the native `dir` attribute — the browser (and Morphos's own CSS-selector-driven styling) already
   respects it via `:dir(rtl)`/`[dir="rtl"]` for free. If a component's *behavior* (not just layout)
   needs to flip per-direction, pass `orientation`/`side` props to that component directly.

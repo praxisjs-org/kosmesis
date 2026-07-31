@@ -5,11 +5,8 @@ import { Avatar as MorphosAvatar, AvatarFallback as MorphosAvatarFallback, Avata
 
 import { cn } from "@/lib/utils";
 
-/**
- * Extends (not wraps) Morphos's `Avatar` so `new Avatar()` still yields a real instance with
- * `.setImageStatus()`/`.imageLoaded`/`.imageError` — what `AvatarImage`/`AvatarFallback` need via
- * their `avatar` prop.
- */
+// Extends (not wraps) Morphos's Avatar so `.setImageStatus()`/`.imageLoaded`/`.imageError` stay
+// available for AvatarImage/AvatarFallback, which read them via their `avatar` prop.
 @Component()
 export class Avatar extends MorphosAvatar {
   render() {

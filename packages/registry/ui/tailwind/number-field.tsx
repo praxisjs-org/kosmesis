@@ -7,11 +7,8 @@ import { cn } from "@/lib/utils";
 
 export type NumberFieldProps = MorphosNumberFieldProps;
 
-/**
- * Morphos's `NumberField` is a single self-contained primitive (decrement button, native
- * `<input type="text" inputmode="decimal">`, increment button) — no compound Trigger/Content
- * parts, so (like `Slider`) it's composed here rather than subclassed.
- */
+// A single self-contained primitive, no compound Trigger/Content parts, so it's composed here
+// rather than subclassed.
 @Component()
 export class NumberField extends StatelessComponent<NumberFieldProps> {
   render() {

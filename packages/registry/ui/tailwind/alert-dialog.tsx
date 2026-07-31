@@ -21,11 +21,7 @@ import { cn } from "@/lib/utils";
 
 
 
-/**
- * `AlertDialog` and `AlertDialogTrigger` are re-exported directly — see the note in `dialog.tsx`
- * for why: `new AlertDialog()` must produce a real instance with `.isOpen`/`.openDialog()`, which
- * a wrapping component class would not have.
- */
+// Re-exported directly (not wrapped) so `new AlertDialog()` keeps `.isOpen`/`.openDialog()`.
 export {
   AlertDialog,
   AlertDialogTrigger,

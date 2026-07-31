@@ -31,11 +31,7 @@ class SliderStyles extends Stylesheet {
 
 export type SliderProps = MorphosSliderProps;
 
-/**
- * Morphos's `Slider` root sets `--slider-value` (a percentage) and wraps a native
- * `<input type="range">`. The track/range/thumb visuals below are pure CSS reading that
- * custom property — no extra JS.
- */
+/** Morphos's `Slider` root sets `--slider-value` (a percentage); the track/range/thumb visuals are pure CSS reading that custom property. */
 @Component()
 export class Slider extends StatelessComponent<SliderProps> {
   @Styled(SliderStyles) $s!: SliderStyles;

@@ -11,9 +11,9 @@ const meta: Meta<Args> = {
     docs: {
       description: {
         component:
-          "PraxisJS/Morphos have no context system, so unlike shadcn/ui's React-context-based " +
-          "`DirectionProvider`, this is a plain element setting the native `dir` attribute — every " +
-          "Morphos component's CSS-selector-driven styling already respects `:dir(rtl)` for free.",
+          "PraxisJS/Morphos have no context system, so `DirectionProvider` is a plain element " +
+          "setting the native `dir` attribute — every Morphos component's CSS-selector-driven " +
+          "styling already respects `:dir(rtl)` for free.",
       },
     },
   },

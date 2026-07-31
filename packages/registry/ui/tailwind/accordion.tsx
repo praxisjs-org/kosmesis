@@ -16,13 +16,8 @@ import { cn } from "@/lib/utils";
 
 export type AccordionProps = MorphosAccordionProps;
 
-/**
- * Extends (not wraps) Morphos's `Accordion` so `new Accordion({ type: "single" })` still yields a
- * real instance with `.isOpen()`/`.toggle()` — the pattern every `AccordionItem`/`Trigger`/
- * `Content` needs via their `accordion` prop. Only `render()` is overridden, to add default
- * classes; if you also mount `<Accordion>` via JSX (optional — Morphos primitives are usually
- * instantiated directly and never mounted), this is what produces the container element.
- */
+// Extends (not wraps) Morphos's Accordion so `.isOpen()`/`.toggle()` stay available for
+// AccordionItem/Trigger/Content, which read them via their `accordion` prop.
 @Component()
 export class Accordion extends MorphosAccordion {
   render() {

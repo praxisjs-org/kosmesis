@@ -111,9 +111,9 @@ implementation. This is the central design fact of the whole registry:
 | Data-attribute / arbitrary selectors | `data-[state=open]:` etc. | `.on("&[data-state]", {...})` — no dedicated data-attribute helper exists on `CSSBuilder` |
 | Runtime dependency | `clsx`, `tailwind-merge`, `tailwindcss`, `@tailwindcss/vite`, `tw-animate-css` | `@praxisjs/css` only |
 
-A `components.json` only ever has one `styleSystem`, and a project never mixes the two — same as
-shadcn/ui never mixing "new-york" and "default" in one project. `kosmesis init` prompts for the
-choice once and writes it to `components.json`; every later `kosmesis add` reads it from there.
+A `components.json` only ever has one `styleSystem`, and a project never mixes the two.
+`kosmesis init` prompts for the choice once and writes it to `components.json`; every later
+`kosmesis add` reads it from there.
 
 ### Wrapping vs. re-exporting a Morphos primitive
 
@@ -244,6 +244,30 @@ Pre-commit hook runs `eslint --fix` on staged `packages/**/*.{ts,tsx}`.
 
 ---
 
+## Comments
+
+**Non-negotiable, applies to every new or edited file under `packages/registry/ui/**`:** default
+to zero comments. Only add one when it captures a genuinely non-obvious "why" — a hidden
+constraint, a workaround for a specific bug, or behavior that would surprise a reader — never a
+restatement of what the adjacent code already makes obvious. Concretely:
+
+- Don't re-explain patterns already documented once, centrally, in this file (e.g. the
+  instantiate-directly/two-instance pattern under "Wrapping vs. re-exporting a Morphos primitive")
+  — a per-component comment repeating it is redundant, not helpful.
+- Don't describe what a prop or value is when the surrounding code already makes it obvious (e.g.
+  a `position` field used as `` `${position}%` `` a few lines down doesn't need a comment saying
+  it's a percentage).
+- Do keep a comment when the component-specific behavior genuinely isn't derivable from reading
+  the code around it (e.g. "needs an explicit height from the consumer" on an absolutely-positioned
+  layout, or "gets no lifecycle callbacks on its own" on a state class with no JSX mount point).
+- One or two short comments per file is normal; more than that is a signal the code needs
+  restructuring, not more prose.
+
+This is the same bar every existing registry component was already swept to — new components must
+match it before being considered done, not as a follow-up cleanup pass.
+
+---
+
 ## Documentation
 
 Docs source: `docs/content/docs/`. Built with Fumadocs + Next.js. Structure:
@@ -280,9 +304,19 @@ pnpm version-packages  # bump versions
 pnpm release           # publish to npm
 ```
 
-Bump types: **patch** (bugfixes, internal refactors), **minor** (new components, new registry
-entries, backwards-compatible CLI additions), **major** (breaking `components.json` schema or CLI
-behavior changes).
+Only `kosmesis` (the CLI) is published to npm — `@kosmesis/registry`, `@kosmesis/docs`, and
+`kosmesis-stories` are private/workspace-only (see "Package map" above). A changeset gates that npm
+release, so it only makes sense when the CLI itself changes.
+
+**Adding, editing, or removing a registry component (in either style system), its docs page, or its
+Storybook stories does NOT need a changeset** — none of that ships to npm. Only add a changeset when
+a change touches `packages/cli` (a command, a template, a util the CLI bundles) or the registry
+schema/build tooling the CLI depends on at runtime (e.g. `packages/registry/scripts/build-registry.mjs`
+via `kosmesis registry build`).
+
+When a changeset is warranted, bump types: **patch** (bugfixes, internal refactors), **minor**
+(backwards-compatible CLI additions), **major** (breaking `components.json` schema or CLI behavior
+changes).
 
 ---
 

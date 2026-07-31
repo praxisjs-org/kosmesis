@@ -13,22 +13,10 @@ import { KosmesisTokens } from "@/lib/kosmesis-theme";
 
 const t = tokenVars(KosmesisTokens);
 
-/**
- * `MorphosScrollAreaScrollbar` applies no positioning of its own, so the track is `absolute` here
- * — otherwise it renders as a normal in-flow sibling below the viewport instead of overlaying it.
- * `MorphosScrollAreaThumb` likewise applies no sizing of its own: it exposes size/position as the
- * `--morphos-thumb-size`/`--morphos-thumb-offset` custom properties (unlike Radix's real thumb,
- * which sets `width`/`transform` inline via its own JS), so the thumb has to consume them
- * explicitly via `position: absolute`.
- */
 class ScrollAreaStyles extends Stylesheet {
   $root = this.css({ position: "relative", overflow: "hidden" });
 
-  // `scrollbarWidth: "none"` / `&::-webkit-scrollbar`: `MorphosScrollAreaViewport` sets plain
-  // `overflow: auto` with no scrollbar-hiding of its own (unlike Radix's real Viewport, which
-  // hides the native scrollbar by default since it renders its own Thumb/Scrollbar UI) — without
-  // this, the browser's native scrollbar renders right on top of the custom one below, in the same
-  // space, looking like a corrupted double scrollbar.
+  // MorphosScrollAreaViewport doesn't hide the native scrollbar; without this it renders on top of the custom one below.
   $viewport = this.css({
     width: "100%",
     height: "100%",
@@ -82,12 +70,7 @@ class ScrollAreaStyles extends Stylesheet {
   });
 }
 
-/**
- * Extends (not wraps) Morphos's `ScrollArea` so `this` can be passed directly as the `scrollArea`
- * prop `ScrollAreaViewport`/`ScrollAreaScrollbar`/`ScrollAreaThumb` all require — composing all
- * four parts into the single-component surface shadcn/ui's `ScrollArea` has, since consumers of
- * the raw Morphos primitive normally assemble those parts by hand (see its docs page).
- */
+/** Extends (not wraps) Morphos's `ScrollArea` so `this` can be passed directly as the `scrollArea` prop the viewport/scrollbar/thumb parts require. */
 @Component()
 export class ScrollArea extends MorphosScrollArea {
   @Styled(ScrollAreaStyles) $s!: ScrollAreaStyles;
@@ -107,12 +90,7 @@ export class ScrollArea extends MorphosScrollArea {
 
 export type ScrollBarProps = MorphosScrollAreaScrollbarProps;
 
-/**
- * Morphos's `ScrollArea` doesn't auto-hide either scrollbar on its own — only a combined
- * `data-scrollable` (either axis) is exposed on the root, not per axis — so each bar hides itself
- * here based on its own axis's `canScrollX`/`canScrollY`, or an always-rendered, always-visible
- * horizontal track would sit on top of content even when nothing overflows horizontally.
- */
+/** Morphos exposes only a combined `data-scrollable`, not per-axis — each bar hides itself via its own `canScrollX`/`canScrollY`. */
 @Component()
 export class ScrollBar extends StatelessComponent<ScrollBarProps> {
   @Styled(ScrollAreaStyles) $s!: ScrollAreaStyles;

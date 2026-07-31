@@ -64,11 +64,7 @@ class AlertDialogStyles extends Stylesheet {
   $description = this.css({ fontSize: "0.875rem", color: t.mutedForeground });
 }
 
-/**
- * `AlertDialog` and `AlertDialogTrigger` are re-exported directly — see the note in `dialog.tsx`
- * for why: `new AlertDialog()` must produce a real instance with `.isOpen`/`.openDialog()`, which
- * a wrapping component class would not have.
- */
+// Re-exported directly (not wrapped) so `new AlertDialog()` keeps `.isOpen`/`.openDialog()`.
 export { AlertDialog, AlertDialogTrigger, type AlertDialogProps, type AlertDialogTriggerProps } from "@morphos/overlays";
 
 export type AlertDialogContentProps = MorphosAlertDialogContentProps;

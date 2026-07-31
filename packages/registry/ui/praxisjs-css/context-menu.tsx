@@ -50,12 +50,7 @@ class ContextMenuStyles extends Stylesheet {
   $separator = this.css({ margin: "0.25rem -0.25rem", height: "1px", backgroundColor: t.border });
 }
 
-/**
- * `ContextMenu` and `ContextMenuTrigger` are re-exported directly — the root is always
- * instantiated directly (`@State() contextMenu = new ContextMenu()`), never mounted via JSX, so
- * wrapping it would break `.isOpen`/`.open()`/`.close()`. `ContextMenuTrigger` adds no default
- * styling of its own (it's just the right-click target), so it's re-exported as-is too.
- */
+// Re-exported directly: the root is instantiated directly, not mounted via JSX, so wrapping it would break `.isOpen`/`.open()`/`.close()`.
 export { ContextMenu, ContextMenuTrigger, type ContextMenuProps, type ContextMenuTriggerProps } from "@morphos/overlays";
 
 export type ContextMenuContentProps = MorphosContextMenuContentProps;

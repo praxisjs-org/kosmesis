@@ -12,7 +12,6 @@ export interface ButtonGroupProps {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. */
 @Component()
 export class ButtonGroup extends StatelessComponent<ButtonGroupProps> {
   render() {

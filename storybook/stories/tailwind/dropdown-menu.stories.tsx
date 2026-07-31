@@ -20,10 +20,10 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "shadcn/ui's `DropdownMenu`/`DropdownMenuTrigger` map to Morphos's `Dropdown`/" +
-          "`DropdownTrigger` (Morphos aliases the whole component `Menu` internally, but exports it " +
-          "as `Dropdown`). Both are re-exported directly, renamed — the root is always instantiated " +
-          "directly (`@State() dropdown = new DropdownMenu()`), never mounted via JSX.",
+          "`DropdownMenu`/`DropdownMenuTrigger` are Morphos's `Dropdown`/`DropdownTrigger` " +
+          "(Morphos aliases the whole component `Menu` internally, but exports it as `Dropdown`), " +
+          "re-exported directly and renamed — the root is always instantiated directly " +
+          "(`@State() dropdown = new DropdownMenu()`), never mounted via JSX.",
       },
     },
   },

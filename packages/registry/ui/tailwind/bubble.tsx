@@ -24,7 +24,6 @@ export interface BubbleProps extends VariantProps<typeof bubbleVariants> {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent. A single chat message bubble, used by `Message`. */
 @Component()
 export class Bubble extends StatelessComponent<BubbleProps> {
   render() {

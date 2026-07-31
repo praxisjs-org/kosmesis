@@ -7,12 +7,7 @@ import { ContextMenuContent as MorphosContextMenuContent, ContextMenuItem as Mor
 
 import { cn } from "@/lib/utils";
 
-/**
- * `ContextMenu` and `ContextMenuTrigger` are re-exported directly — the root is always
- * instantiated directly (`@State() contextMenu = new ContextMenu()`), never mounted via JSX, so
- * wrapping it would break `.isOpen`/`.open()`/`.close()`. `ContextMenuTrigger` adds no default
- * styling of its own (it's just the right-click target), so it's re-exported as-is too.
- */
+// Re-exported directly: the root is instantiated directly, not mounted via JSX, so wrapping it would break `.isOpen`/`.open()`/`.close()`.
 export {
   ContextMenu,
   ContextMenuTrigger,

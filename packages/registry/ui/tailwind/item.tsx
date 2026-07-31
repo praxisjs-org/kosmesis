@@ -37,7 +37,6 @@ export interface ItemProps extends VariantProps<typeof itemVariants> {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. */
 @Component()
 export class Item extends StatelessComponent<ItemProps> {
   render() {

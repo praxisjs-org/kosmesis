@@ -3,25 +3,26 @@ import { Component } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
 import {
+  Drawer,
   DrawerClose as MorphosDrawerClose,
   DrawerContent as MorphosDrawerContent,
   DrawerDescription as MorphosDrawerDescription,
   DrawerTitle as MorphosDrawerTitle,
+  DrawerTrigger,
   type DrawerCloseProps as MorphosDrawerCloseProps,
   type DrawerContentProps as MorphosDrawerContentProps,
   type DrawerDescriptionProps as MorphosDrawerDescriptionProps,
-  type DrawerTitleProps as MorphosDrawerTitleProps
+  type DrawerTitleProps as MorphosDrawerTitleProps,
+  type DrawerProps,
+  type DrawerTriggerProps
 } from "@morphos/overlays";
 
 import { cn } from "@/lib/utils";
 
 
-/**
- * `Drawer` and `DrawerTrigger` are re-exported directly — see the note in `dialog.tsx` for why:
- * `new Drawer()` must produce a real instance with `.isOpen`/`.openDrawer()`, which a wrapping
- * component class would not have.
- */
-export { Drawer, DrawerTrigger, type DrawerProps, type DrawerTriggerProps } from "@morphos/overlays";
+// Re-exported directly, same reason as `Dialog` in `dialog.tsx`: `new Drawer()` must keep
+// `.isOpen`/`.openDrawer()`, which a wrapping component class would not have.
+export { Drawer, DrawerTrigger, type DrawerProps, type DrawerTriggerProps };
 
 export type DrawerContentProps = MorphosDrawerContentProps;
 

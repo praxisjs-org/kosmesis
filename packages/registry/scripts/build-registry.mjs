@@ -1,7 +1,7 @@
 // Reads registry.<styleSystem>.json + the component source files each one references, and emits
 // one self-contained JSON file per component into <outDir>/<styleSystem>/<name>.json — the shape
-// the `kosmesis` CLI's `add` command fetches. Mirrors shadcn/ui's own `registry:build` script,
-// split per style system since Tailwind and @praxisjs/css components have distinct source.
+// the `kosmesis` CLI's `add` command fetches. Split per style system since Tailwind and
+// @praxisjs/css components have distinct source.
 //
 // Output directory defaults to ./dist/r, but callers (e.g. the docs app, which embeds this into
 // its static export) pass an explicit path via the first CLI arg so the built JSON lands wherever

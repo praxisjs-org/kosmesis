@@ -16,19 +16,8 @@ export interface DatePickerProps {
   class?: string;
 }
 
-/**
- * A composition, not a new primitive: `Popover` (Morphos) + `Calendar` (built from scratch above).
- * Instantiate both state objects once, same pattern as everything else:
- *
- * ```tsx
- * @State() popover = new Popover()
- * @State() calendar = new CalendarState({ onSelect: () => this.popover.closePopover() })
- * ```
- *
- * Morphos's `PopoverTrigger` always renders its own `<button>` (there's no `asChild` merge like
- * Radix's) — so the trigger is styled directly with `buttonVariants()` here instead of nesting a
- * separate `Button` inside it, which would produce invalid nested `<button>` elements.
- */
+// `PopoverTrigger` always renders its own `<button>` (no `asChild` merge) — style it directly
+// instead of nesting a `Button` inside it, which would produce invalid nested `<button>` elements.
 @Component()
 export class DatePicker extends StatelessComponent<DatePickerProps> {
   render() {

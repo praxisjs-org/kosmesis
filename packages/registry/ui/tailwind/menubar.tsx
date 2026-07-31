@@ -15,11 +15,8 @@ import {
 
 import { cn } from "@/lib/utils";
 
-/**
- * Extends (not wraps) Morphos's `Menubar` so `new Menubar({ "aria-label": "..." })` still yields
- * a real instance with `.activeMenu`/`.toggle()` — what `MenubarMenu` needs via its `menubar`
- * prop.
- */
+// Extends (not wraps) Morphos's `Menubar` so instances keep `.activeMenu`/`.toggle()`, which
+// `MenubarMenu` needs via its `menubar` prop.
 @Component()
 export class Menubar extends MorphosMenubar {
   render() {
@@ -36,12 +33,8 @@ export class Menubar extends MorphosMenubar {
   }
 }
 
-/**
- * `MenubarMenu`'s `render()` is a no-op Fragment — re-exported directly. Each menu needs its own
- * instance (`@State() fileMenu = new MenubarMenu({ menubar: this.menubar, value: "file" })`),
- * shared between the `<MenubarMenu>` mounted in the tree and the `MenubarTrigger`/`MenubarContent`
- * that reference it via their `menu` prop.
- */
+// Each menu needs its own instance, shared between the mounted `<MenubarMenu>` and the
+// `MenubarTrigger`/`MenubarContent` that reference it via their `menu` prop.
 export { MenubarMenu, type MenubarMenuProps } from "@morphos/layout";
 
 export type MenubarTriggerProps = MorphosMenubarTriggerProps;

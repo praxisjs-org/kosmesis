@@ -58,7 +58,6 @@ export interface ItemProps {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. */
 @Component()
 export class Item extends StatelessComponent<ItemProps> {
   @Styled(ItemStyles) $s!: ItemStyles;

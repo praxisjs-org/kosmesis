@@ -17,12 +17,11 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Purely presentational — no Morphos equivalent. shadcn/ui's `Chart` wraps Recharts (a " +
-          "React-only dependency); rather than pull in an equivalent library, this ships a small " +
-          "SVG bar/line renderer (`SimpleBarChart`/`SimpleLineChart`) plus the same " +
-          "`ChartContainer`/`ChartConfig` CSS-variable convention, so consumers bringing their own " +
-          "SVG (or another charting lib) can still reuse `ChartContainer`/`ChartLegend` for " +
-          "consistent theming.",
+          "Purely presentational — no Morphos equivalent. Rather than pull in a charting library " +
+          "(e.g. Recharts), this ships a small SVG bar/line renderer " +
+          "(`SimpleBarChart`/`SimpleLineChart`) plus a `ChartContainer`/`ChartConfig` CSS-variable " +
+          "convention, so consumers bringing their own SVG (or another charting lib) can still " +
+          "reuse `ChartContainer`/`ChartLegend` for consistent theming.",
       },
     },
   },

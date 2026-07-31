@@ -18,13 +18,8 @@ export interface ChartContainerProps {
   children?: Children;
 }
 
-/**
- * Purely presentational — no Morphos equivalent. shadcn/ui's `Chart` wraps Recharts (a React-only
- * dependency); rather than pull in an equivalent library, this ships a small SVG bar/line
- * renderer (`BarChart`/`LineChart` below) plus the same `ChartContainer`/`ChartConfig`
- * CSS-variable convention, so consumers who bring their own SVG (or another charting lib) can
- * still use `ChartContainer`/`ChartTooltip`/`ChartLegend` for consistent theming.
- */
+// Ships a small SVG bar/line renderer instead of a React-only charting library — consumers who
+// bring their own SVG can still use ChartContainer/ChartTooltip/ChartLegend for theming.
 @Component()
 export class ChartContainer extends StatelessComponent<ChartContainerProps> {
   render() {
@@ -111,7 +106,6 @@ export interface SimpleBarChartProps {
   class?: string;
 }
 
-/** Minimal grouped-bar SVG chart. Bring your own for anything more advanced. */
 @Component()
 export class SimpleBarChart extends StatelessComponent<SimpleBarChartProps> {
   render() {
@@ -163,7 +157,6 @@ export interface SimpleLineChartProps {
   class?: string;
 }
 
-/** Minimal multi-series line SVG chart. Bring your own for anything more advanced. */
 @Component()
 export class SimpleLineChart extends StatelessComponent<SimpleLineChartProps> {
   render() {

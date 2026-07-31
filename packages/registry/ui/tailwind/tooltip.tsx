@@ -5,14 +5,7 @@ import { TooltipContent as MorphosTooltipContent, type TooltipContentProps as Mo
 
 import { cn } from "@/lib/utils";
 
-/**
- * `Tooltip` and `TooltipTrigger` are re-exported directly from `@morphos/overlays`. `Tooltip`'s
- * `render()` is a no-op Fragment and it's always instantiated directly
- * (`@State() tooltip = new Tooltip()`) rather than mounted via JSX, so wrapping it in a new
- * component class here would break `.isOpen`/`.show()`/`.hide()`. `TooltipTrigger` adds no
- * default styling of its own (it's just an accessible hover/focus target), so it's re-exported
- * as-is too.
- */
+/** Re-exported as-is: `Tooltip`'s `render()` is a no-op Fragment, always instantiated directly — wrapping it would break `.isOpen()`/`.show()`/`.hide()`. */
 export {
   Tooltip,
   TooltipTrigger,

@@ -32,11 +32,10 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Purely presentational + a small state container — no Morphos equivalent. Radix doesn't " +
-          "have a sidebar primitive either; shadcn/ui's own `Sidebar` is a composition of `Sheet` " +
-          "(mobile), `Button`, `Separator`, and plain divs, which is exactly what this does. " +
-          "`SidebarState` is a pure state container (`render()` returns `null`), instantiated once " +
-          "and passed to `SidebarProvider`/`Sidebar`/`SidebarTrigger` alike.",
+          "Purely presentational + a small state container — no Morphos equivalent. A composition " +
+          "of `Sheet` (mobile), `Button`, `Separator`, and plain divs. `SidebarState` is a pure " +
+          "state container (`render()` returns `null`), instantiated once and passed to " +
+          "`SidebarProvider`/`Sidebar`/`SidebarTrigger` alike.",
       },
     },
   },

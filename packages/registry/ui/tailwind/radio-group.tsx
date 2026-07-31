@@ -5,11 +5,7 @@ import { Radio as MorphosRadio, RadioGroup as MorphosRadioGroup, type RadioProps
 
 import { cn } from "@/lib/utils";
 
-/**
- * Extends (not wraps) Morphos's `RadioGroup` so `new RadioGroup({ defaultValue: "a" })` still
- * yields a real instance with `.selectedValue`/`.select()` — what `RadioGroupItem` needs via its
- * `group` prop.
- */
+// Extends (not wraps) RadioGroup: `new RadioGroup(...)` must still yield an instance with .selectedValue/.select().
 @Component()
 export class RadioGroup extends MorphosRadioGroup {
   render() {
@@ -31,11 +27,7 @@ export class RadioGroup extends MorphosRadioGroup {
 
 export type RadioGroupItemProps = MorphosRadioProps;
 
-/**
- * Morphos's `Radio` renders a `<label>` wrapping the native input plus `children` — there is no
- * separate "indicator" part, so the checked dot is rendered here as an `::after` pseudo-element
- * on that same label, driven by the `data-checked` attribute Morphos already sets on it.
- */
+// No separate indicator part: the checked dot is an ::after pseudo-element on the label, driven by data-checked.
 @Component()
 export class RadioGroupItem extends StatelessComponent<RadioGroupItemProps> {
   render() {

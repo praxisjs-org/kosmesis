@@ -49,7 +49,6 @@ export interface TableSlotProps {
   children?: Children;
 }
 
-/** Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. */
 @Component()
 export class Table extends StatelessComponent<TableSlotProps> {
   @Styled(TableStyles) $s!: TableStyles;

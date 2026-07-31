@@ -13,10 +13,7 @@ class LabelStyles extends Stylesheet {
     fontWeight: 500,
     lineHeight: 1,
   })
-    // Ancestor-prefixed nested rule: applies when a preceding sibling with the peer marker is
-    // `:disabled`, or an ancestor carries `[data-disabled]` — the `@praxisjs/css` equivalent of
-    // Tailwind's `peer-disabled:`/`group-data-disabled:` variants, since CSS nesting allows `&`
-    // anywhere in a compound selector, not just as a prefix.
+    // `&` can appear anywhere in the compound selector, not just as a prefix.
     .on("[data-kosmesis-peer]:disabled ~ &", { cursor: "not-allowed", opacity: 0.5 })
     .on("[data-disabled] &", { pointerEvents: "none", opacity: 0.5 });
 }
@@ -28,11 +25,7 @@ export interface LabelProps {
   children?: Children;
 }
 
-/**
- * Purely presentational — no Morphos equivalent, same as upstream shadcn/ui. Pairs naturally
- * with Morphos's `Field` (pass `field.fieldId` as `htmlFor`) but isn't coupled to it, so it also
- * works as a plain standalone label.
- */
+// Pairs with Morphos's `Field` (`field.fieldId` as `htmlFor`) but works standalone too.
 @Component()
 export class Label extends StatelessComponent<LabelProps> {
   @Styled(LabelStyles) $s!: LabelStyles;

@@ -37,8 +37,8 @@ type Story = StoryObj;
 @Component()
 class DefaultDemo extends StatefulComponent {
   // Morphos's `Drawer` defaults `side` to `"right"`, not `"bottom"` — this story is named
-  // "Default (bottom)" (matching upstream shadcn/ui's vaul-based default), so it must pass the
-  // side explicitly rather than relying on the constructor default.
+  // "Default (bottom)", so it must pass the side explicitly rather than relying on the
+  // constructor default.
   @State() drawer = new Drawer({ side: "bottom" });
 
   onBeforeMount() {
