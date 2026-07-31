@@ -1,6 +1,6 @@
 import { StatefulComponent } from "@praxisjs/core";
 import { cx, Stylesheet, Styled } from "@praxisjs/css";
-import { Component, Prop, Ref, State, type Ref as RefType } from "@praxisjs/decorators";
+import { Component, OnCommand, Prop, Ref, State, Watch, type Command, type Ref as RefType } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
 const DIST_SM = 20;
@@ -135,6 +135,10 @@ export interface MotionProps {
   delay?: number;
   once?: boolean;
   inView?: boolean;
+  /** Ping-pongs between `from`/`to` forever instead of settling once — ignores `once`/`inView`. Reactive: toggling it after mount starts/stops the loop. */
+  loop?: boolean;
+  /** A `@Command()` field from the parent — calling `trigger()` replays the animation on demand. */
+  trigger?: Command;
   class?: string;
   id?: string;
   children?: Children;
@@ -153,6 +157,8 @@ export class Motion extends StatefulComponent {
   @Prop() delay = 0;
   @Prop() once = true;
   @Prop() inView = true;
+  @Prop() loop = false;
+  @Prop() trigger?: Command;
   @Prop() class?: string;
   @Prop() id?: string;
   @Prop() children?: Children;
@@ -161,10 +167,15 @@ export class Motion extends StatefulComponent {
   elRef!: RefType<HTMLDivElement>;
 
   @State() _active = false;
+  @State() _replaying = false;
 
   private _observer?: IntersectionObserver;
+  private _loopTimer?: ReturnType<typeof setInterval>;
 
   onMount(): void {
+    this._syncLoop();
+    if (this.loop) return;
+
     if (!this.inView) {
       requestAnimationFrame(() => {
         this._active = true;
@@ -190,6 +201,40 @@ export class Motion extends StatefulComponent {
 
   onUnmount(): void {
     this._observer?.disconnect();
+    clearInterval(this._loopTimer);
+  }
+
+  /** Runs once from `onMount` for the initial value, then again on every later `loop` change. */
+  @Watch("loop")
+  private _syncLoop(): void {
+    clearInterval(this._loopTimer);
+    if (!this.loop) {
+      this._active = true;
+      return;
+    }
+    requestAnimationFrame(() => {
+      this._active = true;
+    });
+    this._loopTimer = setInterval(() => {
+      this._active = !this._active;
+    }, this.duration + this.delay);
+  }
+
+  @OnCommand("trigger")
+  private _replay(): void {
+    // A transition is declared on the same style object as the target values, so merely
+    // flipping `_active` false-then-true isn't enough: without disabling the transition first,
+    // the "false" write starts a `duration`-long transition toward `from`, which the "true"
+    // write then interrupts moments later — a barely visible blip, not a replay. Disable the
+    // transition, snap to `from`, let that paint, then re-enable it and animate to `to`.
+    this._replaying = true;
+    this._active = false;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this._replaying = false;
+        this._active = true;
+      });
+    });
   }
 
   private get _resolved(): { from: MotionStyle; to: MotionStyle; easing: string } {
@@ -211,7 +256,9 @@ export class Motion extends StatefulComponent {
         style={() => {
           const { from, to, easing } = this._resolved;
           const state = this._active ? to : from;
-          const transition = `opacity ${String(this.duration)}ms ${easing} ${String(this.delay)}ms, transform ${String(this.duration)}ms ${easing} ${String(this.delay)}ms, filter ${String(this.duration)}ms ${easing} ${String(this.delay)}ms`;
+          const transition = this._replaying
+            ? "none"
+            : `opacity ${String(this.duration)}ms ${easing} ${String(this.delay)}ms, transform ${String(this.duration)}ms ${easing} ${String(this.delay)}ms, filter ${String(this.duration)}ms ${easing} ${String(this.delay)}ms`;
           return {
             opacity: state.opacity ?? 1,
             transform: toTransform(state, this.perspective),

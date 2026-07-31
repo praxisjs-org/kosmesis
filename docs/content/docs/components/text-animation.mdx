@@ -23,27 +23,35 @@ import { StorybookEmbed } from '@/components/storybook-embed';
 
 ## Examples
 
+Every preset gets its own Storybook story, each with a `Loop` switch and a `Replay` button — built
+from this registry's own `Switch` and `Button` — so you can toggle looping on/off and re-trigger the
+reveal on demand without touching code.
+
 <Tabs items={['Tailwind', 'PraxisCSS']}>
   <Tab value="Tailwind">
     <StorybookEmbed story="tailwind-text-animation--default" title="Default" height={100} />
-    <StorybookEmbed story="tailwind-text-animation--effect-gallery" title="Effect gallery (all 29 presets)" height={700} />
+    <StorybookEmbed story="tailwind-text-animation--bounce-in" title="bounce-in — loop switch + replay button" height={190} />
   </Tab>
   <Tab value="PraxisCSS">
     <StorybookEmbed story="praxiscss-text-animation--default" title="Default" height={100} />
-    <StorybookEmbed story="praxiscss-text-animation--effect-gallery" title="Effect gallery (all 29 presets)" height={700} />
+    <StorybookEmbed story="praxiscss-text-animation--bounce-in" title="bounce-in — loop switch + replay button" height={190} />
   </Tab>
 </Tabs>
+
+Open "Open in Storybook" above and browse the `Tailwind/Text Animation` (or `PraxisCSS/Text
+Animation`) sidebar entry for the same demo across all 29 presets (including `wave`, whose switch
+has no effect since it already loops unconditionally).
 
 ## About
 
 Purely presentational — no Morphos equivalent. Each unit (word, character, or line) gets a plain
-CSS `animation`, not a JS-driven transition — there's no single shared trigger point to toggle like
-`Motion` has, so every named `effect`'s `@keyframes` is generated once (from the same `from`/`to`
-model `Motion` uses, kept as a small local, duplicated copy — every registry component is
-standalone copy-paste source) and `animation-delay` staggers each unit's start. The Tailwind flavor
-embeds the current effect's `@keyframes` via one `<style>` tag; the `@praxisjs/css` flavor registers
-all 29 via `keyframes()` at module load. Either way, `animation-fill-mode: backwards` holds each
-unit at its `from` state until its delay elapses, so units don't flash visible before their turn.
+CSS `animation`, not a JS-driven transition, so every named `effect`'s `@keyframes` is generated
+once (from the same `from`/`to` model `Motion` uses, kept as a small local, duplicated copy — every
+registry component is standalone copy-paste source) and `animation-delay` staggers each unit's
+start. The Tailwind flavor embeds the current effect's `@keyframes` via one `<style>` tag; the
+`@praxisjs/css` flavor registers all 29 via `keyframes()` at module load. Either way,
+`animation-fill-mode: backwards` holds each unit at its `from` state until its delay elapses, so
+units don't flash visible before their turn.
 
 **29 built-in `effect` presets** — the same 28 families as `Motion`'s `MotionEffect` (see that page
 for the direction-suffix convention), plus `"wave"`: a continuous, infinitely-looping bob with no
@@ -59,6 +67,34 @@ import { TextAnimation } from "@/components/ui/text-animation";
 <TextAnimation text="Line one\nLine two" by="line" effect="slide-left" />
 ```
 
+### Triggering it imperatively
+
+Pass a `trigger` prop — a PraxisJS `Command` — to replay the whole reveal on demand, the same
+`@Command()`/`@OnCommand()` pattern `Motion` uses. Internally, every unit's `animation-name` is
+switched to `none` for one frame and back — the standard way to restart a finished CSS animation.
+`loop` is reactive too, so a plain `@State()` boolean bound to a `Switch` can turn it on and off at
+runtime — see the Storybook examples above for both wired up together.
+
+```tsx
+import { StatefulComponent } from "@praxisjs/core";
+import { Command, Component } from "@praxisjs/decorators";
+import { TextAnimation } from "@/components/ui/text-animation";
+
+@Component()
+class Demo extends StatefulComponent {
+  @Command() replay!: Command;
+
+  render() {
+    return (
+      <>
+        <TextAnimation trigger={this.replay} text="Read me again" by="word" effect="fade-up" />
+        <button onClick={() => this.replay.trigger()}>Replay</button>
+      </>
+    );
+  }
+}
+```
+
 ## Props
 
 | Prop | Type | Default |
@@ -68,4 +104,6 @@ import { TextAnimation } from "@/components/ui/text-animation";
 | `effect` | `TextAnimationEffect` (29 presets — same families as `MotionEffect`, plus `"wave"`) | `"fade-up"` |
 | `duration` | `number` (ms; ignored by `"wave"`, which always runs at 1200ms) | `400` |
 | `stagger` | `number` (ms between each unit's animation start) | `40` |
+| `loop` | `boolean` (repeats forever, alternating in/out; `"wave"` already loops and ignores this; reactive — can be toggled after mount) | `false` |
+| `trigger` | `Command` (a `@Command()` field — calling `.trigger()` replays the animation) | — |
 | `class` | `string` | — |

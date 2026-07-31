@@ -23,16 +23,23 @@ import { StorybookEmbed } from '@/components/storybook-embed';
 
 ## Examples
 
+Every preset gets its own Storybook story, each with a `Loop` switch and a `Replay` button — built
+from this registry's own `Switch` and `Button` — so you can toggle looping on/off and re-trigger the
+entrance on demand without touching code.
+
 <Tabs items={['Tailwind', 'PraxisCSS']}>
   <Tab value="Tailwind">
     <StorybookEmbed story="tailwind-motion--default" title="Default" height={120} />
-    <StorybookEmbed story="tailwind-motion--effect-gallery" title="Effect gallery (all 28 presets)" height={640} />
+    <StorybookEmbed story="tailwind-motion--bounce-in" title="bounce-in — loop switch + replay button" height={230} />
   </Tab>
   <Tab value="PraxisCSS">
     <StorybookEmbed story="praxiscss-motion--default" title="Default" height={120} />
-    <StorybookEmbed story="praxiscss-motion--effect-gallery" title="Effect gallery (all 28 presets)" height={640} />
+    <StorybookEmbed story="praxiscss-motion--bounce-in" title="bounce-in — loop switch + replay button" height={230} />
   </Tab>
 </Tabs>
+
+Open "Open in Storybook" above and browse the `Tailwind/Motion` (or `PraxisCSS/Motion`) sidebar
+entry for the same demo across all 28 presets.
 
 ## About
 
@@ -65,6 +72,36 @@ import { Motion } from "@/components/ui/motion";
 </Motion>
 ```
 
+### Triggering it imperatively
+
+Pass a `trigger` prop — a PraxisJS `Command` — to replay the animation on demand instead of (or in
+addition to) mount/scroll/`loop`. This is the same `@Command()`/`@OnCommand()` pattern used
+throughout PraxisJS for imperative, prop-driven actions. `loop` is reactive too, so a plain
+`@State()` boolean bound to a `Switch` can turn the ping-pong on and off at runtime — see the
+Storybook examples above for both wired up together.
+
+```tsx
+import { StatefulComponent } from "@praxisjs/core";
+import { Command, Component } from "@praxisjs/decorators";
+import { Motion } from "@/components/ui/motion";
+
+@Component()
+class Demo extends StatefulComponent {
+  @Command() replay!: Command;
+
+  render() {
+    return (
+      <>
+        <Motion trigger={this.replay} effect="bounce-in">
+          <Card>...</Card>
+        </Motion>
+        <button onClick={() => this.replay.trigger()}>Replay</button>
+      </>
+    );
+  }
+}
+```
+
 ## Props
 
 | Prop | Type | Default |
@@ -78,6 +115,8 @@ import { Motion } from "@/components/ui/motion";
 | `delay` | `number` (ms) | `0` |
 | `once` | `boolean` | `true` |
 | `inView` | `boolean` | `true` |
+| `loop` | `boolean` (ping-pongs between `from`/`to` forever, ignoring `once`/`inView`; reactive — can be toggled after mount) | `false` |
+| `trigger` | `Command` (a `@Command()` field — calling `.trigger()` replays the animation) | — |
 | `class` | `string` | — |
 
 ### MotionEffect presets

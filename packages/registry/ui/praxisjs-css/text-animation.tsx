@@ -1,6 +1,6 @@
-import { StatelessComponent } from "@praxisjs/core";
+import { StatefulComponent } from "@praxisjs/core";
 import { cx, keyframes, Stylesheet, Styled } from "@praxisjs/css";
-import { Component } from "@praxisjs/decorators";
+import { Component, OnCommand, Prop, State, type Command } from "@praxisjs/decorators";
 
 const DIST_SM = 20;
 const DIST_LG = 42;
@@ -144,17 +144,50 @@ export interface TextAnimationProps {
   effect?: TextAnimationEffect;
   duration?: number;
   stagger?: number;
+  /** Repeats the entrance forever, alternating in/out — "wave" already loops and ignores this. */
+  loop?: boolean;
+  /** A `@Command()` field from the parent — calling `trigger()` replays the animation on demand. */
+  trigger?: Command;
   class?: string;
   id?: string;
 }
 
-/** Each unit gets a plain CSS `animation`, not a JS-driven transition — no single shared trigger point across units. */
+/**
+ * Each unit gets a plain CSS `animation`, not a JS-driven transition — no single shared trigger
+ * point across units. Replaying (via `trigger`) works by switching every unit's `animation-name`
+ * to `none` for one frame, then back — the standard way to restart a CSS animation that's already
+ * finished.
+ */
 @Component()
-export class TextAnimation extends StatelessComponent<TextAnimationProps> {
+export class TextAnimation extends StatefulComponent {
   @Styled(TextAnimationStyles) $s!: TextAnimationStyles;
 
+  @Prop() text!: string;
+  @Prop() by: "word" | "character" | "line" = "word";
+  @Prop() effect: TextAnimationEffect = "fade-up";
+  @Prop() duration = 400;
+  @Prop() stagger = 40;
+  @Prop() loop = false;
+  @Prop() trigger?: Command;
+  @Prop() class?: string;
+  @Prop() id?: string;
+
+  @State() _replaying = false;
+
+  @OnCommand("trigger")
+  private _replay(): void {
+    this._replaying = true;
+    // Double rAF: a single one can get coalesced with this synchronous write into the same
+    // frame, so `animation-name: none` never actually paints and the animation never restarts.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this._replaying = false;
+      });
+    });
+  }
+
   render() {
-    const { text, by = "word", effect = "fade-up", duration = 400, stagger = 40, class: cls, id } = this.props;
+    const { text, by, effect, duration, stagger, class: cls, id } = this;
     const units = by === "word" ? text.split(" ") : by === "line" ? text.split("\n") : Array.from(text);
     const def = TEXT_EFFECTS[effect];
 
@@ -164,15 +197,16 @@ export class TextAnimation extends StatelessComponent<TextAnimationProps> {
           <span
             key={i}
             class={cx(this.$s.$unit, by === "line" && this.$s.$unitLine)}
-            style={{
+            style={() => ({
               marginRight: by === "word" && i < units.length - 1 ? "0.25em" : undefined,
-              animationName: def.name,
+              animationName: this._replaying ? "none" : def.name,
               animationDuration: `${String(def.duration ?? duration)}ms`,
               animationTimingFunction: def.easing,
               animationDelay: `${String(i * stagger)}ms`,
               animationFillMode: def.infinite ? undefined : "backwards",
-              animationIterationCount: def.infinite ? "infinite" : undefined,
-            }}
+              animationIterationCount: def.infinite || this.loop ? "infinite" : undefined,
+              animationDirection: this.loop && !def.infinite ? "alternate" : undefined,
+            })}
           >
             {by === "word" && i < units.length - 1 ? `${unit} ` : unit}
           </span>
