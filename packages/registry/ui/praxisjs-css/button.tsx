@@ -4,18 +4,14 @@ import { Component } from "@praxisjs/decorators";
 
 import { Button as MorphosButton, type ButtonProps as MorphosButtonProps  } from "@morphos/inputs";
 
+import { Spinner } from "./spinner";
+
 import { KosmesisTokens } from "@/lib/kosmesis-theme";
 
 const t = tokenVars(KosmesisTokens);
 
-/**
- * `$variant*`/`$size*` fields are looked up by name in `render()` rather than composed through a
- * `cva`-style helper — `@praxisjs/css` has no variant-authority equivalent, so a plain
- * `Record<string, string>` lookup plays that role for every Kosmesis component in this style
- * system. Exported so components that render a native button-like element out of the Button
- * primitive (e.g. `AlertDialogAction`/`AlertDialogCancel`) can reuse the exact same scoped
- * classes via their own `@Styled(ButtonStyles)` field.
- */
+// Exported so components that render a native button out of the Button primitive (e.g.
+// `AlertDialogAction`/`AlertDialogCancel`) can reuse these classes via their own `@Styled(ButtonStyles)`.
 export class ButtonStyles extends Stylesheet {
   $root = this.css({
     display: "inline-flex",
@@ -65,6 +61,8 @@ export class ButtonStyles extends Stylesheet {
   $sizeSm = this.css({ height: "2rem", padding: "0 0.75rem", fontSize: "0.75rem" });
   $sizeLg = this.css({ height: "2.5rem", padding: "0 1.5rem" });
   $sizeIcon = this.css({ height: "2.25rem", width: "2.25rem", padding: "0" });
+
+  $spinner = this.css({ height: "1rem", width: "1rem" });
 }
 
 export type ButtonVariant = "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
@@ -73,6 +71,7 @@ export type ButtonSize = "default" | "sm" | "lg" | "icon";
 export interface ButtonProps extends MorphosButtonProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
+  loading?: boolean;
 }
 
 @Component()
@@ -80,7 +79,7 @@ export class Button extends StatelessComponent<ButtonProps> {
   @Styled(ButtonStyles) $s!: ButtonStyles;
 
   render() {
-    const { variant = "default", size = "default", class: cls, ...rest } = this.props;
+    const { variant = "default", size = "default", loading, disabled, class: cls, children, ...rest } = this.props;
 
     const variants: Record<ButtonVariant, string> = {
       default: this.$s.$variantDefault,
@@ -97,6 +96,15 @@ export class Button extends StatelessComponent<ButtonProps> {
       icon: this.$s.$sizeIcon,
     };
 
-    return <MorphosButton class={cx(this.$s.$root, variants[variant], sizes[size], cls)} {...rest} />;
+    return (
+      <MorphosButton
+        class={cx(this.$s.$root, variants[variant], sizes[size], cls)}
+        disabled={disabled ?? loading}
+        {...rest}
+      >
+        {loading && <Spinner class={this.$s.$spinner} />}
+        {children}
+      </MorphosButton>
+    );
   }
 }

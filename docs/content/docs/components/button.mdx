@@ -1,6 +1,6 @@
 ---
 title: Button
-description: A button, wrapping Morphos's polymorphic Button primitive with shadcn-style variants.
+description: A button, wrapping Morphos's polymorphic Button primitive with variant/size styling.
 icon: MousePointerClick
 ---
 
@@ -30,20 +30,23 @@ import { Callout } from 'fumadocs-ui/components/callout';
     <StorybookEmbed story="tailwind-button--all-variants" title="All variants" height={380} />
     <StorybookEmbed story="tailwind-button--all-sizes" title="All sizes" height={380} />
     <StorybookEmbed story="tailwind-button--disabled" title="Disabled" height={380} />
+    <StorybookEmbed story="tailwind-button--loading" title="Loading" height={380} />
   </Tab>
   <Tab value="PraxisCSS">
     <StorybookEmbed story="praxiscss-button--default" title="Default" height={380} />
     <StorybookEmbed story="praxiscss-button--all-variants" title="All variants" height={380} />
     <StorybookEmbed story="praxiscss-button--all-sizes" title="All sizes" height={380} />
     <StorybookEmbed story="praxiscss-button--disabled" title="Disabled" height={380} />
+    <StorybookEmbed story="praxiscss-button--loading" title="Loading" height={380} />
   </Tab>
 </Tabs>
 
 ## About
 
 Wraps `@morphos/inputs`'s `Button` — a polymorphic primitive supporting an `as` prop for
-link-buttons. Kosmesis adds `variant`/`size` props backed by `class-variance-authority`,
-matching shadcn/ui's own API exactly.
+link-buttons. Kosmesis adds `variant`/`size` props backed by `class-variance-authority`.
+A `loading` prop renders the registry's own `Spinner` (registry dependency) before the label
+and disables the button while `true`.
 
 ## Usage
 
@@ -64,6 +67,7 @@ class MyPage extends StatefulComponent {
         <Button size="sm">Small</Button>
         <Button size="lg">Large</Button>
         <Button as="a" href="/dashboard">Go to dashboard</Button>
+        <Button loading>Please wait</Button>
       </div>
     );
   }
@@ -78,6 +82,7 @@ class MyPage extends StatefulComponent {
 | `size` | `"default" \| "sm" \| "lg" \| "icon"` | `"default"` |
 | `as` | `"button" \| "a" \| "span" \| "div"` | `"button"` |
 | `disabled` | `boolean` | — |
+| `loading` | `boolean` | — |
 | `onClick` | `(event: MouseEvent) => void` | — |
 
 All other props (`href`, `type`, `aria-*`, `class`, `id`, `children`, ...) pass through to

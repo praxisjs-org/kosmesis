@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@praxisjs/storybook";
 
 import { Button, type ButtonProps } from "@/ui/tailwind/button";
 
-type Args = Pick<ButtonProps, "variant" | "size" | "disabled"> & {
+type Args = Pick<ButtonProps, "variant" | "size" | "disabled" | "loading"> & {
   children: string;
 };
 
@@ -35,6 +35,10 @@ const meta: Meta<Args> = {
     disabled: {
       control: { type: "boolean" },
       description: "Disables pointer and keyboard interaction.",
+    },
+    loading: {
+      control: { type: "boolean" },
+      description: "Shows a spinner before the label and disables the button.",
     },
     children: {
       control: { type: "text" },
@@ -113,6 +117,20 @@ export const Disabled: Story = {
   },
   render: (args) => (
     <Button variant={args.variant} disabled={args.disabled}>
+      {args.children}
+    </Button>
+  ),
+};
+
+export const Loading: Story = {
+  name: "Loading",
+  args: {
+    variant: "default",
+    children: "Please wait",
+    loading: true,
+  },
+  render: (args) => (
+    <Button variant={args.variant} loading={args.loading}>
       {args.children}
     </Button>
   ),

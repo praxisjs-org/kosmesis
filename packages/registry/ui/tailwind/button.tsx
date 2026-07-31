@@ -5,6 +5,8 @@ import { Component } from "@praxisjs/decorators";
 
 import { Button as MorphosButton, type ButtonProps as MorphosButtonProps  } from "@morphos/inputs";
 
+import { Spinner } from "./spinner";
+
 import { cn } from "@/lib/utils";
 
 export const buttonVariants = cva(
@@ -35,13 +37,20 @@ export const buttonVariants = cva(
   },
 );
 
-export interface ButtonProps extends MorphosButtonProps, VariantProps<typeof buttonVariants> {}
+export interface ButtonProps extends MorphosButtonProps, VariantProps<typeof buttonVariants> {
+  loading?: boolean;
+}
 
 @Component()
 export class Button extends StatelessComponent<ButtonProps> {
   render() {
-    const { variant, size, class: cls, ...rest } = this.props;
+    const { variant, size, loading, disabled, class: cls, children, ...rest } = this.props;
 
-    return <MorphosButton class={cn(buttonVariants({ variant, size }), cls)} {...rest} />;
+    return (
+      <MorphosButton class={cn(buttonVariants({ variant, size }), cls)} disabled={disabled ?? loading} {...rest}>
+        {loading && <Spinner class="size-4" />}
+        {children}
+      </MorphosButton>
+    );
   }
 }
