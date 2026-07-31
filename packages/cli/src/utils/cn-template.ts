@@ -1,4 +1,4 @@
-/** Source written to `<aliases.utils>.ts` by `kosmesis init`. Mirrors shadcn/ui's `cn` helper. */
+/** Source written to `<aliases.utils>.ts` by `kosmesis init`. */
 export const CN_UTIL_SOURCE = `import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 

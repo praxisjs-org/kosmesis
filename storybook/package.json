@@ -11,6 +11,7 @@
   "dependencies": {
     "@morphos/core": "^0.1.1",
     "@morphos/feedback": "^1.0.1",
+    "@morphos/icons": "^1.0.0",
     "@morphos/inputs": "^1.0.1",
     "@morphos/layout": "^1.1.1",
     "@morphos/overlays": "^1.0.2",
@@ -19,9 +20,10 @@
     "@praxisjs/decorators": "^1.5.1",
     "@praxisjs/runtime": "^0.5.4",
     "@praxisjs/shared": "^0.3.1",
-    "@praxisjs/storybook": "^0.2.6",
+    "@praxisjs/storybook": "^0.2.7",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "lucide": "^1.27.0",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {

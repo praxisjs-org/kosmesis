@@ -2,6 +2,8 @@ import { theme } from "@praxisjs/css";
 import { jsx } from "@praxisjs/jsx/jsx-runtime";
 import type { ComponentConstructor } from "@praxisjs/shared/internal";
 
+import { setIconProvider } from "@morphos/icons";
+
 // `./praxisjs-css-theme` must be imported before `./tailwind-theme.css`: it triggers
 // `@praxisjs/css`'s `preflight()`, which (as of @praxisjs/css 0.2.0) wraps its reset in
 // `@layer reset`. Cascade layer priority is ranked by the order layer names FIRST appear in the
@@ -16,6 +18,14 @@ import "./tailwind-theme.css";
 import { DarkTheme, LightTheme } from "@/lib/kosmesis-theme";
 
 export { renderToCanvas } from "@praxisjs/storybook";
+
+// Stories mount components directly rather than through a decorated root `@Component()`, so
+// there's no class to apply `@IconProvider(...)` to — `setIconProvider` does the same thing
+// without one, same as `kosmesis init` wires `@IconProvider(LucideSource)` into a real project's
+// root component. Importing from `@morphos/icons` evaluates its `LucideSource` module (and the
+// `@RegisterIconProvider("lucide")` decorator on it) regardless of which named export is used, so
+// no separate `LucideSource` import is needed here.
+setIconProvider("lucide");
 
 interface RenderContext {
   component?: new (...args: unknown[]) => unknown;

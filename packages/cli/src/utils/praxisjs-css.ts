@@ -89,7 +89,7 @@ export function ensureVirtualStylesTypeDeclaration(viteEnvPath: string): "update
 }
 
 /** Merges `name` into an existing `import { ... } from "from"` statement in `content`, or adds a new one at the top if there isn't one yet. */
-function ensureNamedImport(content: string, names: string[], from: string): string {
+export function ensureNamedImport(content: string, names: string[], from: string): string {
   const existingImport = new RegExp(`import\\s+\\{([^}]*)\\}\\s+from\\s+["']${from.replace(/[/\\.]/g, "\\$&")}["'];?`).exec(
     content,
   );

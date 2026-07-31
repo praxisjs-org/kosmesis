@@ -10,6 +10,7 @@
   "devDependencies": {
     "@morphos/core": "^0.1.1",
     "@morphos/feedback": "^1.0.1",
+    "@morphos/icons": "^1.0.0",
     "@morphos/inputs": "^1.0.1",
     "@morphos/layout": "^1.1.1",
     "@morphos/overlays": "^1.0.2",
@@ -19,9 +20,14 @@
     "@praxisjs/jsx": "^0.7.3",
     "@praxisjs/runtime": "^0.5.4",
     "@praxisjs/shared": "^0.3.1",
+    "@types/qrcode": "^1.5.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "lucide": "^1.27.0",
     "tailwind-merge": "^3.6.0",
     "typescript": "catalog:"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
   }
 }

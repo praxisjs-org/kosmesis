@@ -33,6 +33,11 @@
       "required": ["components", "ui", "lib", "utils"],
       "additionalProperties": false
     },
+    "iconLibrary": {
+      "type": "string",
+      "enum": ["lucide", "none"],
+      "description": "Icon library wired up by `kosmesis init` — \"lucide\" configures @morphos/icons' built-in LucideSource provider, \"none\" skips icon setup. Absent on components.json files written before this field existed, equivalent to \"none\"."
+    },
     "registry": {
       "type": "string",
       "description": "Registry base — a local directory path or an http(s):// URL serving `<styleSystem>/<name>.json` files."

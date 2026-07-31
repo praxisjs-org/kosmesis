@@ -4,13 +4,15 @@ import {
   CONFIG_FILE_NAME,
   DEFAULT_ALIASES,
   DEFAULT_CSS_PATH,
+  DEFAULT_ICON_LIBRARY,
   DEFAULT_REGISTRY_URL,
   DEFAULT_STYLE_SYSTEM,
+  type IconLibrary,
   type StyleSystem,
 } from "../constants";
 import { readJsonIfExists, writeJson } from "./fs";
 
-export type { StyleSystem };
+export type { IconLibrary, StyleSystem };
 
 export interface KosmesisConfig {
   $schema?: string;
@@ -23,6 +25,13 @@ export interface KosmesisConfig {
    */
   css: string;
   aliases: typeof DEFAULT_ALIASES;
+  /**
+   * Which icon library `kosmesis init` wired up (`"lucide"`, backed by `@morphos/icons`'
+   * `LucideSource` provider, or `"none"`). Optional for backwards compatibility with
+   * `components.json` files written before this field existed — those projects simply never had
+   * icon setup wired, equivalent to `"none"`.
+   */
+  iconLibrary?: IconLibrary;
   registry: string;
   /**
    * Additional registries keyed by `@namespace` (e.g. `"@acme": "https://ui.acme.internal/r"`),
@@ -51,6 +60,7 @@ export function defaultConfig(overrides?: Partial<KosmesisConfig>): KosmesisConf
     styleSystem: DEFAULT_STYLE_SYSTEM,
     css: DEFAULT_CSS_PATH,
     aliases: DEFAULT_ALIASES,
+    iconLibrary: DEFAULT_ICON_LIBRARY,
     registry: DEFAULT_REGISTRY_URL,
     ...overrides,
   };

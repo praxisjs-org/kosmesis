@@ -12,12 +12,15 @@ import {
   DEFAULT_MAIN_ENTRY_PATH,
   DEFAULT_THEME_MODULE_PATH,
   DEFAULT_VITE_ENV_PATH,
+  ICON_LIBRARY_DEPENDENCIES,
   STYLE_SYSTEM_DEPENDENCIES,
+  type IconLibrary,
   type StyleSystem,
 } from "../constants";
 import { CN_UTIL_SOURCE } from "../utils/cn-template";
 import { defaultConfig, readConfig, writeConfig } from "../utils/config";
 import { ensureDir, writeFile } from "../utils/fs";
+import { ensureIconProviderDecorator } from "../utils/icons";
 import { ensureTsconfigAlias, ensureViteAlias } from "../utils/import-alias";
 import { detectPackageManagerFromLockfile, execCommand, installCommand, installPackages } from "../utils/package-manager";
 import {
@@ -87,7 +90,7 @@ export async function init(): Promise<void> {
       {
         value: "tailwind",
         label: "Tailwind CSS",
-        hint: "utility classes + class-variance-authority — the shadcn/ui default",
+        hint: "utility classes + class-variance-authority",
       },
       {
         value: "praxisjs-css",
@@ -103,6 +106,27 @@ export async function init(): Promise<void> {
   const styleSystem = styleSystemResult;
   const isTailwind = styleSystem === "tailwind";
 
+  const iconLibraryResult = await select<IconLibrary>({
+    message: "Which icon library do you want to use?",
+    options: [
+      {
+        value: "lucide",
+        label: "Lucide",
+        hint: "@morphos/icons' built-in provider — wires @IconProvider(LucideSource) on your root component",
+      },
+      {
+        value: "none",
+        label: "None",
+        hint: "skip icon setup — configure @morphos/icons yourself later",
+      },
+    ],
+  });
+  if (isCancel(iconLibraryResult)) {
+    cancel("Operation cancelled");
+    return;
+  }
+  const iconLibrary = iconLibraryResult;
+
   const cssPathResult = await text({
     message: isTailwind ? "Where is your global CSS file?" : "Where should Kosmesis write your theme module?",
     placeholder: isTailwind ? DEFAULT_CSS_PATH : DEFAULT_THEME_MODULE_PATH,
@@ -113,8 +137,11 @@ export async function init(): Promise<void> {
     return;
   }
 
+  // Needed for @Themed(...) (praxisjs-css) and/or @IconProvider(...) (lucide) — either wiring
+  // step needs the root component regardless of style system, so ask once up front.
+  const needsMainFile = !isTailwind || iconLibrary !== "none";
   let mainFilePathResult = "";
-  if (!isTailwind) {
+  if (needsMainFile) {
     const result = await text({
       message: "Where is your root component?",
       placeholder: DEFAULT_MAIN_COMPONENT_PATH,
@@ -129,6 +156,7 @@ export async function init(): Promise<void> {
 
   const config = defaultConfig({
     styleSystem,
+    iconLibrary,
     css: cssPathResult || (isTailwind ? DEFAULT_CSS_PATH : DEFAULT_THEME_MODULE_PATH),
   });
   writeConfig(projectRoot, config);
@@ -232,6 +260,23 @@ export async function init(): Promise<void> {
     }
   }
 
+  if (iconLibrary === "lucide") {
+    const mainFilePath = path.join(projectRoot, mainFilePathResult || DEFAULT_MAIN_COMPONENT_PATH);
+    const iconProviderResult = ensureIconProviderDecorator(mainFilePath);
+    if (iconProviderResult === "updated") {
+      log.success(`Wired ${pc.cyan("@IconProvider(LucideSource)")} into ${pc.cyan(path.relative(projectRoot, mainFilePath))}.`);
+    } else if (iconProviderResult === "already-configured") {
+      log.info(`${pc.cyan(path.relative(projectRoot, mainFilePath))} already has @IconProvider(...).`);
+    } else {
+      log.warn(`Couldn't find ${pc.cyan(path.relative(projectRoot, mainFilePath))} — add it manually:`);
+      note(
+        `Add ${pc.cyan("@IconProvider(LucideSource)")} above ${pc.cyan("@Component()")} on your root component, ` +
+          `importing both from ${pc.cyan('"@morphos/icons"')}.`,
+        "One more step",
+      );
+    }
+  }
+
   const tsconfigResult = ensureTsconfigAlias(path.join(projectRoot, "tsconfig.json"));
   const viteAliasResult = ensureViteAlias(path.join(projectRoot, "vite.config.ts"));
   if (tsconfigResult === "updated" || viteAliasResult === "updated") {
@@ -263,6 +308,7 @@ export async function init(): Promise<void> {
   };
 
   await installGroup([...STYLE_SYSTEM_DEPENDENCIES[styleSystem]], false, "Run this command to install dependencies");
+  await installGroup([...ICON_LIBRARY_DEPENDENCIES[iconLibrary]], false, "Run this command to install icon dependencies");
   await installGroup([...COMMON_DEPENDENCIES], true, "Run this command to install dev dependencies");
 
   outro(pc.green("Kosmesis is ready."));

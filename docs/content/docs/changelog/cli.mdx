@@ -4,6 +4,16 @@ description: Changelog for kosmesis.
 icon: Terminal
 ---
 
+## 0.4.0
+
+- `kosmesis init` now prompts for an icon library (`Lucide`, backed by `@morphos/icons`' built-in
+  `LucideSource` provider, or `None`), stores the choice as `iconLibrary` in `components.json`,
+  installs `@morphos/icons`/`lucide` when Lucide is selected, and wires
+  `@IconProvider(LucideSource)` onto the project's root component — the same "ensure" pattern
+  already used for `@Themed(...)`.
+- Every registry component that previously rendered an emoji or a hand-picked Unicode glyph as a
+  pseudo-icon now renders a real `<Icon>` from `@morphos/icons` instead, in both style systems.
+
 ## 0.3.2
 
 - `kosmesis init` now wires the `virtual:praxisjs/styles.css` import into `@praxisjs/css`

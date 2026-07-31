@@ -706,7 +706,7 @@ describe("kosmesis init", () => {
     writeConfig(tmpDir, defaultConfig());
     writePackageJson({ "@praxisjs/core": "^2.0.0" });
     hoisted.confirmMock.mockResolvedValueOnce(true);
-    hoisted.selectMock.mockResolvedValueOnce("tailwind");
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -739,7 +739,7 @@ describe("kosmesis init", () => {
   it("proceeds past the non-PraxisJS warning once the user confirms", async () => {
     writePackageJson({ react: "^19.0.0" });
     hoisted.confirmMock.mockResolvedValueOnce(true);
-    hoisted.selectMock.mockResolvedValueOnce("tailwind");
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -762,7 +762,7 @@ describe("kosmesis init", () => {
 
   it("cancels when the css path prompt is cancelled", async () => {
     writePackageJson({ "@praxisjs/core": "^2.0.0" });
-    hoisted.selectMock.mockResolvedValueOnce("tailwind");
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce(hoisted.CANCEL);
 
     setArgv("init", []);
@@ -773,7 +773,7 @@ describe("kosmesis init", () => {
 
   it("cancels when the root component path prompt is cancelled", async () => {
     writePackageJson({ "@praxisjs/core": "^2.0.0" });
-    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce(hoisted.CANCEL);
 
     setArgv("init", []);
@@ -786,7 +786,7 @@ describe("kosmesis init", () => {
     // No existing components.json, no vite.config.ts/tsconfig.json — exercises the "not-found"
     // branches and the toAdd.length > 0 branch since only @praxisjs/core is already installed.
     writePackageJson({ "@praxisjs/core": "^2.0.0" });
-    hoisted.selectMock.mockResolvedValueOnce("tailwind");
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -803,7 +803,7 @@ describe("kosmesis init", () => {
   it("shows the dependency install command when init cannot install automatically", async () => {
     mockInstallExit(1);
     writePackageJson({ "@praxisjs/core": "^2.0.0" });
-    hoisted.selectMock.mockResolvedValueOnce("tailwind");
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -816,7 +816,7 @@ describe("kosmesis init", () => {
   it("formats non-Error init install failures before showing the fallback command", async () => {
     mockInstallError("spawn failed");
     writePackageJson({ "@praxisjs/core": "^2.0.0" });
-    hoisted.selectMock.mockResolvedValueOnce("tailwind");
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -841,7 +841,7 @@ describe("kosmesis init", () => {
     fs.writeFileSync(cssPath, "/* custom rules */\n");
     hoisted.confirmMock.mockResolvedValueOnce(false);
 
-    hoisted.selectMock.mockResolvedValueOnce("tailwind");
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("src/style.css");
 
     setArgv("init", []);
@@ -867,7 +867,7 @@ describe("kosmesis init", () => {
     fs.writeFileSync(cssPath, "/* custom rules */\n");
     hoisted.confirmMock.mockResolvedValueOnce(true);
 
-    hoisted.selectMock.mockResolvedValueOnce("tailwind");
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("src/style.css");
 
     setArgv("init", []);
@@ -885,7 +885,7 @@ describe("kosmesis init", () => {
     fs.writeFileSync(cssPath, "/* custom rules */\n");
     hoisted.confirmMock.mockResolvedValueOnce(hoisted.CANCEL);
 
-    hoisted.selectMock.mockResolvedValueOnce("tailwind");
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("src/style.css");
 
     setArgv("init", []);
@@ -906,7 +906,7 @@ describe("kosmesis init", () => {
     fs.mkdirSync(path.dirname(cssPath), { recursive: true });
     fs.writeFileSync(cssPath, "@import \"tailwindcss\";\n\n:root { --color-background: #fff; }\n");
 
-    hoisted.selectMock.mockResolvedValueOnce("tailwind");
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("src/style.css");
 
     setArgv("init", []);
@@ -932,7 +932,7 @@ describe("kosmesis init", () => {
     );
     fs.writeFileSync(path.join(tmpDir, "src", "vite-env.d.ts"), `/// <reference types="vite/client" />\n`);
 
-    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("src/lib/kosmesis-theme.ts");
 
     setArgv("init", []);
@@ -969,7 +969,7 @@ describe("kosmesis init", () => {
       `/// <reference types="vite/client" />\ndeclare module "virtual:praxisjs/styles.css" {}\n`,
     );
 
-    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -988,7 +988,7 @@ describe("kosmesis init", () => {
       `import { defineConfig } from "vite";\n\nexport default defineConfig({\n  plugins: [],\n});\n`,
     );
 
-    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -1005,7 +1005,7 @@ describe("kosmesis init", () => {
     fs.writeFileSync(themePath, "export const somethingElse = true;\n");
     hoisted.confirmMock.mockResolvedValueOnce(false);
 
-    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -1027,7 +1027,7 @@ describe("kosmesis init", () => {
     fs.writeFileSync(themePath, "export const somethingElse = true;\n");
     hoisted.confirmMock.mockResolvedValueOnce(true);
 
-    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -1045,7 +1045,7 @@ describe("kosmesis init", () => {
     fs.writeFileSync(defaultCssPath, "body { margin: 0; }\n");
     hoisted.confirmMock.mockResolvedValueOnce(true);
 
-    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -1065,7 +1065,7 @@ describe("kosmesis init", () => {
     fs.writeFileSync(defaultCssPath, "body { margin: 0; }\n");
     hoisted.confirmMock.mockResolvedValueOnce(false);
 
-    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -1081,7 +1081,7 @@ describe("kosmesis init", () => {
     fs.writeFileSync(defaultCssPath, "body { margin: 0; }\n");
     hoisted.confirmMock.mockResolvedValueOnce(hoisted.CANCEL);
 
-    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -1099,7 +1099,7 @@ describe("kosmesis init", () => {
       `import { Component } from "@praxisjs/decorators";\nimport { StatefulComponent } from "@praxisjs/core";\n\n@Component()\nclass App extends StatefulComponent {\n  render() {\n    return null;\n  }\n}\n`,
     );
 
-    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -1119,7 +1119,7 @@ describe("kosmesis init", () => {
       `import { Component } from "@praxisjs/decorators";\n\n@Component()\nclass Root {}\n`,
     );
 
-    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce("src/root.tsx");
 
     setArgv("init", []);
@@ -1136,7 +1136,7 @@ describe("kosmesis init", () => {
       `@Themed(KosmesisTokens, LightTheme, { persist: true, syncTabs: true })\n@Component()\nclass App {}\n`;
     fs.writeFileSync(path.join(tmpDir, "src/app.tsx"), appSource);
 
-    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -1149,7 +1149,7 @@ describe("kosmesis init", () => {
   it("falls back to a manual note when the root component can't be found", async () => {
     writePackageJson({ "@praxisjs/core": "^2.0.0" });
 
-    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -1162,7 +1162,7 @@ describe("kosmesis init", () => {
   it("warns when there is no vite.config.ts to wire the praxisjsCSS() plugin into", async () => {
     writePackageJson({ "@praxisjs/core": "^2.0.0" });
 
-    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("");
 
     setArgv("init", []);
@@ -1188,7 +1188,7 @@ describe("kosmesis init", () => {
       JSON.stringify({ compilerOptions: { paths: { "@/*": ["./src/*"] } } }),
     );
 
-    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css");
+    hoisted.selectMock.mockResolvedValueOnce("praxisjs-css").mockResolvedValueOnce("none");
     hoisted.textMock.mockResolvedValueOnce("src/lib/kosmesis-theme.ts");
 
     setArgv("init", []);
@@ -1196,5 +1196,57 @@ describe("kosmesis init", () => {
 
     expect(clack.log.info).toHaveBeenCalledWith(expect.stringContaining("already defines KosmesisTokens"));
     expect(hoisted.spawnMock).not.toHaveBeenCalled();
+  });
+
+  it("wires @IconProvider(LucideSource) into the root component for a Tailwind project when Lucide is selected", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
+    fs.writeFileSync(
+      path.join(tmpDir, "src/app.tsx"),
+      `import { Component } from "@praxisjs/decorators";\nimport { StatefulComponent } from "@praxisjs/core";\n\n@Component()\nclass App extends StatefulComponent {\n  render() {\n    return null;\n  }\n}\n`,
+    );
+
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("lucide");
+    hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    const appContent = fs.readFileSync(path.join(tmpDir, "src/app.tsx"), "utf-8");
+    expect(appContent).toContain('import { IconProvider, LucideSource } from "@morphos/icons";');
+    expect(appContent).toContain("@IconProvider(LucideSource)\n@Component()");
+    expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("Wired"));
+
+    const config = readConfig(tmpDir);
+    expect(config?.iconLibrary).toBe("lucide");
+  });
+
+  it("skips icon setup entirely when 'none' is selected", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("none");
+    hoisted.textMock.mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    expect(clack.log.warn).not.toHaveBeenCalledWith(expect.stringContaining("@IconProvider"));
+    expect(clack.log.success).not.toHaveBeenCalledWith(expect.stringContaining("@IconProvider"));
+
+    const config = readConfig(tmpDir);
+    expect(config?.iconLibrary).toBe("none");
+  });
+
+  it("falls back to a manual note when the root component can't be found for icon setup", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("lucide");
+    hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    expect(clack.log.warn).toHaveBeenCalledWith(expect.stringContaining("Couldn't find"));
+    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("@IconProvider"), "One more step");
   });
 });

@@ -59,6 +59,28 @@ export const STYLE_SYSTEM_DEPENDENCIES: Record<StyleSystem, readonly string[]> =
  */
 export const COMMON_DEPENDENCIES = ["@types/node"] as const;
 
+/**
+ * Icon library a project can be wired to via `kosmesis init`, stored in `components.json` as
+ * `iconLibrary`. `"lucide"` wires up `@morphos/icons`' built-in `LucideSource` provider
+ * (`@IconProvider(LucideSource)` on the root component) plus the `lucide` peer dependency it
+ * reads icon data from live. `"none"` skips icon setup entirely — no dependency installed, no
+ * `@IconProvider(...)` wired — for projects that don't want icons or prefer to configure a custom
+ * `@morphos/icons` provider by hand later (see `@morphos/icons`' `RegisterIconProvider`).
+ */
+export type IconLibrary = "lucide" | "none";
+
+export const DEFAULT_ICON_LIBRARY: IconLibrary = "lucide";
+
+/**
+ * npm packages to add per icon library when running `kosmesis init`. `@morphos/icons` is the
+ * provider/registry package itself; `lucide` is a real peer dependency it reads icon data from
+ * live (`import { icons } from "lucide"`) rather than bundling its own copy.
+ */
+export const ICON_LIBRARY_DEPENDENCIES: Record<IconLibrary, readonly string[]> = {
+  lucide: ["@morphos/icons", "lucide"],
+  none: [],
+};
+
 // The full generated-file templates (global Tailwind stylesheet, @praxisjs/css theme module) are
 // large enough to deserve their own files — see ./templates/kosmesis-theme-css.ts and
 // ./templates/kosmesis-tokens-ts.ts, imported directly by utils/tailwind.ts and
