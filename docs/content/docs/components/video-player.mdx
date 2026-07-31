@@ -1,0 +1,121 @@
+---
+title: Video Player
+description: A native HTML5 video player with a custom control bar. Purely presentational — no Morphos equivalent, no media-chrome dependency.
+icon: MonitorPlay
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="video-player" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="video-player" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-video-player--default" title="Default" height={340} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-video-player--default" title="Default" height={340} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent, and deliberately avoids a runtime dependency like
+`media-chrome`: the native `<video>` element already fires every event
+(`play`/`pause`/`timeupdate`/`loadedmetadata`/`volumechange`/`waiting`/`playing`) a custom control
+bar needs. `VideoPlayerState` mirrors those events into a handful of `@State` fields and exposes
+imperative `togglePlay`/`seek`/`seekBy`/`setVolume`/`toggleMute` methods that write straight back
+to the `<video>` element — instantiated directly and passed to `VideoPlayer` and every control via
+a `state` prop, the same convention as `CarouselState`. Clicking the video itself also toggles
+play/pause.
+
+Every control has a hover/active micro-interaction (buttons scale up on hover and down on press,
+the play/pause and mute/unmute icons pop in with a quick zoom whenever they swap), and the seek and
+volume sliders reveal a thumb and grow slightly taller on hover, with the filled portion drawn as an
+animated gradient rather than relying on the browser's native (and inconsistently-styled) range
+appearance.
+
+`VideoPlayerControlBar` auto-hides itself — after `state.showControls()` runs (wired to
+`VideoPlayer`'s own `onPointerMove`), a timer fades it back out `2.5s` after the pointer stops
+moving, but only while `playing`; pausing cancels the timer and forces it back on immediately,
+since there's no reason to hide controls over a paused frame. `VideoPlayerOverlay` is the
+center-of-frame indicator every native player has: a spinner while `buffering` (the `waiting`
+event), or a big pop-in play button while paused — never both at once.
+
+## Usage
+
+```tsx
+import {
+  VideoPlayer,
+  VideoPlayerState,
+  VideoPlayerControlBar,
+  VideoPlayerMuteButton,
+  VideoPlayerOverlay,
+  VideoPlayerPlayButton,
+  VideoPlayerSeekBackwardButton,
+  VideoPlayerSeekForwardButton,
+  VideoPlayerTimeDisplay,
+  VideoPlayerTimeRange,
+  VideoPlayerVolumeRange,
+} from "@/components/ui/video-player";
+
+const state = new VideoPlayerState();
+
+<VideoPlayer state={state} src="/videos/sample.mp4">
+  <VideoPlayerOverlay state={state} />
+  <VideoPlayerControlBar state={state}>
+    <VideoPlayerSeekBackwardButton state={state} />
+    <VideoPlayerPlayButton state={state} />
+    <VideoPlayerSeekForwardButton state={state} />
+    <VideoPlayerTimeDisplay state={state} />
+    <VideoPlayerTimeRange state={state} />
+    <VideoPlayerMuteButton state={state} />
+    <VideoPlayerVolumeRange state={state} />
+  </VideoPlayerControlBar>
+</VideoPlayer>
+```
+
+## Props
+
+### VideoPlayer
+
+| Prop | Type | Default |
+|---|---|---|
+| `state` | `VideoPlayerState` | — |
+| `src` | `string` | — |
+| `poster` | `string` | — |
+| `loop` | `boolean` | — |
+| `class` | `string` | — |
+
+### VideoPlayerSeekBackwardButton / VideoPlayerSeekForwardButton
+
+| Prop | Type | Default |
+|---|---|---|
+| `state` | `VideoPlayerState` | — |
+| `seconds` | `number` | `10` |
+| `class` | `string` | — |
+
+### VideoPlayerOverlay / VideoPlayerControlBar / VideoPlayerPlayButton / VideoPlayerMuteButton / VideoPlayerTimeRange / VideoPlayerVolumeRange / VideoPlayerTimeDisplay
+
+| Prop | Type | Default |
+|---|---|---|
+| `state` | `VideoPlayerState` | — |
+| `class` | `string` | — |
+
+`VideoPlayerState` exposes `playing`, `muted`, `volume`, `currentTime`, `duration`, `buffering`,
+`controlsVisible`, and a computed `progress` (0–100) — read directly off the instance if you're
+building fully custom controls.

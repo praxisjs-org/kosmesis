@@ -1,0 +1,70 @@
+---
+title: Order Summary
+description: A line-item + total breakdown card. Purely presentational — no Morphos equivalent.
+icon: Receipt
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="order-summary" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="order-summary" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-order-summary--default" title="Default" height={200} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-order-summary--default" title="Default" height={200} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. `OrderSummaryTotal` is visually distinct (larger,
+bolder, top border) from `OrderSummaryItem` — always place it last.
+
+## Usage
+
+```tsx
+import { OrderSummary, OrderSummaryItem, OrderSummaryTotal } from "@/components/ui/order-summary";
+
+<OrderSummary>
+  <OrderSummaryItem label="Subtotal" value="$49.00" />
+  <OrderSummaryItem label="Shipping" value="$4.99" />
+  <OrderSummaryTotal value="$53.99" />
+</OrderSummary>
+```
+
+## Props
+
+### OrderSummaryItem
+
+| Prop | Type | Default |
+|---|---|---|
+| `label` | `Children` | — |
+| `value` | `Children` | — |
+| `class` | `string` | — |
+
+### OrderSummaryTotal
+
+| Prop | Type | Default |
+|---|---|---|
+| `label` | `Children` | `"Total"` |
+| `value` | `Children` | — |
+| `class` | `string` | — |
+
+`OrderSummary` accepts `class` and `children` only.

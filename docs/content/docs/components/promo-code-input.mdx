@@ -1,0 +1,70 @@
+---
+title: Promo Code Input
+description: A coupon-code input + apply button. Purely presentational — no Morphos equivalent.
+icon: Ticket
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="promo-code-input" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="promo-code-input" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-promo-code-input--default" title="Default" height={120} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-promo-code-input--default" title="Default" height={120} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. `status`/`message` are driven by the consumer's
+own validation result after `onApply` fires — this component has no knowledge of whether a code is
+actually valid.
+
+## Usage
+
+```tsx
+import { PromoCodeInput } from "@/components/ui/promo-code-input";
+
+@Component()
+class Coupon extends StatefulComponent {
+  @State() status: "idle" | "applied" | "invalid" = "idle";
+  @State() message = "";
+
+  handleApply(code: string) {
+    const valid = checkCode(code);
+    this.status = valid ? "applied" : "invalid";
+    this.message = valid ? "10% discount applied!" : "That code isn't valid.";
+  }
+
+  render() {
+    return <PromoCodeInput status={this.status} message={this.message} onApply={(code) => this.handleApply(code)} />;
+  }
+}
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `status` | `"idle" \| "applied" \| "invalid"` | `"idle"` |
+| `message` | `string` | — |
+| `onApply` | `(code: string) => void` | — |
+| `class` | `string` | — |

@@ -1,0 +1,57 @@
+---
+title: Pointer
+description: A custom cursor that tracks 1:1 within a bounded PointerArea. Purely presentational — no Morphos equivalent.
+icon: MousePointerClick
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="pointer" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="pointer" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-pointer--default" title="Default" height={260} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-pointer--default" title="Default" height={260} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Same imperative DOM-querying approach as `Dock`:
+`PointerArea`'s `onPointerMove` queries its own `[data-slot=pointer]` child directly and moves it,
+rather than requiring a shared instance reference. Distinct from `SmoothCursor` (viewport-global,
+eased motion): this tracks 1:1 within a single bounded container. Pair with `cursor-none` on the
+area to hide the native cursor.
+
+## Usage
+
+```tsx
+import { Pointer, PointerArea } from "@/components/ui/pointer";
+
+<PointerArea class="relative flex h-56 cursor-none items-center justify-center">
+  Hover me
+  <Pointer />
+</PointerArea>
+```
+
+## Props
+
+`PointerArea` and `Pointer` both accept `class` and `children` only — `Pointer`'s `children`
+override the default dot indicator.

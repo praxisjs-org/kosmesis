@@ -1,0 +1,77 @@
+---
+title: Pricing Table
+description: A responsive row of pricing plan cards with a features list. Purely presentational — no Morphos equivalent.
+icon: Tags
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="pricing-table" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="pricing-table" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-pricing-table--default" title="Default" height={360} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-pricing-table--default" title="Default" height={360} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. `PricingPlan`'s name/description are plain
+children (a heading + paragraph) rather than dedicated slots, matching the public prop API of
+`Card` — only `PricingPlanPrice` and `PricingPlanFeature` get dedicated components since their
+formatting (price/period split, check-marked list item) is genuinely repetitive.
+
+## Usage
+
+```tsx
+import { PricingPlan, PricingPlanFeature, PricingPlanPrice, PricingTable } from "@/components/ui/pricing-table";
+
+<PricingTable>
+  <PricingPlan highlighted>
+    <h3>Pro</h3>
+    <PricingPlanPrice price="$19" period="mo" />
+    <ul>
+      <PricingPlanFeature>Unlimited projects</PricingPlanFeature>
+      <PricingPlanFeature>Priority support</PricingPlanFeature>
+    </ul>
+    <Button>Get started</Button>
+  </PricingPlan>
+</PricingTable>
+```
+
+## Props
+
+### PricingPlan
+
+| Prop | Type | Default |
+|---|---|---|
+| `highlighted` | `boolean` | `false` |
+| `class` | `string` | — |
+
+### PricingPlanPrice
+
+| Prop | Type | Default |
+|---|---|---|
+| `price` | `string` | — |
+| `period` | `string` | — |
+| `class` | `string` | — |
+
+`PricingTable`/`PricingPlanFeature` accept `class` and `children` only.

@@ -1,0 +1,63 @@
+---
+title: Drag Items
+description: Free-form draggable positioning within a bounded container. Purely presentational — no Morphos equivalent.
+icon: Move
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="drag-items" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="drag-items" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-drag-items--default" title="Default" height={260} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-drag-items--default" title="Default" height={260} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Pointer-drag math the same shape as
+`ResizableHandle`'s, translating the element instead of resizing a neighbor. Distinct from
+`Sortable`, which reorders a rank instead of repositioning elements freely — this is a
+moodboard/canvas item, not a list.
+
+## Usage
+
+```tsx
+import { DragItem, DragItems } from "@/components/ui/drag-items";
+
+<DragItems>
+  <DragItem defaultPosition={{ x: 24, y: 24 }}>A</DragItem>
+  <DragItem defaultPosition={{ x: 140, y: 80 }}>B</DragItem>
+</DragItems>
+```
+
+## Props
+
+### DragItem
+
+| Prop | Type | Default |
+|---|---|---|
+| `defaultPosition` | `{ x: number; y: number }` | `{ x: 0, y: 0 }` |
+| `bounded` | `boolean` | `true` (clamp within the parent `DragItems`) |
+| `class` | `string` | — |
+
+`DragItems` accepts `class`, `id`, and `children` only.

@@ -1,0 +1,77 @@
+---
+title: Dock
+description: A macOS-style magnifying dock, driven by pointer-distance DOM queries. Purely presentational — no Morphos equivalent.
+icon: PanelBottom
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="dock" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="dock" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-dock--default" title="Default" height={180} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-dock--default" title="Default" height={180} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Rather than tracking per-item reactive state,
+`onPointerMove` walks the mounted `[data-slot=dock-item]` children directly (the same
+DOM-querying approach `ResizableHandle` uses) and sets each one's `transform` imperatively based
+on distance from the pointer.
+
+## Usage
+
+```tsx
+import { Icon } from "@morphos/icons";
+
+import { Dock, DockItem } from "@/components/ui/dock";
+
+<Dock>
+  <DockItem label="Home">
+    <Icon name="House" />
+  </DockItem>
+  <DockItem label="Messages">
+    <Icon name="MessageCircle" />
+  </DockItem>
+  <DockItem label="Calendar">
+    <Icon name="Calendar" />
+  </DockItem>
+</Dock>
+```
+
+## Props
+
+### Dock
+
+| Prop | Type | Default |
+|---|---|---|
+| `magnification` | `number` | `1.5` |
+| `distance` | `number` | `140` (px range of pointer influence) |
+| `class` | `string` | — |
+
+### DockItem
+
+| Prop | Type | Default |
+|---|---|---|
+| `label` | `string` | — |
+| `class` | `string` | — |

@@ -1,0 +1,85 @@
+---
+title: Marquee
+description: A seamless infinite-scroll content ticker. Purely presentational — no Morphos equivalent, no react-fast-marquee dependency.
+icon: MoveHorizontal
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="marquee" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="marquee" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-marquee--default" title="Default" height={140} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-marquee--default" title="Default" height={140} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent, and deliberately avoids a runtime dependency like
+`react-fast-marquee`: `MarqueeContent` renders its `children` twice back-to-back inside a flex
+track animated from `translateX(0)` to `translateX(-50%)` — a seamless-loop trick that works
+regardless of content width, since `-50%` is relative to the track's own (doubled) width. A
+`ResizeObserver` measures one copy against the container and grows the copy count past 2 whenever
+content is narrower than the container, so there's never a visible gap before the loop repeats —
+the `autoFill` behavior of the original, without the dependency. Hovering pauses the animation when
+`pauseOnHover` is on (the default).
+
+## Usage
+
+```tsx
+import { Marquee, MarqueeContent, MarqueeFade, MarqueeItem } from "@/components/ui/marquee";
+
+<Marquee>
+  <MarqueeFade side="left" />
+  <MarqueeContent>
+    <MarqueeItem>Item one</MarqueeItem>
+    <MarqueeItem>Item two</MarqueeItem>
+    <MarqueeItem>Item three</MarqueeItem>
+  </MarqueeContent>
+  <MarqueeFade side="right" />
+</Marquee>
+```
+
+## Props
+
+### MarqueeContent
+
+| Prop | Type | Default |
+|---|---|---|
+| `speed` | `number` (px/second) | `50` |
+| `direction` | `"left" \| "right"` | `"left"` |
+| `pauseOnHover` | `boolean` | `true` |
+| `gap` | `number` (px) | `16` |
+| `class` | `string` | — |
+
+### MarqueeFade
+
+| Prop | Type | Default |
+|---|---|---|
+| `side` | `"left" \| "right"` | — |
+| `class` | `string` | — |
+
+### Marquee / MarqueeItem
+
+| Prop | Type | Default |
+|---|---|---|
+| `class` | `string` | — |

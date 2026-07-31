@@ -1,0 +1,89 @@
+---
+title: Kanban
+description: A drag-across-columns board. Purely presentational — no Morphos equivalent.
+icon: Columns3
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="kanban" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="kanban" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-kanban--default" title="Default" height={280} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-kanban--default" title="Default" height={280} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Same live-DOM `insertBefore` approach as
+`Sortable`, extended to pick whichever column body the pointer is currently over instead of
+assuming a single container. `onChange` fires on drop with every column's current card order.
+
+The picked-up card detaches from document flow (`position: fixed`) and follows the pointer 1:1,
+while a dashed "ghost" placeholder — sized to match the card — stays behind and is what actually
+gets reordered within/across columns as the pointer moves; on drop, the card swaps back in for the
+ghost with a short FLIP settle animation. The column currently under the pointer is highlighted as
+the drop target, and any sibling cards displaced by the ghost's move slide into their new slot via
+a small FLIP pass (measure → move → animate the delta away with `transform`) instead of snapping —
+all pure DOM/CSS, no `@State` involved, since the board already tracks card order by querying live
+DOM rather than through reactive state. An empty column body shows a dashed "Drop cards here"
+placeholder.
+
+## Usage
+
+```tsx
+import { KanbanBoard, KanbanCard, KanbanColumn } from "@/components/ui/kanban";
+
+<KanbanBoard onChange={(columns) => console.log(columns)}>
+  <KanbanColumn columnId="todo" title="To do">
+    <KanbanCard value="task-1">Write proposal</KanbanCard>
+  </KanbanColumn>
+  <KanbanColumn columnId="done" title="Done">
+    <KanbanCard value="task-2">Set up repo</KanbanCard>
+  </KanbanColumn>
+</KanbanBoard>
+```
+
+## Props
+
+### KanbanBoard
+
+| Prop | Type | Default |
+|---|---|---|
+| `onChange` | `(columns: Record<string, string[]>) => void` | — |
+| `class` | `string` | — |
+
+### KanbanColumn
+
+| Prop | Type | Default |
+|---|---|---|
+| `columnId` | `string` | — |
+| `title` | `Children` | — |
+| `color` | `string` (CSS color for a status dot before `title`) | — |
+| `class` | `string` | — |
+
+### KanbanCard
+
+| Prop | Type | Default |
+|---|---|---|
+| `value` | `string` | — |
+| `class` | `string` | — |

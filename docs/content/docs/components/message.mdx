@@ -1,6 +1,6 @@
 ---
 title: Message
-description: Composes Bubble with an optional avatar and role-based layout for chat UIs.
+description: Composes Bubble with an optional avatar, role-based layout, and an optional trailing actions row, for chat UIs.
 icon: MessageSquare
 ---
 
@@ -27,10 +27,12 @@ import { StorybookEmbed } from '@/components/storybook-embed';
   <Tab value="Tailwind">
     <StorybookEmbed story="tailwind-message--default" title="Default" height={380} />
     <StorybookEmbed story="tailwind-message--conversation" title="Conversation" height={380} />
+    <StorybookEmbed story="tailwind-message--with-actions" title="With actions" height={180} />
   </Tab>
   <Tab value="PraxisCSS">
     <StorybookEmbed story="praxiscss-message--default" title="Default" height={380} />
     <StorybookEmbed story="praxiscss-message--conversation" title="Conversation" height={380} />
+    <StorybookEmbed story="praxiscss-message--with-actions" title="With actions" height={180} />
   </Tab>
 </Tabs>
 
@@ -59,8 +61,9 @@ class Chat extends StatefulComponent {
 }
 ```
 
-Use with [Message Scroller](/docs/components/message-scroller) for a scrollable chat viewport, and
-[Attachment](/docs/components/attachment) for file previews within a message.
+Use with [Message Scroller](/docs/components/message-scroller) for a scrollable chat viewport,
+[Attachment](/docs/components/attachment) for file previews within a message, and
+[Actions](/docs/components/actions) for the `actions` slot below.
 
 ## Props
 
@@ -70,5 +73,6 @@ Use with [Message Scroller](/docs/components/message-scroller) for a scrollable 
 |---|---|---|
 | `from` | `"user" \| "assistant"` | — required |
 | `avatar` | `Children` | — rendered before the bubble (e.g. an `Avatar`) |
+| `actions` | `Children` | — rendered below the bubble, indented to align with it (e.g. `Actions`) |
 
 `MessageGroup` takes no props beyond `class`/`children`.

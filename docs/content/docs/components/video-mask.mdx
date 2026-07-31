@@ -1,0 +1,94 @@
+---
+title: Video Masking
+description: A video revealed only inside a shape — a circle by default, or any custom SVG. Purely presentational — no Morphos equivalent.
+icon: Video
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="video-mask" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="video-mask" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-video-masking--default" title="Default" height={280} />
+    <StorybookEmbed story="tailwind-video-masking--auto-move" title="Auto Move" height={280} />
+    <StorybookEmbed story="tailwind-video-masking--custom-shape" title="Custom Shape" height={280} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-video-masking--default" title="Default" height={280} />
+    <StorybookEmbed story="praxiscss-video-masking--auto-move" title="Auto Move" height={280} />
+    <StorybookEmbed story="praxiscss-video-masking--custom-shape" title="Custom Shape" height={280} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. The reveal shape is a CSS custom property
+(`--video-mask`) written imperatively (same reasoning as `Resizable`'s direct style writes: this
+needs to update every pointer-move event or animation frame, which would be wasteful to route
+through `@State`). The area outside the shape shows the container's background instead of the
+video.
+
+By default the shape is a circle that follows the pointer (`_handlePointerMove` writes the mask
+straight from `event.clientX`/`clientY`). Set `autoMove` to drive that circle from a
+`requestAnimationFrame` loop instead — a Lissajous curve (`cos`/`sin` at different frequencies,
+tracing a figure eight rather than a plain circle) scaled to the container's own measured size,
+with no pointer involved at all. Useful for an ambient hero/background effect where you can't rely
+on the visitor moving their mouse over it (e.g. most of the time on mobile, or a section that's
+merely scrolled past).
+
+Set `maskSrc` to reveal the video through *any* SVG (or raster image) instead of a circle — a
+fixed shape, applied once via `mask-image: url(...)`, bypassing the `--video-mask`/pointer/
+`autoMove` machinery entirely (no per-frame writes at all). Point it at a local file, a remote URL,
+or an inline `data:image/svg+xml,...` URI — whatever you pass becomes the reveal shape: your logo,
+an icon, a blob, text. The browser's default *luminance* masking means opaque **white** areas of
+the source are what's visible; a plain black fill instead masks everything out, since a
+transparent background already contributes zero regardless of color. `maskSize`/`maskPosition`/
+`maskRepeat` (defaulting to `"contain"`/`"center"`/`"no-repeat"`) tune how the shape fits the
+container, same as the matching CSS properties.
+
+## Usage
+
+```tsx
+import { VideoMask } from "@/components/ui/video-mask";
+
+<VideoMask class="h-64 w-full rounded-lg" src="/your-video.mp4" radius={120} />
+
+{/* Ambient variant — sweeps on its own, ignores the pointer */}
+<VideoMask class="h-64 w-full rounded-lg" src="/your-video.mp4" radius={120} autoMove />
+
+{/* Custom shape — reveals through any SVG instead of a circle */}
+<VideoMask class="h-64 w-full rounded-lg" src="/your-video.mp4" maskSrc="/your-logo.svg" />
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `src` | `string` | — |
+| `poster` | `string` | — |
+| `radius` | `number` (px reveal radius) | `120` |
+| `autoMove` | `boolean` | `false` |
+| `maskSrc` | `string` (URL or data URI) | — |
+| `maskSize` | `string` | `"contain"` |
+| `maskPosition` | `string` | `"center"` |
+| `maskRepeat` | `string` | `"no-repeat"` |
+| `class` | `string` | — |
+
+`radius`/`autoMove` only apply when `maskSrc` is unset — passing `maskSrc` switches the component
+into the fixed-custom-shape mode described above.

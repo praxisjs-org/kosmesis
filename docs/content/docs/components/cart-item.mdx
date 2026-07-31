@@ -1,0 +1,68 @@
+---
+title: Cart Item
+description: A single cart row with a quantity stepper. Purely presentational — no Morphos equivalent.
+icon: PackageSearch
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="cart-item" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="cart-item" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-cart-item--default" title="Default" height={140} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-cart-item--default" title="Default" height={140} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. The remove button only renders when `onRemove` is
+given; the quantity stepper's decrease button disables at `quantity === 1` (use `onRemove` to go
+below that).
+
+## Usage
+
+```tsx
+import { CartItem } from "@/components/ui/cart-item";
+
+<CartItem
+  image="/headphones.jpg"
+  name="Wireless headphones"
+  variant="Black"
+  price="$89.00"
+  quantity={1}
+  onQuantityChange={(quantity) => updateQuantity(quantity)}
+  onRemove={() => removeItem()}
+/>
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `image` | `string` | — |
+| `name` | `string` | — |
+| `variant` | `string` | — |
+| `price` | `string` | — |
+| `quantity` | `number` | — |
+| `onQuantityChange` | `(quantity: number) => void` | — |
+| `onRemove` | `() => void` | — |
+| `class` | `string` | — |

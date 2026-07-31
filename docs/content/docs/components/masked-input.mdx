@@ -1,0 +1,74 @@
+---
+title: Masked Input
+description: A pattern-formatted text input — phone numbers, dates, credit cards, and the like. Purely presentational — no Morphos equivalent.
+icon: SquareAsterisk
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="masked-input" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="masked-input" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-masked-input--phone" title="Phone" height={100} />
+    <StorybookEmbed story="tailwind-masked-input--date-mask" title="Date" height={100} />
+    <StorybookEmbed story="tailwind-masked-input--credit-card" title="Credit card" height={100} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-masked-input--phone" title="Phone" height={100} />
+    <StorybookEmbed story="praxiscss-masked-input--date-mask" title="Date" height={100} />
+    <StorybookEmbed story="praxiscss-masked-input--credit-card" title="Credit card" height={100} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent, no external masking dependency. `mask` is a plain
+pattern string: `9` accepts a digit, `a` accepts a letter, `*` accepts either, and every other
+character is a literal that's inserted automatically once the data slots before it are filled.
+Literal characters typed by the user (e.g. pasting an already-formatted `"(555) 123-4567"`) are
+filtered out and re-inserted rather than double-counted. The caret always resets to the end of the
+value after each keystroke — this stays a lightweight, single-file implementation rather than a
+full caret-preserving mask engine, so it's best suited to append-only entry (phone numbers, dates,
+card numbers) rather than free-form mid-string editing.
+
+## Usage
+
+```tsx
+import { MaskedInput } from "@/components/ui/masked-input";
+
+<MaskedInput
+  mask="(999) 999-9999"
+  placeholder="(555) 123-4567"
+  onChange={(value, rawValue) => console.log(value, rawValue)}
+/>
+```
+
+Common masks: phone `"(999) 999-9999"`, date `"99/99/9999"`, credit card
+`"9999 9999 9999 9999"`, SSN `"999-99-9999"`, license plate `"aaa-9999"`.
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `mask` | `string` | — required |
+| `defaultValue` | `string` | `""` |
+| `onChange` | `(value: string, rawValue: string) => void` | — |
+| `disabled` | `boolean` | `false` |
+| `placeholder` | `string` | — |
+| `class` | `string` | — |

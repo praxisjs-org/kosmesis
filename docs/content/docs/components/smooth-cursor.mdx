@@ -1,0 +1,58 @@
+---
+title: Smooth Cursor
+description: A viewport-global custom cursor that eases toward the pointer. Purely presentational — no Morphos equivalent.
+icon: Pointer
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="smooth-cursor" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="smooth-cursor" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-smooth-cursor--default" title="Default" height={260} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-smooth-cursor--default" title="Default" height={260} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Distinct from `Pointer` (bounded to a single
+container, tracks 1:1): mount this once near the app root. Runs its own
+`requestAnimationFrame` loop and writes `transform` directly rather than through `@State`, since
+the lerp needs to keep ticking every frame regardless of whether the pointer is moving. Pair with
+a global `cursor: none` where you want the native cursor hidden.
+
+## Usage
+
+```tsx
+import { SmoothCursor } from "@/components/ui/smooth-cursor";
+
+// once, near the app root
+<SmoothCursor size={24} ease={0.15} />
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `size` | `number` (px) | `24` |
+| `ease` | `number` (0-1 lerp factor per frame) | `0.15` |
+| `class` | `string` | — |

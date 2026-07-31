@@ -1,0 +1,56 @@
+---
+title: Review Summary
+description: An average-rating + star-count breakdown. Purely presentational — no Morphos equivalent.
+icon: Star
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="review-summary" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="review-summary" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-review-summary--default" title="Default" height={180} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-review-summary--default" title="Default" height={180} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. `breakdown` is 5 counts ordered 5★..1★ (index 0 =
+5-star count); each bar is scaled relative to the largest count in the array. Omit `breakdown` to
+show just the average/count.
+
+## Usage
+
+```tsx
+import { ReviewSummary } from "@/components/ui/review-summary";
+
+<ReviewSummary average={4.6} count={238} breakdown={[180, 40, 10, 5, 3]} />
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `average` | `number` | — |
+| `count` | `number` | — |
+| `breakdown` | `number[]` (5 counts, 5★..1★) | — |
+| `class` | `string` | — |

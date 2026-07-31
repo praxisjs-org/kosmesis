@@ -1,0 +1,243 @@
+---
+title: Shimmer
+description: A pure-CSS shimmer sweep for text. Purely presentational — no Morphos equivalent.
+icon: Sparkle
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="shimmer" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="shimmer" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-shimmer--default" title="Default" height={80} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-shimmer--default" title="Default" height={80} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Unlike shadcn's `shimmer` (a set of global Tailwind
+utility classes shipped via the `shadcn` npm package), Kosmesis ships this as a copy-paste `Shimmer`
+component: wrap any text in it instead of adding a `shimmer` class. The effect is pure CSS —
+`background-clip: text` paints the text with a moving highlight gradient layered over a static
+`currentColor` gradient, so it adapts to whatever color the wrapping element sets, in light or dark
+mode, with no configuration needed. Every prop (`color`, `duration`, `spread`, `angle`) is threaded
+through as a CSS custom property and read back via `var()` in a scoped rule injected once per
+instance — the actual `animation-*`/`background-*` properties are never set inline, so the RTL and
+reduced-motion overrides in that same rule always win over the per-instance custom properties.
+
+```tsx
+<p className="text-muted-foreground">
+  <Shimmer>Generating response&hellip;</Shimmer>
+</p>
+```
+
+## With Marker
+
+A common pairing is a status dot and spinner next to shimmering status text:
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-shimmer--with-marker" title="With Marker" height={80} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-shimmer--with-marker" title="With Marker" height={80} />
+  </Tab>
+</Tabs>
+
+```tsx
+<div className="flex items-center gap-2">
+  <Marker variant="default" aria-label="Working" />
+  <Spinner />
+  <Shimmer>Thinking&hellip;</Shimmer>
+</div>
+```
+
+## Color
+
+Use the `color` prop to set the highlight color explicitly — any valid CSS color, including
+`color-mix()`/alpha syntax for opacity. Left unset, the highlight is derived automatically from
+`currentColor` via relative color syntax (`oklch(from currentColor calc(l + 0.35) c h)`), so it
+adapts to any text color without configuration.
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-shimmer--color" title="Color" height={100} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-shimmer--color" title="Color" height={100} />
+  </Tab>
+</Tabs>
+
+```tsx
+<Shimmer color="oklch(0.7 0.19 260 / 70%)">Generating response&hellip;</Shimmer>
+<Shimmer color="#378ADD">Generating response&hellip;</Shimmer>
+```
+
+## Duration
+
+Use `duration` to set the length of one sweep in milliseconds. The default is `2000`.
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-shimmer--duration" title="Duration" height={80} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-shimmer--duration" title="Duration" height={80} />
+  </Tab>
+</Tabs>
+
+```tsx
+<Shimmer duration={1000}>Generating response&hellip;</Shimmer>
+```
+
+## Spread
+
+Use `spread` to set the width of the highlight band, as a number of pixels or any CSS length
+string. The default is `"calc(3ch + 40px)"`: a fixed base plus a `3ch` term that scales with the
+font size.
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-shimmer--spread" title="Spread" height={80} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-shimmer--spread" title="Spread" height={80} />
+  </Tab>
+</Tabs>
+
+```tsx
+<Shimmer spread={96}>Generating response&hellip;</Shimmer>
+<Shimmer spread="5rem">Generating response&hellip;</Shimmer>
+```
+
+## Angle
+
+Use `angle` to set the tilt of the highlight band, in degrees. The default is `20`.
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-shimmer--angle" title="Angle" height={80} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-shimmer--angle" title="Angle" height={80} />
+  </Tab>
+</Tabs>
+
+```tsx
+<Shimmer angle={45}>Generating response&hellip;</Shimmer>
+```
+
+## Reverse
+
+Use `reverse` to sweep the highlight in the opposite direction. In RTL layouts the sweep already
+follows the reading direction — see [RTL](#rtl).
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-shimmer--reverse" title="Reverse" height={80} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-shimmer--reverse" title="Reverse" height={80} />
+  </Tab>
+</Tabs>
+
+```tsx
+<Shimmer reverse>Generating response&hellip;</Shimmer>
+```
+
+## Play Once
+
+Use `once` to play a single sweep instead of looping — useful as a reveal when streaming completes.
+Pair it with `duration` to control how long the sweep takes.
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-shimmer--once" title="Play Once" height={80} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-shimmer--once" title="Play Once" height={80} />
+  </Tab>
+</Tabs>
+
+```tsx
+<Shimmer duration={1100} once>
+  Response generated.
+</Shimmer>
+```
+
+## Disabled
+
+Use `disabled` to turn the effect off and render the text normally — the component skips every
+shimmer style entirely, so it's cheap to gate behind a prop.
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-shimmer--disabled" title="Disabled" height={80} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-shimmer--disabled" title="Disabled" height={80} />
+  </Tab>
+</Tabs>
+
+```tsx
+<Shimmer disabled={!isStreaming}>Generating response&hellip;</Shimmer>
+```
+
+## Fallback
+
+The shimmer is built on modern color features — relative color syntax and multi-layer
+`background-clip: text` — available in all current browsers. In older browsers without support,
+the highlight gradient is dropped and the text can render transparent; pass an explicit `color`
+(a plain color, not relative-color syntax) if you need to support them.
+
+## Reduced Motion
+
+When the user prefers reduced motion, the animation and gradient are disabled automatically and the
+text renders as normal `currentColor` text. There is nothing to configure.
+
+## RTL
+
+The sweep follows the reading direction — left to right in LTR, right to left in RTL — with no
+extra props, driven by `:dir(rtl)` in the component's own scoped rule. Use `reverse` to flip the
+direction manually in either mode.
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-shimmer--rtl" title="RTL" height={80} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-shimmer--rtl" title="RTL" height={80} />
+  </Tab>
+</Tabs>
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `color` | `string` | auto (brightened `currentColor`) |
+| `duration` | `number` (ms) | `2000` |
+| `spread` | `number` (px) \| `string` | `"calc(3ch + 40px)"` |
+| `angle` | `number` (deg) | `20` |
+| `reverse` | `boolean` | `false` |
+| `once` | `boolean` | `false` |
+| `disabled` | `boolean` | `false` |
+| `class` | `string` | — |

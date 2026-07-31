@@ -1,0 +1,100 @@
+---
+title: Credit Card
+description: A visual credit card face with multiple color variants and a flippable front/back. Purely presentational — no Morphos equivalent.
+icon: CreditCard
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="credit-card" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="credit-card" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-credit-card--default" title="Default" height={260} />
+    <StorybookEmbed story="tailwind-credit-card--variants" title="Variants" height={260} />
+    <StorybookEmbed story="tailwind-credit-card--controlled" title="Controlled" height={300} />
+    <StorybookEmbed story="tailwind-credit-card--static" title="Static (Not Flippable)" height={220} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-credit-card--default" title="Default" height={260} />
+    <StorybookEmbed story="praxiscss-credit-card--variants" title="Variants" height={260} />
+    <StorybookEmbed story="praxiscss-credit-card--controlled" title="Controlled" height={300} />
+    <StorybookEmbed story="praxiscss-credit-card--static" title="Static (Not Flippable)" height={220} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Pass an already-masked `number` (e.g.
+`"•••• •••• •••• 4242"`) if you're displaying a saved card; this component does no formatting or
+validation of its own.
+
+`variant` swaps the whole color scheme (`"dark"` (default), `"gradient"`, `"gold"`, `"platinum"`,
+`"light"`) — front and back always share it, so it still reads as one physical card rather than two
+unrelated faces. When `flippable` (default `true`), clicking the card — or focusing it and pressing
+<kbd>Enter</kbd>/<kbd>Space</kbd> — rotates it 180° via a real 3D transform (`perspective` on the
+outer box, `rotateY` on an inner flipper, `backface-visibility: hidden` on both faces) to reveal the
+back: a magnetic stripe, a signature strip with `cvv`, and the brand repeated in small print. Both
+faces are always in the DOM; `rotateY` alone decides which one is currently readable, so there's no
+separate "back-facing" render path to keep in sync.
+
+Both faces are absolutely positioned (so the flip doesn't reflow anything), which means nothing in
+normal document flow gives the card a natural size anymore — a `min-width` keeps it from collapsing
+to `0×0` if you drop it into a shrink-to-fit parent (a centered flex column with no explicit width);
+it still happily fills (up to its `max-width`) any parent that has a real one, which is the common
+case.
+
+`side` lets you pick which face is showing from the outside instead of relying on clicks — pass
+`flippable={false}` alongside it to disable the built-in click-to-flip entirely, as in the
+**Controlled** example above. `onFlip` fires on every flip either way (controlled or not), so a
+controlled consumer can keep its own state in sync. Cross-component prop updates aren't continuously
+reactive in this framework (a value is only read once at assignment), so changing `side` after the
+first render means re-creating the element from a thunk keyed off your own state — e.g.
+`{() => <CreditCard side={this.side} .../>}`, the same idiom `ProgressiveBlur` uses — which is why an
+externally-driven `side` switches instantly rather than animating; reserve `flippable` + the card's
+own internal state for the smooth 3D flip.
+
+## Usage
+
+```tsx
+import { CreditCard } from "@/components/ui/credit-card";
+
+<CreditCard
+  variant="gradient"
+  number="4242 4242 4242 4242"
+  name="Ada Lovelace"
+  expiry="08/29"
+  brand="VISA"
+  cvv="123"
+/>
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `number` | `string` | `"•••• •••• •••• ••••"` |
+| `name` | `string` | `"CARD HOLDER"` |
+| `expiry` | `string` | `"MM/YY"` |
+| `brand` | `string` | — |
+| `cvv` | `string` (shown on the back) | `"•••"` |
+| `variant` | `"dark" \| "gradient" \| "gold" \| "platinum" \| "light"` | `"dark"` |
+| `flippable` | `boolean` | `true` |
+| `side` | `"front" \| "back"` (controlled — omit for internal state) | — |
+| `onFlip` | `(side: "front" \| "back") => void` | — |
+| `class` | `string` | — |

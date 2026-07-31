@@ -1,0 +1,95 @@
+---
+title: Motion
+description: An animate-on-mount / animate-on-scroll-into-view wrapper with 28 built-in effect presets. Purely presentational — no Morphos equivalent.
+icon: WandSparkles
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="motion" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="motion" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-motion--default" title="Default" height={120} />
+    <StorybookEmbed story="tailwind-motion--effect-gallery" title="Effect gallery (all 28 presets)" height={640} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-motion--default" title="Default" height={120} />
+    <StorybookEmbed story="praxiscss-motion--effect-gallery" title="Effect gallery (all 28 presets)" height={640} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational + an `IntersectionObserver` — no Morphos equivalent. Transitions plain CSS
+`opacity`/`transform`/`filter` between `from` and `to`. With `inView` (the default), the animation
+starts when the element scrolls into the viewport; with `inView={false}` it starts immediately on
+mount.
+
+**28 built-in `effect` presets** resolve to a `from`/`to`/easing triple, covering fade, slide, zoom,
+flip (2D squish via a single-element `perspective()`, no wrapper needed), rotate, skew, blur, and
+bounce/elastic (overshoot easing, not multi-step keyframes) families. Direction suffixes describe
+where the element starts *relative to its settled position* — `"fade-up"` starts below and rises
+into place, `"fade-left"` starts to the right and slides left into place, and so on. Explicit
+`from`/`to`/`easing` props always override whatever `effect` computes, so picking a preset never
+forecloses hand-tuning it further — pass `effect="bounce-in"` and `duration={800}` together, or
+drop `effect` entirely and specify `from`/`to` exactly as before.
+
+## Usage
+
+```tsx
+import { Motion } from "@/components/ui/motion";
+
+<Motion effect="fade-up" duration={600}>
+  <Card>...</Card>
+</Motion>
+
+// or fully custom, same as before `effect` existed
+<Motion from={{ opacity: 0, y: 16, rotate: -8 }} to={{ opacity: 1, y: 0, rotate: 0 }} duration={600}>
+  <Card>...</Card>
+</Motion>
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `effect` | `MotionEffect` (28 presets — see below) | — |
+| `from` | `{ opacity?; x?; y?; scale?; scaleX?; scaleY?; rotate?; rotateX?; rotateY?; skewX?; skewY?; blur? }` | `{ opacity: 0, y: 12 }`, or the effect's preset |
+| `to` | same shape as `from` | `{ opacity: 1, y: 0 }`, or the effect's preset |
+| `easing` | `string` (any CSS easing/`cubic-bezier`) | `"ease"`, or the effect's suggested easing |
+| `perspective` | `number` (px, applied when `rotateX`/`rotateY` is set) | `800` |
+| `duration` | `number` (ms) | `500` |
+| `delay` | `number` (ms) | `0` |
+| `once` | `boolean` | `true` |
+| `inView` | `boolean` | `true` |
+| `class` | `string` | — |
+
+### MotionEffect presets
+
+| Family | Presets |
+|---|---|
+| Fade | `fade`, `fade-up`, `fade-down`, `fade-left`, `fade-right` |
+| Slide (no opacity change) | `slide-up`, `slide-down`, `slide-left`, `slide-right` |
+| Zoom | `zoom-in`, `zoom-out` |
+| Flip | `flip-x`, `flip-y`, `flip-up`, `flip-down` |
+| Rotate | `rotate-in`, `rotate-left`, `rotate-right` |
+| Skew | `skew-up`, `skew-down` |
+| Blur | `blur-in` |
+| Bounce / elastic (overshoot easing) | `bounce-in`, `bounce-up`, `elastic-in`, `pop` |
+| Roll / drop | `roll-in-left`, `roll-in-right`, `drop-in` |

@@ -1,0 +1,70 @@
+---
+title: Payment Method Selector
+description: A radio-driven list of payment method rows, wrapping Morphos's RadioGroup + Radio.
+icon: Wallet
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="payment-method-selector" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="payment-method-selector" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-payment-method-selector--default" title="Default" height={220} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-payment-method-selector--default" title="Default" height={220} />
+  </Tab>
+</Tabs>
+
+## About
+
+Same Morphos `RadioGroup`/`Radio` primitives as `RadioGroup`/`RadioCard`, styled as a vertical list
+of rows (icon + label + trailing dot) instead of a grid of cards. Same two-instance pattern as
+`RadioGroup`: one instance mounted via JSX (the container), one held in state that
+`PaymentMethodOption` reads from via its `group` prop.
+
+## Usage
+
+```tsx
+import { PaymentMethodOption, PaymentMethodSelector } from "@/components/ui/payment-method-selector";
+
+@Component()
+class PaymentMethod extends StatefulComponent {
+  @State() group = new PaymentMethodSelector({ defaultValue: "card" });
+
+  onBeforeMount() {
+    this.group.onBeforeMount();
+  }
+
+  render() {
+    return (
+      <PaymentMethodSelector defaultValue="card">
+        <PaymentMethodOption group={this.group} value="card" label="Credit card" icon={<CreditCardIcon />} />
+        <PaymentMethodOption group={this.group} value="paypal" label="PayPal" icon={<PayPalIcon />} />
+      </PaymentMethodSelector>
+    );
+  }
+}
+```
+
+## Props
+
+`PaymentMethodSelector` accepts the same props as `RadioGroup` (`defaultValue`, `disabled`,
+`class`, ...). `PaymentMethodOption` accepts the same props as `RadioGroupItem` (`group`, `value`,
+`disabled`, `class`, ...) plus `label` and an optional `icon`.

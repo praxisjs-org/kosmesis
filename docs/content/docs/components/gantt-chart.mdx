@@ -1,0 +1,127 @@
+---
+title: Gantt Chart
+description: A customizable, animated project timeline with draggable/resizable task bars, day/week/month views, dependency connectors, and milestones. Purely presentational — no Morphos equivalent.
+icon: ChartNoAxesGantt
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="gantt-chart" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="gantt-chart" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-gantt-chart--default" title="Default" height={420} />
+    <StorybookEmbed story="tailwind-gantt-chart--grouped-with-dependencies" title="Grouped, with dependencies & milestones" height={480} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-gantt-chart--default" title="Default" height={420} />
+    <StorybookEmbed story="praxiscss-gantt-chart--grouped-with-dependencies" title="Grouped, with dependencies & milestones" height={480} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational + date math — no Morphos equivalent, and no external gantt/scheduling
+dependency. `GanttChart` is a single self-contained widget (same shape as `KanbanBoard` or
+`ProgressCircle`) that takes a flat `tasks` array and renders the whole thing: a sticky task-name
+sidebar, a sticky date header, task bars, dependency connectors, and a "today" marker — all inside
+one scroll container using CSS `position: sticky` for the frozen header/column (no manual scroll
+syncing).
+
+**Views.** `viewMode` (`"day" | "week" | "month"`, controlled) or `defaultViewMode` (uncontrolled,
+defaults to `"day"`) switches the header granularity. Every column is really a day-width computed
+off the visible range's start date — week/month view just change how columns are *grouped* and how
+many days each spans, so bar placement is one formula across all three modes, not three divergent
+ones. Month view is the one exception: each month's day-width is `columnWidth / daysInThatMonth`,
+so every month renders at the same column width despite having different day counts. A built-in
+toolbar (`showToolbar`, on by default) renders the Day/Week/Month switcher plus a "Today" button
+that smooth-scrolls the viewport to center the current date.
+
+**Animated.** On mount, every bar grows in from zero width and its progress fill animates in
+shortly after, staggered per row (capped at 300ms) so a long task list reveals top-to-bottom
+instead of popping in at once. The "today" marker pulses. Dragging or resizing a bar snaps to its
+final position with a short eased transition instead of jumping.
+
+**Editable.** With `editable` (on by default), drag a bar to move it, or its left/right edge to
+resize it — both snap to whole-day increments. Dragging is plain DOM mutation during the gesture
+(`setPointerCapture` + direct `style.left`/`style.width` writes, the same technique `Resizable` and
+`KanbanBoard` use) rather than reactive state, so a re-render can never steal the pointer capture
+mid-drag. `onTaskChange` fires once, on drop, with the updated task; `onTaskClick` fires for a
+plain click (no movement). If you don't feed the updated dates back into `tasks`, the bar simply
+stays where it was dropped — same contract as `KanbanBoard`'s `onChange`.
+
+**Customizable.** `rowHeight`, `sidebarWidth`, and `columnWidth` (per-view-mode column size)
+control layout density; `height` caps the widget and turns on scrolling. Each `GanttTask` accepts
+its own `color` (any CSS color, blended into the bar's track/fill), `group` (clusters tasks under a
+header row — assumes `tasks` is pre-sorted by group), `dependencies` (an array of task ids that
+draws an arrowed connector from each), and `milestone` (renders a diamond marker at `start` instead
+of a bar). `showDependencies`, `showToday`, and `showWeekends` toggle each layer independently.
+
+## Usage
+
+```tsx
+import { GanttChart, type GanttTask } from "@/components/ui/gantt-chart";
+
+const tasks: GanttTask[] = [
+  { id: "design", name: "Design", start: new Date(2026, 0, 5), end: new Date(2026, 0, 12), progress: 100, group: "Phase 1" },
+  { id: "build", name: "Build", start: new Date(2026, 0, 10), end: new Date(2026, 0, 24), progress: 60, group: "Phase 1", dependencies: ["design"] },
+  { id: "launch", name: "Launch", start: new Date(2026, 0, 26), end: new Date(2026, 0, 26), milestone: true, group: "Phase 1", dependencies: ["build"] },
+];
+
+<GanttChart
+  tasks={tasks}
+  onTaskChange={(task) => console.log("moved", task.id, task.start, task.end)}
+/>
+```
+
+## Props
+
+### GanttChart
+
+| Prop | Type | Default |
+|---|---|---|
+| `tasks` | `GanttTask[]` | `[]` |
+| `viewMode` | `"day" \| "week" \| "month"` | — (uncontrolled) |
+| `defaultViewMode` | `"day" \| "week" \| "month"` | `"day"` |
+| `onViewModeChange` | `(mode: GanttViewMode) => void` | — |
+| `columnWidth` | `number` (overrides the per-mode default column width) | — |
+| `rowHeight` | `number` | `40` |
+| `sidebarWidth` | `number` | `240` |
+| `height` | `number` (caps height, enables scrolling) | — (grows to fit) |
+| `editable` | `boolean` | `true` |
+| `showToolbar` | `boolean` | `true` |
+| `showDependencies` | `boolean` | `true` |
+| `showToday` | `boolean` | `true` |
+| `showWeekends` | `boolean` | `true` |
+| `onTaskChange` | `(task: GanttTask) => void` | — |
+| `onTaskClick` | `(task: GanttTask) => void` | — |
+| `class` | `string` | — |
+
+### GanttTask
+
+| Field | Type | Notes |
+|---|---|---|
+| `id` | `string` | — |
+| `name` | `string` | — |
+| `start` | `Date` | — |
+| `end` | `Date` | — |
+| `progress` | `number` | 0–100, animates in on mount |
+| `color` | `string` | any CSS color, defaults to the theme's primary token |
+| `group` | `string` | clusters under a group header row; assumes `tasks` is pre-sorted |
+| `dependencies` | `string[]` | ids of tasks that must render before this one |
+| `milestone` | `boolean` | renders a diamond at `start` instead of a bar; `end` is ignored |

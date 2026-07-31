@@ -1,0 +1,63 @@
+---
+title: AI Actions
+description: A row of small icon action buttons under an AI response. Purely presentational — no Morphos equivalent.
+icon: EllipsisVertical
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="ai-actions" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="ai-actions" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-ai-actions--default" title="Default" height={80} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-ai-actions--default" title="Default" height={80} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. `AiActions` is the row container; each `AiAction`
+is a plain icon button (copy, regenerate, share, ...). Pairs well with `AiMessage`'s `actions` slot.
+
+## Usage
+
+```tsx
+import { Icon } from "@morphos/icons";
+
+import { AiAction, AiActions } from "@/components/ui/ai-actions";
+
+<AiActions>
+  <AiAction label="Copy" onClick={copyText}><Icon name="Copy" size={16} /></AiAction>
+  <AiAction label="Regenerate" onClick={regenerate}><Icon name="RotateCw" size={16} /></AiAction>
+</AiActions>
+```
+
+## Props
+
+### AiAction
+
+| Prop | Type | Default |
+|---|---|---|
+| `label` | `string` | — |
+| `onClick` | `() => void` | — |
+| `class` | `string` | — |
+
+`AiActions` accepts `class` and `children` only.

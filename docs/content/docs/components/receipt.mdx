@@ -1,0 +1,153 @@
+---
+title: Receipt
+description: A purchase receipt, either a thermal-paper printout or a modern card. Purely presentational — no Morphos equivalent.
+icon: Receipt
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="receipt" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="receipt" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-receipt--default" title="Default" height={420} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-receipt--default" title="Default" height={420} />
+  </Tab>
+</Tabs>
+
+### Physical
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-receipt--physical" title="Physical" height={480} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-receipt--physical" title="Physical" height={480} />
+  </Tab>
+</Tabs>
+
+### Kind: Restaurant
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-receipt--restaurant" title="Restaurant" height={560} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-receipt--restaurant" title="Restaurant" height={560} />
+  </Tab>
+</Tabs>
+
+### Kind: Fuel
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-receipt--fuel" title="Fuel" height={420} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-receipt--fuel" title="Fuel" height={420} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Two independent props control the result:
+
+- **`variant`** swaps the chrome rather than just colors:
+  - **`"modern"`** (default) — a theme-aware card built from the same tokens as the rest of the
+    registry (`bg-card`, `border-border`, ...), so it adapts to light/dark mode like any other
+    surface.
+  - **`"physical"`** — a thermal-paper printout. It uses fixed paper colors instead of theme tokens
+    (a real receipt doesn't invert for dark mode) and a torn-edge `clip-path` computed once at
+    module load, jagged at both the top and bottom the way a receipt looks after being torn off the
+    roll.
+- **`kind`** swaps the body layout:
+  - **`"retail"`** (default) — the itemized list shown above.
+  - **`"restaurant"`** — adds a `table`/`server` row under the date, renders `tipSuggestions` as a
+    row of suggested amounts, and (physical only) a blank signature line at the bottom.
+  - **`"fuel"`** — replaces the item list with a `fuel` stat grid (`pump`, `fuelType`,
+    `pricePerUnit`, `volume`) instead of itemized products.
+
+`items`, `subtotal`, `tax`, and `paymentMethod`/`footerNote` are all optional beyond `total` — omit
+what a given receipt doesn't have. `table`/`server`/`tipSuggestions` only render for
+`kind="restaurant"`, `fuel` only for `kind="fuel"`.
+
+## Usage
+
+```tsx
+import { Receipt } from "@/components/ui/receipt";
+
+<Receipt
+  merchant="Kosmesis Café"
+  address="221B Baker Street"
+  date="Jul 12, 2026 — 09:41"
+  receiptNumber="10492"
+  items={[
+    { name: "Flat White", quantity: 2, price: "$9.00" },
+    { name: "Blueberry Muffin", price: "$4.50" },
+  ]}
+  subtotal="$13.50"
+  tax="$1.08"
+  total="$14.58"
+  paymentMethod="Visa •••• 4242"
+  footerNote="Thank you for stopping by!"
+/>
+
+// Restaurant, with a suggested tip row and a signature line (physical only)
+<Receipt
+  variant="physical"
+  kind="restaurant"
+  merchant="Trattoria Nove"
+  date="Jul 18, 2026 — 20:12"
+  table="7"
+  server="Marco"
+  items={[{ name: "Margherita Pizza", price: "$16.00" }]}
+  total="$16.00"
+  tipSuggestions={[
+    { label: "15%", amount: "$2.40" },
+    { label: "18%", amount: "$2.88" },
+    { label: "20%", amount: "$3.20" },
+  ]}
+/>
+
+// Fuel, with a pump/price/volume stat grid instead of an item list
+<Receipt kind="fuel" merchant="Roadside Fuel Co." date="Jul 20, 2026 — 14:03" fuel={{ pump: "4", fuelType: "Regular", pricePerUnit: "$3.42/gal", volume: "12.4 gal" }} total="$42.41" />
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `merchant` | `string` | — |
+| `address` | `string` | — |
+| `date` | `string` | — |
+| `receiptNumber` | `string` | — |
+| `items` | `{ name: string; quantity?: number; price: string }[]` | — |
+| `table` | `string` | — |
+| `server` | `string` | — |
+| `tipSuggestions` | `{ label: string; amount: string }[]` | — |
+| `fuel` | `{ pump?: string; fuelType?: string; pricePerUnit?: string; volume?: string }` | — |
+| `subtotal` | `string` | — |
+| `tax` | `string` | — |
+| `total` | `string` | — |
+| `paymentMethod` | `string` | — |
+| `footerNote` | `string` | — |
+| `kind` | `"retail" \| "restaurant" \| "fuel"` | `"retail"` |
+| `variant` | `"physical" \| "modern"` | `"modern"` |
+| `class` | `string` | — |

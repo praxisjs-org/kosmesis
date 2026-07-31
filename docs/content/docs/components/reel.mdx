@@ -1,0 +1,118 @@
+---
+title: Reel
+description: A full-height, story-style video/image viewer with segmented progress bars. Purely presentational — no Morphos equivalent.
+icon: Clapperboard
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="reel" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="reel" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-reel--default" title="Default" height={480} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-reel--default" title="Default" height={480} />
+  </Tab>
+</Tabs>
+
+## About
+
+An Instagram/Snapchat-Stories-style media viewer — purely presentational, no Morphos equivalent.
+`ReelState` owns the current index, play/pause, mute, and a per-item progress timer, instantiated
+directly and passed to `Reel` and every part via a `state` prop, the same convention as
+`CarouselState`. Every value works controlled or uncontrolled — pass `index`/`playing`/
+`muted` to drive it externally, or leave them out and read `onIndexChange`/`onPlayingChange`/
+`onMutedChange` instead.
+
+Progress isn't driven by the video's own `timeupdate` (an image has no such event) — a single
+`requestAnimationFrame` loop advances each item's progress bar against its own `duration` (in
+seconds) and auto-advances to the next item once it elapses, looping back to the first item at the
+end. Tapping the left half of `ReelNavigation` goes to the previous item, the right half to the
+next — same as tapping through a real Stories viewer.
+
+## Usage
+
+```tsx
+import {
+  Reel,
+  ReelState,
+  ReelControls,
+  ReelHeader,
+  ReelMedia,
+  ReelMuteButton,
+  ReelNavigation,
+  ReelPlayButton,
+  ReelProgress,
+  type ReelItem,
+} from "@/components/ui/reel";
+
+const items: ReelItem[] = [
+  { id: "1", type: "video", src: "/videos/one.mp4", duration: 10, title: "First" },
+  { id: "2", type: "image", src: "/images/two.jpg", duration: 5, alt: "Second", title: "Second" },
+];
+
+const state = new ReelState({ items });
+
+<Reel state={state}>
+  <ReelProgress state={state} />
+  <ReelHeader>
+    <p class="font-semibold text-white">{items[state.currentIndex].title}</p>
+  </ReelHeader>
+  <ReelMedia state={state} />
+  <ReelNavigation state={state} />
+  <ReelControls>
+    <ReelPlayButton state={state} />
+    <ReelMuteButton state={state} />
+  </ReelControls>
+</Reel>
+```
+
+## Props
+
+### ReelState (constructor props)
+
+| Prop | Type | Default |
+|---|---|---|
+| `items` | `ReelItem[]` | — |
+| `defaultIndex` | `number` | `0` |
+| `index` | `number` | — (uncontrolled when omitted) |
+| `onIndexChange` | `(index: number) => void` | — |
+| `defaultPlaying` | `boolean` | `true` |
+| `playing` | `boolean` | — (uncontrolled when omitted) |
+| `onPlayingChange` | `(playing: boolean) => void` | — |
+| `defaultMuted` | `boolean` | `true` |
+| `muted` | `boolean` | — (uncontrolled when omitted) |
+| `onMutedChange` | `(muted: boolean) => void` | — |
+
+`ReelItem` is `{ id: string; type: "video" | "image"; src: string; duration: number; alt?: string; title?: string; description?: string }`.
+`duration` is in seconds and drives the progress bar / auto-advance regardless of the item's type.
+
+### Reel / ReelMedia / ReelProgress / ReelNavigation / ReelPreviousButton / ReelNextButton / ReelPlayButton / ReelMuteButton
+
+| Prop | Type | Default |
+|---|---|---|
+| `state` | `ReelState` | — |
+| `class` | `string` | — |
+
+### ReelHeader / ReelFooter / ReelControls
+
+| Prop | Type | Default |
+|---|---|---|
+| `class` | `string` | — |

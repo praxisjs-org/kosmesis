@@ -1,0 +1,54 @@
+---
+title: Stock Badge
+description: A product stock-level badge. Purely presentational — no Morphos equivalent.
+icon: Boxes
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="stock-badge" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="stock-badge" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-stock-badge--default" title="Default" height={80} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-stock-badge--default" title="Default" height={80} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. `count` only affects the label when
+`status="low-stock"` (renders "Only N left"); it's ignored for the other two statuses.
+
+## Usage
+
+```tsx
+import { StockBadge } from "@/components/ui/stock-badge";
+
+<StockBadge status="low-stock" count={3} />
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `status` | `"in-stock" \| "low-stock" \| "out-of-stock"` | — |
+| `count` | `number` | — |
+| `class` | `string` | — |

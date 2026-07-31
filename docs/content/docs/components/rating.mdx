@@ -1,0 +1,61 @@
+---
+title: Rating
+description: An interactive star-rating control. Purely presentational — no Morphos equivalent.
+icon: Star
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="rating" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="rating" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-rating--default" title="Default" height={120} />
+    <StorybookEmbed story="tailwind-rating--read-only" title="Read-only" height={120} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-rating--default" title="Default" height={120} />
+    <StorybookEmbed story="praxiscss-rating--read-only" title="Read-only" height={120} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. `value` behaves like `CalendarState.selected`:
+pass a plain number for uncontrolled use, or a getter function to stay controlled.
+
+## Usage
+
+```tsx
+import { Rating } from "@/components/ui/rating";
+
+<Rating defaultValue={3} max={5} onChange={(value) => console.log(value)} />
+<Rating value={4} readOnly />
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `value` | `number` | — (uncontrolled when omitted) |
+| `defaultValue` | `number` | `0` |
+| `max` | `number` | `5` |
+| `readOnly` | `boolean` | `false` |
+| `disabled` | `boolean` | `false` |
+| `onChange` | `(value: number) => void` | — |
+| `class` | `string` | — |

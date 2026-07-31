@@ -1,0 +1,74 @@
+---
+title: Sortable
+description: A pointer-driven drag-to-reorder list. Purely presentational — no Morphos equivalent.
+icon: ArrowUpDown
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="sortable" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="sortable" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-sortable--default" title="Default" height={240} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-sortable--default" title="Default" height={240} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Reordering is done the same way `Resizable`
+handles dragging: walking and mutating the live DOM directly (`insertBefore`) rather than tracking
+an items array in state, so each `SortableItem` stays fully consumer-owned (identified only by its
+own `value`). Distinct from `Drag Items`, which repositions elements freely instead of reordering
+a rank.
+
+## Usage
+
+```tsx
+import { Sortable, SortableHandle, SortableItem } from "@/components/ui/sortable";
+
+<Sortable onReorder={(order) => console.log(order)}>
+  {items.map((item) => (
+    <SortableItem key={item} value={item}>
+      <SortableHandle />
+      {item}
+    </SortableItem>
+  ))}
+</Sortable>
+```
+
+## Props
+
+### Sortable
+
+| Prop | Type | Default |
+|---|---|---|
+| `onReorder` | `(order: string[]) => void` | — |
+| `class` | `string` | — |
+
+### SortableItem
+
+| Prop | Type | Default |
+|---|---|---|
+| `value` | `string` | — |
+| `class` | `string` | — |
+
+`SortableHandle` accepts `class` only — a drag only starts from a `SortableHandle` inside the item, not from anywhere on the item itself.

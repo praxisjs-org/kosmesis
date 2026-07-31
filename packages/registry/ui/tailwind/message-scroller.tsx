@@ -1,6 +1,8 @@
 import { StatefulComponent } from "@praxisjs/core";
-import { Component, Prop, Ref, type Ref as RefType } from "@praxisjs/decorators";
+import { Component, Prop, Ref, State, type Ref as RefType } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
+
+import { ScrollButton } from "./scroll-button";
 
 import { cn } from "@/lib/utils";
 
@@ -10,21 +12,8 @@ export interface MessageScrollerProps {
   children?: Children;
 }
 
-/**
- * Pairs with `ScrollArea` conceptually, but owns its own scrollable viewport directly rather than
- * composing it — no Morphos equivalent. Chat UIs need to scroll to the newest message whenever
- * one is appended; since PraxisJS has no DOM-mutation-observer-style "children changed" hook
- * built in, call `.scrollToBottom()` explicitly after you push a new message into whatever state
- * your message list renders from:
- *
- * ```tsx
- * @Ref() scroller!: Ref<MessageScroller>
- * addMessage(msg: Message) {
- *   this.messages.push(msg)
- *   queueMicrotask(() => this.scroller.current?.scrollToBottom())
- * }
- * ```
- */
+// PraxisJS has no "children changed" hook — call `.scrollToBottom()` explicitly after appending
+// a new message.
 @Component()
 export class MessageScroller extends StatefulComponent {
   @Prop() class?: string;
@@ -33,9 +22,13 @@ export class MessageScroller extends StatefulComponent {
   @Ref<HTMLDivElement>()
   viewportRef!: RefType<HTMLDivElement>;
 
-  onMount() {
-    this.scrollToBottom();
-  }
+  @State() _atBottom = true;
+
+  private readonly _handleScroll = () => {
+    const el = this.viewportRef.current;
+    if (!el) return;
+    this._atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
+  };
 
   scrollToBottom(behavior: ScrollBehavior = "auto"): void {
     const el = this.viewportRef.current;
@@ -43,14 +36,22 @@ export class MessageScroller extends StatefulComponent {
     el.scrollTo({ top: el.scrollHeight, behavior });
   }
 
+  onMount() {
+    this.scrollToBottom();
+  }
+
   render() {
     return (
-      <div
-        ref={this.viewportRef}
-        data-slot="message-scroller"
-        class={cn("flex h-full flex-col overflow-y-auto overscroll-contain [scrollbar-width:thin]", this.class)}
-      >
-        {this.children}
+      <div data-slot="message-scroller" class={cn("relative flex h-full flex-col", this.class)}>
+        <div
+          ref={this.viewportRef}
+          data-slot="message-scroller-viewport"
+          class="flex-1 overflow-y-auto overscroll-contain [scrollbar-width:thin]"
+          onScroll={this._handleScroll}
+        >
+          {this.children}
+        </div>
+        {() => (!this._atBottom ? <ScrollButton onClick={() => { this.scrollToBottom("smooth"); }} /> : null)}
       </div>
     );
   }

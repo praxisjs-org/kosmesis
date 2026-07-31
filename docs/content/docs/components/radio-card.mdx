@@ -1,0 +1,76 @@
+---
+title: Radio Card
+description: A card-shaped radio option, wrapping Morphos's RadioGroup + Radio.
+icon: SquareCheck
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="radio-card" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="radio-card" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-radio-card--default" title="Default" height={220} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-radio-card--default" title="Default" height={220} />
+  </Tab>
+</Tabs>
+
+## About
+
+Same Morphos `RadioGroup`/`Radio` primitives as `RadioGroup`/`RadioGroupItem`, styled as a grid of
+selectable cards instead of a list of dots. Two instances are involved, same as `RadioGroup`: one
+mounted via JSX (produces the container `<div>`), one held in state that `RadioCard` reads from
+via its `group` prop.
+
+## Usage
+
+```tsx
+import { RadioCard, RadioCardDescription, RadioCardGroup, RadioCardTitle } from "@/components/ui/radio-card";
+
+@Component()
+class PlanPicker extends StatefulComponent {
+  @State() group = new RadioCardGroup({ defaultValue: "pro" });
+
+  onBeforeMount() {
+    this.group.onBeforeMount();
+  }
+
+  render() {
+    return (
+      <RadioCardGroup defaultValue="pro">
+        <RadioCard group={this.group} value="free">
+          <RadioCardTitle>Free</RadioCardTitle>
+          <RadioCardDescription>For personal projects</RadioCardDescription>
+        </RadioCard>
+        <RadioCard group={this.group} value="pro">
+          <RadioCardTitle>Pro</RadioCardTitle>
+          <RadioCardDescription>For growing teams</RadioCardDescription>
+        </RadioCard>
+      </RadioCardGroup>
+    );
+  }
+}
+```
+
+## Props
+
+`RadioCardGroup` accepts the same props as `RadioGroup` (`defaultValue`, `disabled`, `orientation`,
+`class`, ...). `RadioCard` accepts the same props as `RadioGroupItem` (`group`, `value`, `disabled`,
+`class`, ...). `RadioCardTitle`/`RadioCardDescription` accept `class` and `children` only.

@@ -1,6 +1,6 @@
 ---
 title: Message Scroller
-description: A scrollable chat viewport with an imperative scrollToBottom(). Pairs with Message.
+description: A scrollable chat viewport with an imperative scrollToBottom() that auto-scrolls on mount and surfaces a ScrollButton when scrolled away from the bottom. Pairs with Message.
 icon: ScrollText
 ---
 
@@ -27,13 +27,20 @@ import { Callout } from 'fumadocs-ui/components/callout';
 <Tabs items={['Tailwind', 'PraxisCSS']}>
   <Tab value="Tailwind">
     <StorybookEmbed story="tailwind-messagescroller--default" title="Default (auto-scrolls to bottom)" height={460} />
+    <StorybookEmbed story="tailwind-messagescroller--scrolled-up" title="Scrolled up (ScrollButton visible)" height={460} />
   </Tab>
   <Tab value="PraxisCSS">
     <StorybookEmbed story="praxiscss-messagescroller--default" title="Default (auto-scrolls to bottom)" height={460} />
+    <StorybookEmbed story="praxiscss-messagescroller--scrolled-up" title="Scrolled up (ScrollButton visible)" height={460} />
   </Tab>
 </Tabs>
 
 ## Usage
+
+`ref` on a JSX tag only ever binds a DOM node, never a component instance — `scrollToBottom()` is
+reached by refing a wrapping element and querying its `[data-slot="message-scroller-viewport"]`
+descendant, or (simpler) by keeping `MessageScroller` itself out of state and calling
+`scrollIntoView()` on a sentinel element after the last message instead:
 
 ```tsx
 import { Ref } from "@praxisjs/decorators";
@@ -45,21 +52,26 @@ import { MessageScroller } from "@/components/ui/message-scroller";
 class Chat extends StatefulComponent {
   @State() messages: { from: "user" | "assistant"; text: string }[] = [];
 
-  @Ref<MessageScroller>()
-  scroller!: RefType<MessageScroller>;
+  @Ref<HTMLDivElement>()
+  wrapperRef!: RefType<HTMLDivElement>;
 
   addMessage(from: "user" | "assistant", text: string) {
     this.messages = [...this.messages, { from, text }];
-    queueMicrotask(() => { this.scroller.current?.scrollToBottom("smooth"); });
+    queueMicrotask(() => {
+      const viewport = this.wrapperRef.current?.querySelector<HTMLDivElement>('[data-slot="message-scroller-viewport"]');
+      viewport?.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
+    });
   }
 
   render() {
     return (
-      <MessageScroller ref={this.scroller} class="h-96">
-        <MessageGroup>
-          {() => this.messages.map((m) => <Message from={m.from}>{m.text}</Message>)}
-        </MessageGroup>
-      </MessageScroller>
+      <div ref={this.wrapperRef} class="h-96">
+        <MessageScroller>
+          <MessageGroup>
+            {() => this.messages.map((m) => <Message from={m.from}>{m.text}</Message>)}
+          </MessageGroup>
+        </MessageScroller>
+      </div>
     );
   }
 }
@@ -73,8 +85,7 @@ class Chat extends StatefulComponent {
 ## Props
 
 `MessageScroller` takes no props beyond `class`/`children` — it auto-scrolls to the bottom on
-mount and exposes one imperative method via `ref`:
-
-| Method | Type | Default |
-|---|---|---|
-| `scrollToBottom(behavior?)` | `(behavior?: ScrollBehavior) => void` | `behavior` defaults to `"auto"` |
+mount and surfaces a `ScrollButton` whenever scrolled more than 24px away from the bottom (wired to
+call `scrollToBottom("smooth")`). Its own `scrollToBottom(behavior?)` method isn't reachable from
+outside (`ref` only ever binds a DOM node, never a component instance) — see the Usage example
+above for calling it from a parent via the `[data-slot="message-scroller-viewport"]` descendant.

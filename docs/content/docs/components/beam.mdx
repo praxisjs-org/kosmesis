@@ -1,0 +1,82 @@
+---
+title: Beam
+description: An animated beam connecting two elements by ref. Purely presentational — no Morphos equivalent.
+icon: Zap
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="beam" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="beam" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-beam--default" title="Default" height={200} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-beam--default" title="Default" height={200} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. `fromRef`/`toRef`/`containerRef` each take a
+zero-arg getter returning the element (`() => this.fromRef.current`), not a `@Ref()` object
+directly — `@Prop()` auto-invokes any function-valued prop to resolve it reactively, and a
+`@Ref()` object is itself callable (it doubles as the ref-callback the framework calls on mount),
+so passing one straight through gets it invoked with no arguments instead of read. The path
+recomputes on mount, resize, and container mutation. The moving highlight is a dashed stroke
+animated via a per-instance `@keyframes` (embedded as an inline SVG `<style>`, since the dash
+length needs a unique animation name per `Beam` instance) rather than a `requestAnimationFrame`
+loop.
+
+## Usage
+
+```tsx
+@Component()
+class Connected extends StatefulComponent {
+  @Ref() containerRef!: Ref<HTMLDivElement>;
+  @Ref() fromRef!: Ref<HTMLDivElement>;
+  @Ref() toRef!: Ref<HTMLDivElement>;
+
+  render() {
+    return (
+      <div ref={this.containerRef} class="relative flex items-center justify-between">
+        <div ref={this.fromRef}>A</div>
+        <div ref={this.toRef}>B</div>
+        <Beam
+          containerRef={() => this.containerRef.current}
+          fromRef={() => this.fromRef.current}
+          toRef={() => this.toRef.current}
+        />
+      </div>
+    );
+  }
+}
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `fromRef` | `() => HTMLElement \| null` | — |
+| `toRef` | `() => HTMLElement \| null` | — |
+| `containerRef` | `() => HTMLElement \| null` | — |
+| `duration` | `number` (seconds) | `3` |
+| `curvature` | `number` (px) | `40` |
+| `reverse` | `boolean` | `false` |
+| `class` | `string` | — |

@@ -1,0 +1,140 @@
+---
+title: Ticket
+description: An event/boarding ticket, either a paper stub or a modern boarding-pass card. Purely presentational — no Morphos equivalent.
+icon: Ticket
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="ticket" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="ticket" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-ticket--default" title="Default" height={220} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-ticket--default" title="Default" height={220} />
+  </Tab>
+</Tabs>
+
+### Physical
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-ticket--physical" title="Physical" height={240} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-ticket--physical" title="Physical" height={240} />
+  </Tab>
+</Tabs>
+
+### Kind: Boarding Pass
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-ticket--boarding-pass" title="Boarding Pass" height={280} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-ticket--boarding-pass" title="Boarding Pass" height={280} />
+  </Tab>
+</Tabs>
+
+### Kind: Raffle
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-ticket--raffle" title="Raffle" height={300} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-ticket--raffle" title="Raffle" height={300} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Two independent props control the result:
+
+- **`variant`** swaps the chrome rather than just colors:
+  - **`"modern"`** (default) — a theme-aware boarding-pass card built from the same tokens as the
+    rest of the registry, with a plain dashed divider separating the main stub from a QR-code stub.
+  - **`"physical"`** — a paper ticket. It uses fixed cardstock colors instead of theme tokens and
+    punches circular notches through the edge exactly where the dashed perforation meets it — the
+    classic torn-stub silhouette. The notches are circles colored with the background token/class,
+    so they read correctly as long as the ticket sits on the page background, the same assumption
+    every card-on-canvas surface in this registry already makes.
+- **`kind`** swaps the layout:
+  - **`"stub"`** (default) — a general-admission ticket: main content on the left, a barcode/QR
+    stub on the right, seam running top-to-bottom.
+  - **`"boarding-pass"`** — the same shell, but the header is replaced by an `origin`/`destination`
+    route hero with a plane icon between the two airport codes.
+  - **`"raffle"`** — a narrow ticket split *vertically* instead of horizontally: notches on the
+    left/right of a single dashed seam, the same `code` printed on both the kept half and the drawn
+    stub below it.
+
+`details` is an open-ended list of extra label/value pairs (seat, gate, section, ...) rendered
+alongside the built-in `date`/`time` fields. `origin`/`destination` only apply to
+`kind="boarding-pass"`.
+
+## Usage
+
+```tsx
+import { Ticket } from "@/components/ui/ticket";
+
+<Ticket
+  title="Signal & Noise"
+  subtitle="The Grand Hall, Lisbon"
+  date="Aug 03, 2026"
+  time="20:00"
+  code="KSM-88213"
+  details={[
+    { label: "Seat", value: "12A" },
+    { label: "Gate", value: "B7" },
+  ]}
+/>
+
+// Boarding pass — same shell, a route hero instead of a plain title
+<Ticket
+  kind="boarding-pass"
+  origin="LIS"
+  destination="JFK"
+  title="TAP 1954 · Ada Lovelace"
+  date="Aug 03, 2026"
+  time="Boarding 19:40"
+  code="KSM-88213"
+  details={[{ label: "Gate", value: "22" }, { label: "Seat", value: "14C" }]}
+/>
+
+// Raffle — split vertically instead of horizontally
+<Ticket variant="physical" kind="raffle" title="Summer Raffle" subtitle="Kosmesis Café" date="Aug 03, 2026" code="0427" />
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `title` | `string` | — |
+| `subtitle` | `string` | — |
+| `date` | `string` | — |
+| `time` | `string` | — |
+| `code` | `string` | — |
+| `details` | `{ label: string; value: string }[]` | — |
+| `origin` | `string` | — |
+| `destination` | `string` | — |
+| `kind` | `"stub" \| "boarding-pass" \| "raffle"` | `"stub"` |
+| `variant` | `"physical" \| "modern"` | `"modern"` |
+| `class` | `string` | — |

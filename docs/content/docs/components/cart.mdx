@@ -1,0 +1,53 @@
+---
+title: Cart
+description: A divided list of CartItems. Purely presentational — no Morphos equivalent.
+icon: ShoppingCart
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="cart" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="cart" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-cart--default" title="Default" height={200} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-cart--default" title="Default" height={200} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Just a `divide-y` list container — pair with
+`CartItem` for each row.
+
+## Usage
+
+```tsx
+import { Cart } from "@/components/ui/cart";
+import { CartItem } from "@/components/ui/cart-item";
+
+<Cart>
+  {items.map((item) => <CartItem key={item.id} {...item} />)}
+</Cart>
+```
+
+## Props
+
+`Cart` accepts `class` and `children` only.

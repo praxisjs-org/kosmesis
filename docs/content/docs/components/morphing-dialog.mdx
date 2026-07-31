@@ -1,0 +1,135 @@
+---
+title: Morphing Dialog
+description: A card that morphs into a full dialog using the native View Transitions API. Purely presentational — no Morphos equivalent.
+icon: Maximize2
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="morphing-dialog" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="morphing-dialog" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-morphing-dialog--default" title="Default" height={420} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-morphing-dialog--default" title="Default" height={420} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Animates via the native **View Transitions API**
+(`document.startViewTransition`) rather than any hand-rolled FLIP math: a `view-transition-name` is
+handed off between the trigger element and the dialog right before/inside the transition callback,
+so the browser captures a snapshot of each and cross-fades + resizes between them natively. This
+looks right even when the trigger and the settled dialog have very different aspect ratios — a
+`scale()`-based FLIP would visibly stretch/distort in that case, since it fakes the resize by
+scaling one flat box uniformly instead of letting the browser blend two real snapshots.
+
+`MorphingDialogState` is a pure state container (same pattern as `CalendarState`/`CarouselState`),
+constructed directly (`new MorphingDialogState()`) and passed to every other part as `state`.
+`@State() _open` toggles synchronously inside the transition callback — PraxisJS signals notify
+subscribers (and thus patch the DOM) synchronously outside of an explicit `batch()`, so there's no
+React-`flushSync` equivalent needed for the browser to see the correct before/after DOM states.
+
+The dialog itself is a real `<dialog>` element (`MorphingDialogContainer`), opened via
+`showModal()`/`close()` — this gets native top-layer stacking, a native `::backdrop`, native focus
+trapping, and a native `cancel` event on <kbd>Esc</kbd> for free, instead of a hand-built backdrop
+`<div>`. `MorphingDialogTrigger` hides itself (`data-expanded="true"` → `invisible`) once the dialog
+is open, so the trigger and dialog are never both visible at once, and reappears (with the view
+transition handing the name back to it) as the dialog closes, so the morph plays symmetrically in
+both directions.
+
+Falls back to an instant (non-animated) open/close — still fully functional, just without the
+morph — whenever `document.startViewTransition` isn't available or the user has
+`prefers-reduced-motion: reduce` set.
+
+## Usage
+
+```tsx
+import {
+  MorphingDialogClose,
+  MorphingDialogContainer,
+  MorphingDialogContent,
+  MorphingDialogDescription,
+  MorphingDialogImage,
+  MorphingDialogState,
+  MorphingDialogTitle,
+  MorphingDialogTrigger,
+} from "@/components/ui/morphing-dialog";
+
+@Component()
+class ProjectCard extends StatefulComponent {
+  @State() state = new MorphingDialogState();
+
+  render() {
+    return (
+      <>
+        <MorphingDialogTrigger state={this.state} class="block w-72 overflow-hidden rounded-xl border">
+          <img src="/project-nova.jpg" alt="" class="h-36 w-full object-cover" />
+          <div class="p-4">
+            <h3 class="text-sm font-semibold">Project Nova</h3>
+          </div>
+        </MorphingDialogTrigger>
+        <MorphingDialogContainer state={this.state}>
+          <MorphingDialogContent class="p-0">
+            <MorphingDialogClose state={this.state} />
+            <MorphingDialogImage src="/project-nova.jpg" alt="" class="h-48 w-full" />
+            <div class="p-6">
+              <MorphingDialogTitle>Project Nova</MorphingDialogTitle>
+              <MorphingDialogDescription>Full details morph in from the trigger's own position.</MorphingDialogDescription>
+            </div>
+          </MorphingDialogContent>
+        </MorphingDialogContainer>
+      </>
+    );
+  }
+}
+```
+
+## Props
+
+### MorphingDialogTrigger / MorphingDialogContainer
+
+| Prop | Type | Default |
+|---|---|---|
+| `state` | `MorphingDialogState` | — |
+| `class` | `string` | — |
+
+### MorphingDialogContent / MorphingDialogTitle / MorphingDialogSubtitle / MorphingDialogDescription
+
+| Prop | Type | Default |
+|---|---|---|
+| `class` | `string` | — |
+
+### MorphingDialogImage
+
+| Prop | Type | Default |
+|---|---|---|
+| `src` | `string` | — |
+| `alt` | `string` | — |
+| `class` | `string` | — |
+
+### MorphingDialogClose
+
+| Prop | Type | Default |
+|---|---|---|
+| `state` | `MorphingDialogState` | — |
+| `class` | `string` | — |
+| `children` | `Children` (defaults to an `X` icon) | — |

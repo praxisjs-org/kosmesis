@@ -1,0 +1,69 @@
+---
+title: Grid
+description: A responsive grid layout primitive with a colSpan/rowSpan item. Purely presentational — no Morphos equivalent.
+icon: Grid3x3
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="grid" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="grid" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-grid--default" title="Default" height={140} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-grid--default" title="Default" height={140} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. `cols`/`gap`/`colSpan`/`rowSpan` are runtime
+numbers, so they drive `grid-template-columns`/`gap`/`grid-column`/`grid-row` via inline style
+rather than `grid-cols-N`-style utility classes — a dynamically-built class string isn't visible
+to Tailwind's build-time scanner.
+
+## Usage
+
+```tsx
+import { Grid, GridItem } from "@/components/ui/grid";
+
+<Grid cols={3} gap={4}>
+  <GridItem colSpan={2}>Wide item</GridItem>
+  <GridItem>Item</GridItem>
+</Grid>
+```
+
+## Props
+
+### Grid
+
+| Prop | Type | Default |
+|---|---|---|
+| `cols` | `number` | `1` |
+| `gap` | `number` | `4` (Tailwind spacing steps, i.e. `4` = `1rem`) |
+| `class` | `string` | — |
+
+### GridItem
+
+| Prop | Type | Default |
+|---|---|---|
+| `colSpan` | `number` | — |
+| `rowSpan` | `number` | — |
+| `class` | `string` | — |

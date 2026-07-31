@@ -1,0 +1,67 @@
+---
+title: Presence
+description: An overlapping avatar stack with a +N overflow badge and an online/away/offline status dot. Purely presentational — no Morphos equivalent.
+icon: Users
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="presence" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="presence" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-presence--default" title="Default" height={100} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-presence--default" title="Default" height={100} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Deliberately doesn't reuse `Avatar`: Morphos's
+`Avatar` needs one instance per user (to track image load/error state), which doesn't compose
+cleanly with a flat `users` array prop, so image/initials fallback is handled locally instead.
+`PresenceDot` is a separate small status indicator meant to sit on an `Avatar`'s corner.
+
+## Usage
+
+```tsx
+import { Presence, PresenceDot } from "@/components/ui/presence";
+
+<Presence users={[{ id: "1", name: "Ada Lovelace" }, { id: "2", name: "Grace Hopper" }]} max={4} />
+<PresenceDot status="online" class="absolute right-0 bottom-0" />
+```
+
+## Props
+
+### Presence
+
+| Prop | Type | Default |
+|---|---|---|
+| `users` | `{ id: string; name: string; avatarUrl?: string }[]` | — |
+| `max` | `number` | `5` |
+| `size` | `number` | `32` |
+| `class` | `string` | — |
+
+### PresenceDot
+
+| Prop | Type | Default |
+|---|---|---|
+| `status` | `"online" \| "away" \| "offline"` | `"online"` |
+| `class` | `string` | — |

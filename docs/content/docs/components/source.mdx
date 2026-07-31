@@ -1,0 +1,66 @@
+---
+title: Source
+description: A collapsible list of citation links backing an AI response. Purely presentational — no Morphos equivalent.
+icon: Link
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="source" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="source" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-source--default" title="Default" height={140} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-source--default" title="Default" height={140} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. `Sources` is the collapsible wrapper; each `Source`
+is a plain external link styled as a small chip, defaulting its label to the `href` if no children
+are given.
+
+## Usage
+
+```tsx
+import { Source, Sources } from "@/components/ui/source";
+
+<Sources defaultOpen>
+  <Source href="https://example.com/docs">Example Docs</Source>
+  <Source href="https://example.com" />
+</Sources>
+```
+
+## Props
+
+### Sources
+
+| Prop | Type | Default |
+|---|---|---|
+| `defaultOpen` | `boolean` | `false` |
+| `class` | `string` | — |
+
+### Source
+
+| Prop | Type | Default |
+|---|---|---|
+| `href` | `string` | — |
+| `class` | `string` | — |

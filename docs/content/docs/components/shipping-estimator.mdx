@@ -1,0 +1,79 @@
+---
+title: Shipping Estimator
+description: A postal-code form for a shipping estimate. Purely presentational — no Morphos equivalent.
+icon: Truck
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="shipping-estimator" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="shipping-estimator" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-shipping-estimator--default" title="Default" height={220} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-shipping-estimator--default" title="Default" height={220} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. The actual rate lookup is business logic the
+consumer owns: call `onEstimate` and render the resulting `ShippingOption`s as `children`.
+
+## Usage
+
+```tsx
+import { ShippingEstimator, ShippingOption } from "@/components/ui/shipping-estimator";
+
+@Component()
+class Estimator extends StatefulComponent {
+  @State() rates: Array<{ name: string; price: string; eta: string }> = [];
+
+  handleEstimate(postalCode: string) {
+    this.rates = lookupRates(postalCode);
+  }
+
+  render() {
+    return (
+      <ShippingEstimator onEstimate={(code) => this.handleEstimate(code)}>
+        {this.rates.map((rate) => <ShippingOption key={rate.name} {...rate} />)}
+      </ShippingEstimator>
+    );
+  }
+}
+```
+
+## Props
+
+### ShippingEstimator
+
+| Prop | Type | Default |
+|---|---|---|
+| `onEstimate` | `(postalCode: string) => void` | — |
+| `class` | `string` | — |
+
+### ShippingOption
+
+| Prop | Type | Default |
+|---|---|---|
+| `name` | `string` | — |
+| `price` | `string` | — |
+| `eta` | `string` | — |
+| `class` | `string` | — |

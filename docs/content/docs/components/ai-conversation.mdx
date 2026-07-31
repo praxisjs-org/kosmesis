@@ -1,0 +1,59 @@
+---
+title: AI Conversation
+description: A scrollable AI chat thread that auto-scrolls and surfaces a ScrollButton when scrolled away from the bottom. Purely presentational — no Morphos equivalent.
+icon: MessagesSquare
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="ai-conversation" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="ai-conversation" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-ai-conversation--default" title="Default" height={300} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-ai-conversation--default" title="Default" height={300} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Distinct from the plain `MessageScroller` (which
+has no built-in scroll button): `AiConversation` wires a `ScrollButton` (registry dependency) to
+appear automatically once the user scrolls more than ~24px away from the bottom. It only owns
+scroll behavior — wrap your message list in `MessageGroup` for spacing/padding.
+
+## Usage
+
+```tsx
+import { AiConversation } from "@/components/ui/ai-conversation";
+import { AiMessage } from "@/components/ui/ai-message";
+import { MessageGroup } from "@/components/ui/message";
+
+<AiConversation>
+  <MessageGroup>
+    {messages.map((m) => <AiMessage key={m.id} from={m.from}>{m.text}</AiMessage>)}
+  </MessageGroup>
+</AiConversation>
+```
+
+## Props
+
+`AiConversation` accepts `class` and `children` only. Its instance also exposes
+`scrollToBottom(behavior?: ScrollBehavior)`.

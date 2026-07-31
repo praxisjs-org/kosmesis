@@ -1,0 +1,87 @@
+---
+title: Tree View
+description: A recursive expand/collapse/select tree. Purely presentational — no Morphos equivalent.
+icon: FolderTree
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="tree-view" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="tree-view" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-tree-view--default" title="Default" height={300} />
+    <StorybookEmbed story="tailwind-tree-view--with-lines" title="With Lines" height={300} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-tree-view--default" title="Default" height={300} />
+    <StorybookEmbed story="praxiscss-tree-view--with-lines" title="With Lines" height={300} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational + expand/select state — no Morphos equivalent. A single component recurses
+over `data` itself (rather than a separate item component per node managing its own expand state)
+since every node needs to read/write the same shared expanded set anyway. Every node without an
+explicit `icon` renders a folder icon (open or closed, following its expand state) or a file icon
+depending on whether it has `children` — the same default kibo-ui's own `Tree` uses.
+
+Expanding a node animates its children open/closed via a `grid-template-rows` 0fr→1fr transition
+(the standard CSS-only technique for animating to an `auto` height), and the chevron/folder icons
+swap and rotate in step. None of this goes through component state — it's written straight to the
+DOM on click, the same direct-DOM convention `Kanban` uses for anything that changes on
+every interaction, so a folder you've expanded stays expanded even if selecting another node
+elsewhere in the tree causes a re-render.
+
+Clicking anywhere on a folder's row — not just its chevron — both selects and toggles it, same as
+kibo-ui's own `Tree`. Clicking the chevron itself toggles only, without selecting.
+
+Set `showLines` to draw the ancestor guide lines connecting each node back to its parent's icon
+column (kibo-ui's own default look). Each row draws its own copy of the lines for every ancestor
+level it belongs to, so they read as continuous lines running down the whole subtree — a line
+stops short instead of running past an ancestor that has no more siblings below it.
+
+## Usage
+
+```tsx
+import { TreeView, type TreeNode } from "@/components/ui/tree-view";
+
+const data: TreeNode[] = [
+  { id: "src", label: "src", children: [{ id: "src/app.tsx", label: "app.tsx" }] },
+  { id: "package.json", label: "package.json" },
+];
+
+<TreeView data={data} defaultExpanded={["src"]} showLines onSelect={(id) => console.log(id)} />
+```
+
+Pass `icon` on a node (any name accepted by `@morphos/icons`' `Icon`) to override the default
+folder/file icon — useful for e.g. a distinct icon per file extension.
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `data` | `TreeNode[]` | — |
+| `defaultExpanded` | `string[]` | `[]` |
+| `selected` | `string` | — (uncontrolled when omitted) |
+| `onSelect` | `(id: string) => void` | — |
+| `showLines` | `boolean` | `false` |
+| `class` | `string` | — |
+
+`TreeNode` is `{ id: string; label: string; icon?: string; children?: TreeNode[] }`.

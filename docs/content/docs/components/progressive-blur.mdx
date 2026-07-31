@@ -1,0 +1,113 @@
+---
+title: Progressive Blur
+description: A stacked-layer approximation of an iOS-style progressive blur edge. Purely presentational — no Morphos equivalent.
+icon: Blend
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="progressive-blur" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="progressive-blur" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-progressive-blur--default" title="Default" height={260} />
+    <StorybookEmbed story="tailwind-progressive-blur--static" title="Static" height={200} />
+    <StorybookEmbed story="tailwind-progressive-blur--scrollable-no-scrollbar" title="Scrollable, No Scrollbar" height={260} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-progressive-blur--default" title="Default" height={260} />
+    <StorybookEmbed story="praxiscss-progressive-blur--static" title="Static" height={200} />
+    <StorybookEmbed story="praxiscss-progressive-blur--scrollable-no-scrollbar" title="Scrollable, No Scrollbar" height={260} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. CSS can't animate a single element's blur *amount*
+across a gradient, so this stacks `layers` absolutely-positioned divs, each blurred more than the
+last and masked to a shrinking region, to approximate one. Absolutely positioned — place it inside
+a `relative` container over the edge you want faded. The **Static** example above is the simplest
+case: a plain "read more" teaser fade over content that doesn't scroll at all, no scrollbar to
+think about.
+
+Once the content it fades *does* scroll (the **Default** example above), use **two** nested
+containers, not one: an outer `relative` + fixed-height + `overflow-hidden` wrapper, with the
+actual scrollable content as an `overflow-y-auto` *child*, and `ProgressiveBlur` as that child's
+sibling (not its child). If `ProgressiveBlur` were placed *inside* the scrolling element instead,
+its `bottom-0` would anchor to the bottom of the full scrollable **content** (which can be far
+taller than what's visible) rather than to the visible viewport's bottom edge — so it would only
+appear once scrolled all the way down, the opposite of the always-visible fade you actually want.
+
+`ProgressiveBlur` doesn't know anything about scrollbars, and by default it spans the full width of
+its containing block — including whatever column a vertical scrollbar reserves inside the sibling
+scroller, which visibly blurs/washes out the scrollbar itself. Two ways to deal with that, shown in
+the **Scrollable, No Scrollbar** and **Default** examples above:
+
+- **Hide the scrollbar** (`scrollbar-width: none` + `::-webkit-scrollbar { display: none }` —
+  Tailwind's built-in `scrollbar-none` utility does both) if you don't need a visible one. The
+  element stays fully scrollable by wheel/touch/keyboard; there's just no thumb for
+  `ProgressiveBlur` to collide with, and no measuring needed.
+- **Keep the scrollbar and measure it**, via `scrollbarInset` (px), if you want it visible. Don't
+  guess a fixed number — scrollbar width isn't a constant, it's `0` with macOS's overlay-style
+  scrollbars and a different value per OS/browser/zoom level otherwise — measure the *real* value
+  off the scroller itself (`el.offsetWidth - el.clientWidth`) and pass that. `ProgressiveBlur` only
+  reads `scrollbarInset` once, in its own `render()` (like every other prop), so if you're measuring
+  it after mount — typically the case, since the scrollbar's real width isn't known until the
+  scroller has laid out — mount `ProgressiveBlur` itself from inside a reactive thunk keyed off that
+  measured `@State` value, so it re-creates with the up-to-date number (see the **Default** story's
+  source for the full `ResizeObserver`-based measuring pattern, which also keeps it correct across
+  container resizes).
+
+## Usage
+
+```tsx
+import { ProgressiveBlur } from "@/components/ui/progressive-blur";
+
+// Static content — no scrollbar involved.
+<div class="relative h-40 overflow-hidden rounded-lg border p-4">
+  <p>{/* teaser text */}</p>
+  <ProgressiveBlur side="bottom" size={64} />
+</div>
+
+// Scrollable content, scrollbar hidden — no measuring needed.
+<div class="relative h-64 overflow-hidden rounded-lg border">
+  <div class="h-full overflow-y-auto scrollbar-none p-3">
+    {/* scrollable content */}
+  </div>
+  <ProgressiveBlur side="bottom" size={80} />
+</div>
+
+// Scrollable content, scrollbar visible — measure its real width and pass it along.
+<div class="relative h-64 overflow-hidden rounded-lg border">
+  <div class="h-full overflow-y-auto p-3">
+    {/* scrollable content */}
+  </div>
+  <ProgressiveBlur side="bottom" size={80} scrollbarInset={measuredScrollbarWidth} />
+</div>
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `side` | `"top" \| "bottom" \| "left" \| "right"` | `"bottom"` |
+| `size` | `number` (px depth of the blurred region) | `96` |
+| `layers` | `number` | `6` |
+| `maxBlur` | `number` (px, at the strongest layer) | `16` |
+| `scrollbarInset` | `number` (px, measured scrollbar width) | `0` |
+| `class` | `string` | — |

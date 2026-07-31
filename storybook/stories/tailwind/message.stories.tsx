@@ -2,6 +2,9 @@ import { StatelessComponent } from "@praxisjs/core";
 import { Component } from "@praxisjs/decorators";
 import type { Meta, StoryObj } from "@praxisjs/storybook";
 
+import { Icon } from "@morphos/icons";
+
+import { Action, Actions } from "@/ui/tailwind/actions";
 import { Message, MessageGroup, type MessageProps } from "@/ui/tailwind/message";
 
 type Args = Pick<MessageProps, "from"> & {
@@ -57,11 +60,11 @@ class ConversationDemo extends StatelessComponent {
     return (
       <div style="width:360px">
         <MessageGroup>
-          <Message from="assistant" avatar={<span style="font-size:1.25rem">🤖</span>}>
+          <Message from="assistant" avatar={<Icon name="Bot" size={20} />}>
             How can I help you today?
           </Message>
           <Message from="user">Can you write stories for the whole registry?</Message>
-          <Message from="assistant" avatar={<span style="font-size:1.25rem">🤖</span>}>
+          <Message from="assistant" avatar={<Icon name="Bot" size={20} />}>
             Already on it.
           </Message>
         </MessageGroup>
@@ -73,4 +76,42 @@ class ConversationDemo extends StatelessComponent {
 export const Conversation: Story = {
   name: "Conversation",
   render: () => <ConversationDemo />,
+};
+
+@Component()
+class WithActionsDemo extends StatelessComponent {
+  render() {
+    return (
+      <div style="width:360px">
+        <Message
+          from="assistant"
+          avatar={<Icon name="Bot" size={20} />}
+          actions={
+            <Actions>
+              <Action label="Copy">
+                <Icon name="Copy" size={14} />
+              </Action>
+              <Action label="Regenerate">
+                <Icon name="RefreshCw" size={14} />
+              </Action>
+            </Actions>
+          }
+        >
+          I've finished writing the storybook stories for every component.
+        </Message>
+      </div>
+    );
+  }
+}
+
+export const WithActions: Story = {
+  name: "With actions",
+  parameters: {
+    docs: {
+      description: {
+        story: "The `actions` slot renders below the bubble, indented to align with it — pairs well with `Actions`/`Action`.",
+      },
+    },
+  },
+  render: () => <WithActionsDemo />,
 };

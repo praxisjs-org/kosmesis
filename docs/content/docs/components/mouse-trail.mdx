@@ -1,0 +1,59 @@
+---
+title: Mouse Trail
+description: A canvas particle trail following the pointer within its bounding box. Purely presentational — no Morphos equivalent.
+icon: MousePointer2
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="mouse-trail" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="mouse-trail" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-mouse-trail--default" title="Default" height={260} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-mouse-trail--default" title="Default" height={260} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Runs its own `requestAnimationFrame` loop rather
+than reactive state: every particle fades independently every frame, which would mean a state
+write (and a re-render) per particle per frame if it went through `@State`. Fills its parent by
+default (`size-full` / `width: 100%; height: 100%`) — size it via a wrapping container or `class`.
+
+## Usage
+
+```tsx
+import { MouseTrail } from "@/components/ui/mouse-trail";
+
+<MouseTrail class="h-64 w-full" color="oklch(0.6 0.2 280)">
+  <div class="flex h-full items-center justify-center">Hover me</div>
+</MouseTrail>
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `color` | `string` | `"oklch(0.7 0.15 250)"` |
+| `size` | `number` (max particle radius, px) | `6` |
+| `length` | `number` (max trail particles) | `20` |
+| `class` | `string` | — |

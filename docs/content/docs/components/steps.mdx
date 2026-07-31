@@ -1,0 +1,73 @@
+---
+title: Steps
+description: A numbered step indicator with a connecting rail between steps. Purely presentational — no Morphos equivalent.
+icon: ListOrdered
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="steps" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="steps" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-steps--horizontal" title="Horizontal" height={200} />
+    <StorybookEmbed story="tailwind-steps--vertical" title="Vertical" height={320} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-steps--horizontal" title="Horizontal" height={200} />
+    <StorybookEmbed story="praxiscss-steps--vertical" title="Vertical" height={320} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Each `Step` carries its own `status`
+(`"complete" | "current" | "upcoming"`); the connecting rail to the next step is a single
+absolutely-positioned span that reads its own ancestor's `data-status`/`data-orientation`
+attributes, so no separate connector element needs to be rendered between steps.
+
+## Usage
+
+```tsx
+import { Step, Steps } from "@/components/ui/steps";
+
+<Steps>
+  <Step step={1} status="complete" title="Account" description="Create your account" />
+  <Step step={2} status="current" title="Profile" description="Tell us about you" />
+  <Step step={3} status="upcoming" title="Confirm" description="Review and submit" />
+</Steps>
+```
+
+## Props
+
+### Steps
+
+| Prop | Type | Default |
+|---|---|---|
+| `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` |
+| `class` | `string` | — |
+
+### Step
+
+| Prop | Type | Default |
+|---|---|---|
+| `step` | `number` | — |
+| `status` | `"complete" \| "current" \| "upcoming"` | `"upcoming"` |
+| `title` | `Children` | — |
+| `description` | `Children` | — |
+| `class` | `string` | — |

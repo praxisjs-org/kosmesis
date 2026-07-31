@@ -1,0 +1,60 @@
+---
+title: Plan Card
+description: A single subscription/account plan card. Purely presentational — no Morphos equivalent.
+icon: BadgeCheck
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="plan-card" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="plan-card" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-plan-card--default" title="Default" height={180} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-plan-card--default" title="Default" height={180} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Distinct from `PricingPlan` (a row in a comparison
+table meant to be shown side by side): this is a single "your current plan" summary, e.g. on a
+billing settings page. `children` render below the description (e.g. a usage bar or an upgrade
+button).
+
+## Usage
+
+```tsx
+import { PlanCard } from "@/components/ui/plan-card";
+
+<PlanCard name="Pro" price="$19/mo" description="For growing teams" current>
+  <Button variant="outline">Change plan</Button>
+</PlanCard>
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `name` | `string` | — |
+| `price` | `string` | — |
+| `description` | `string` | — |
+| `current` | `boolean` | `false` |
+| `class` | `string` | — |

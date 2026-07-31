@@ -1,0 +1,61 @@
+---
+title: QR Code
+description: Renders a QR code as a single SVG path, using the qrcode package's synchronous encoder.
+icon: QrCode
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="qr-code" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="qr-code" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-qr-code--default" title="Default" height={220} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-qr-code--default" title="Default" height={220} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational. Uses the [`qrcode`](https://www.npmjs.com/package/qrcode) package's
+synchronous `create()` encoder and renders every dark module as a single combined SVG `<path>`
+(not one `<rect>` per module — a real QR code can have thousands). Colors default to a fixed
+black-on-white rather than the theme's tokens, so the code keeps scanning contrast regardless of
+light/dark theme.
+
+## Usage
+
+```tsx
+import { QRCode } from "@/components/ui/qr-code";
+
+<QRCode value="https://example.com" size={180} />
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `value` | `string` | — |
+| `size` | `number` | `200` |
+| `margin` | `number` | `2` |
+| `errorCorrectionLevel` | `"low" \| "medium" \| "quartile" \| "high"` | `"medium"` |
+| `color` | `string` | `"#000000"` |
+| `background` | `string` | `"#ffffff"` |
+| `class` | `string` | — |

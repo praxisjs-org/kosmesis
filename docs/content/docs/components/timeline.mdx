@@ -1,0 +1,85 @@
+---
+title: Timeline
+description: A vertical list of dated events with a connecting rail. Purely presentational — no Morphos equivalent.
+icon: History
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="timeline" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="timeline" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-timeline--default" title="Default" height={340} />
+    <StorybookEmbed story="tailwind-timeline--animated" title="Animated" height={340} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-timeline--default" title="Default" height={340} />
+    <StorybookEmbed story="praxiscss-timeline--animated" title="Animated" height={340} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. `TimelineItem` renders its own dot + connecting
+rail; `TimelineTitle`, `TimelineTime`, and `TimelineDescription` are plain typography slots, the
+same compound-slot pattern as `Card`.
+
+The connecting rail is a single `absolute` span pinned to the dot's own center at the top and to
+the `<li>`'s full bottom edge (padding included) at the bottom — so it always reaches exactly where
+the next item's dot begins, regardless of how tall this item's content is.
+
+Set `animated` on a `TimelineItem` to pulse an expanding ring around its dot — only visible when
+`status` is `"current"`, a nice touch for a step that's genuinely in progress (e.g. "Shipped" while
+waiting on "Delivered"). Set `animateLine` to turn *that one item's* connecting line into a dashed
+pattern that scrolls continuously downward — a "flowing toward the next, still-pending step"
+indicator, not a one-shot entrance animation. Each `TimelineItem` owns its own `animateLine`
+independently, so only the segment between the current step and the next pending one needs it —
+not every line in the list, and not the ones behind you that are already done.
+
+## Usage
+
+```tsx
+import { Timeline, TimelineDescription, TimelineItem, TimelineTime, TimelineTitle } from "@/components/ui/timeline";
+
+<Timeline>
+  <TimelineItem status="complete">
+    <TimelineTitle>Order placed</TimelineTitle>
+    <TimelineTime>Jan 3, 2026</TimelineTime>
+    <TimelineDescription>Your order was confirmed.</TimelineDescription>
+  </TimelineItem>
+  <TimelineItem status="current" animated animateLine>
+    <TimelineTitle>Shipped</TimelineTitle>
+    <TimelineTime>Jan 4, 2026</TimelineTime>
+    <TimelineDescription>Package left the warehouse.</TimelineDescription>
+  </TimelineItem>
+</Timeline>
+```
+
+## Props
+
+### TimelineItem
+
+| Prop | Type | Default |
+|---|---|---|
+| `status` | `"complete" \| "current" \| "upcoming"` | `"complete"` |
+| `animated` | `boolean` | `false` |
+| `animateLine` | `boolean` | `false` |
+| `class` | `string` | — |
+
+`TimelineTitle`, `TimelineTime`, and `TimelineDescription` accept `class` and `children` only.

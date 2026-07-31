@@ -1,0 +1,56 @@
+---
+title: Code Block
+description: A plain code display with a copy button. Purely presentational — no Morphos equivalent.
+icon: Code
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="code-block" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="code-block" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-code-block--default" title="Default" height={220} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-code-block--default" title="Default" height={220} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent, and deliberately avoids a heavy
+syntax-highlighter dependency like shiki (same reasoning `Carousel` avoids Embla): plain
+`<pre><code>` with a copy button, no highlighting.
+
+## Usage
+
+```tsx
+import { CodeBlock } from "@/components/ui/code-block";
+
+<CodeBlock code={source} language="ts" filename="greet.ts" />
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `code` | `string` | — |
+| `language` | `string` | — |
+| `filename` | `string` | — |
+| `class` | `string` | — |

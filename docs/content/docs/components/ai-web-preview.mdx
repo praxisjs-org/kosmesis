@@ -1,0 +1,61 @@
+---
+title: AI Web Preview
+description: A link-preview card for a web page an AI response references. Purely presentational — no Morphos equivalent.
+icon: Globe
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="ai-web-preview" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="ai-web-preview" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-ai-web-preview--default" title="Default" height={140} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-ai-web-preview--default" title="Default" height={140} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. The hostname is derived from `url` via the `URL`
+constructor (falling back to the raw string if it isn't fully-qualified). `image` is optional —
+without it, the card is just title/description/hostname.
+
+## Usage
+
+```tsx
+import { AiWebPreview } from "@/components/ui/ai-web-preview";
+
+<AiWebPreview
+  url="https://example.com/docs"
+  title="Example Docs"
+  description="Everything you need to get started."
+/>
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `url` | `string` | — |
+| `title` | `string` | — |
+| `description` | `string` | — |
+| `image` | `string` | — |
+| `class` | `string` | — |

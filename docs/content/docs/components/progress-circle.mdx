@@ -1,0 +1,63 @@
+---
+title: Progress Circle
+description: A circular progress ring with an indeterminate mode. Purely presentational — Morphos's Progress renders no children to nest an SVG ring inside.
+icon: CircleDashed
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="progress-circle" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="progress-circle" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-progress-circle--default" title="Default" height={160} />
+    <StorybookEmbed story="tailwind-progress-circle--indeterminate" title="Indeterminate" height={160} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-progress-circle--default" title="Default" height={160} />
+    <StorybookEmbed story="praxiscss-progress-circle--indeterminate" title="Indeterminate" height={160} />
+  </Tab>
+</Tabs>
+
+## About
+
+`Progress` wraps Morphos's `Progress` primitive directly since it only needs a `div` for its fill.
+`ProgressCircle` needs an SVG ring nested inside the progressbar element, and Morphos's `Progress`
+renders no children at all — so the same `value`/`min`/`max` percentage math is duplicated here
+directly against a local `role="progressbar"` element instead.
+
+## Usage
+
+```tsx
+import { ProgressCircle } from "@/components/ui/progress-circle";
+
+<ProgressCircle value={65} showLabel />
+<ProgressCircle /> {/* indeterminate — spins */}
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `value` | `number` | — (indeterminate when omitted) |
+| `max` | `number` | `100` |
+| `min` | `number` | `0` |
+| `size` | `number` | `80` |
+| `strokeWidth` | `number` | `8` |
+| `showLabel` | `boolean` | `false` |
+| `class` | `string` | — |

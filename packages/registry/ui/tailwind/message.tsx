@@ -12,22 +12,22 @@ export interface MessageProps {
   class?: string;
   /** Rendered before the bubble (e.g. an `Avatar`). */
   avatar?: Children;
+  /** Rendered below the bubble, indented to align with it (e.g. a row of icon action buttons). */
+  actions?: Children;
   children?: Children;
 }
 
-/**
- * Composes `Bubble` with an optional avatar and role-based layout — no Morphos equivalent.
- * `from="user"` mirrors the row and uses the "sent" bubble variant; `from="assistant"` keeps
- * normal reading order with the "received" variant.
- */
 @Component()
 export class Message extends StatelessComponent<MessageProps> {
   render() {
-    const { from, class: cls, avatar, children } = this.props;
+    const { from, class: cls, avatar, actions, children } = this.props;
     return (
-      <div class={cn("flex items-end gap-2", from === "user" && "flex-row-reverse", cls)}>
-        {avatar}
-        <Bubble variant={from === "user" ? "sent" : "received"}>{children}</Bubble>
+      <div class={cn("flex flex-col gap-1.5", from === "user" && "items-end", cls)}>
+        <div class={cn("flex items-end gap-2", from === "user" && "flex-row-reverse")}>
+          {avatar}
+          <Bubble variant={from === "user" ? "sent" : "received"}>{children}</Bubble>
+        </div>
+        {actions && <div class={cn("flex items-center gap-1", from === "user" ? "pr-10" : "pl-10")}>{actions}</div>}
       </div>
     );
   }

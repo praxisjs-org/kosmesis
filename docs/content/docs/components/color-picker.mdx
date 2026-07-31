@@ -1,0 +1,94 @@
+---
+title: Color Picker
+description: A Popover + hue/alpha/saturation-value composition for picking a color. Purely presentational — no Morphos equivalent.
+icon: Palette
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="color-picker" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="color-picker" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-color-picker--default" title="Default" height={80} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-color-picker--default" title="Default" height={80} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Unlike `DatePicker`, `ColorPicker` owns its
+[Popover](/docs/components/popover) instance internally rather than taking one as a prop — there's
+no reason a consumer would need to share it with a sibling component. `value`/`defaultValue` only
+seed the initial color: HSV, not the emitted hex string, is the source of truth for the widget
+after that. Round-tripping a controlled value back through hex on every change would reset hue
+whenever saturation or value passes through 0 (hue is undefined for grayscale), which is why
+`onChange` is the way to observe changes rather than feeding `value` back in on every keystroke.
+
+The saturation/value area, hue track, and alpha track are all plain `role="slider"` `div`s driven
+by pointer position relative to their own bounding rect (same technique as `Sortable` and
+`Comparison`) — arrow keys work once one is focused.
+
+## Usage
+
+```tsx
+import { ColorPicker } from "@/components/ui/color-picker";
+
+<ColorPicker
+  defaultValue="#3b82f6"
+  onChange={(value) => console.log(value)}
+/>
+```
+
+## No Alpha
+
+Set `alpha={false}` to hide the alpha track and always emit an opaque 6-digit hex.
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-color-picker--no-alpha" title="No alpha" height={80} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-color-picker--no-alpha" title="No alpha" height={80} />
+  </Tab>
+</Tabs>
+
+## Disabled
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-color-picker--disabled" title="Disabled" height={80} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-color-picker--disabled" title="Disabled" height={80} />
+  </Tab>
+</Tabs>
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `value` | `string` | — |
+| `defaultValue` | `string` | `"#000000"` |
+| `onChange` | `(value: string) => void` | — |
+| `alpha` | `boolean` | `true` |
+| `disabled` | `boolean` | `false` |
+| `class` | `string` | — |
+| `id` | `string` | — |

@@ -7,12 +7,14 @@
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
-      "description": "A button, wrapping Morphos's polymorphic Button primitive with shadcn-style variants.",
+      "description": "A button, wrapping Morphos's polymorphic Button primitive with variant/size styling.",
       "dependencies": [
         "@morphos/inputs",
         "class-variance-authority"
       ],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "spinner"
+      ],
       "files": [
         {
           "path": "ui/tailwind/button.tsx",
@@ -24,7 +26,7 @@
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",
-      "description": "A small status/label pill. Purely presentational \u2014 no Morphos primitive to wrap.",
+      "description": "A small status/label pill. Purely presentational — no Morphos primitive to wrap.",
       "dependencies": [
         "class-variance-authority"
       ],
@@ -144,7 +146,7 @@
       "name": "textarea",
       "type": "registry:ui",
       "title": "Textarea",
-      "description": "A multi-line text input. Purely presentational \u2014 no Morphos primitive (Radix has none either).",
+      "description": "A multi-line text input. Purely presentational — no Morphos primitive (Radix has none either).",
       "dependencies": [],
       "registryDependencies": [],
       "files": [
@@ -565,7 +567,8 @@
       "title": "Dialog",
       "description": "A modal dialog with focus trap and scroll lock, wrapping Morphos's Dialog primitive.",
       "dependencies": [
-        "@morphos/overlays"
+        "@morphos/overlays",
+        "@morphos/icons"
       ],
       "registryDependencies": [],
       "files": [
@@ -690,22 +693,6 @@
       ]
     },
     {
-      "name": "sheet",
-      "type": "registry:ui",
-      "title": "Sheet",
-      "description": "A side panel sliding in from any edge \u2014 a thin re-export of Drawer under shadcn's naming.",
-      "dependencies": [],
-      "registryDependencies": [
-        "drawer"
-      ],
-      "files": [
-        {
-          "path": "ui/tailwind/sheet.tsx",
-          "type": "registry:ui"
-        }
-      ]
-    },
-    {
       "name": "drawer",
       "type": "registry:ui",
       "title": "Drawer",
@@ -770,28 +757,13 @@
       ]
     },
     {
-      "name": "toast",
-      "type": "registry:ui",
-      "title": "Toast",
-      "description": "The classic toast API \u2014 a thin re-export of Sonner (same underlying Morphos ToastProvider).",
-      "dependencies": [],
-      "registryDependencies": [
-        "sonner"
-      ],
-      "files": [
-        {
-          "path": "ui/tailwind/toast.tsx",
-          "type": "registry:ui"
-        }
-      ]
-    },
-    {
       "name": "sonner",
       "type": "registry:ui",
       "title": "Sonner",
       "description": "An auto-dismissing notification queue with a global toast() helper, wrapping Morphos's ToastProvider.",
       "dependencies": [
-        "@morphos/feedback"
+        "@morphos/feedback",
+        "@morphos/icons"
       ],
       "registryDependencies": [],
       "files": [
@@ -805,8 +777,10 @@
       "name": "calendar",
       "type": "registry:ui",
       "title": "Calendar",
-      "description": "A month-grid date picker with real date math. Purely presentational \u2014 no Morphos equivalent.",
-      "dependencies": [],
+      "description": "A month-grid date picker with real date math. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
       "registryDependencies": [],
       "files": [
         {
@@ -836,13 +810,34 @@
       ]
     },
     {
+      "name": "color-picker",
+      "type": "registry:ui",
+      "title": "Color Picker",
+      "description": "A Popover + hue/alpha/saturation-value composition for picking a color. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/overlays",
+        "@morphos/inputs"
+      ],
+      "registryDependencies": [
+        "input",
+        "popover"
+      ],
+      "files": [
+        {
+          "path": "ui/tailwind/color-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "command",
       "type": "registry:ui",
       "title": "Command",
       "description": "A cmdk-style, always-filtered command list, with a CommandDialog composition over Morphos's Dialog.",
       "dependencies": [
         "@morphos/overlays",
-        "@morphos/core"
+        "@morphos/core",
+        "@morphos/icons"
       ],
       "registryDependencies": [],
       "files": [
@@ -857,7 +852,9 @@
       "type": "registry:ui",
       "title": "Data Table",
       "description": "A sortable, paginated data table composing Table with a lightweight table-model helper (no external table library).",
-      "dependencies": [],
+      "dependencies": [
+        "@morphos/icons"
+      ],
       "registryDependencies": [
         "table"
       ],
@@ -869,11 +866,27 @@
       ]
     },
     {
+      "name": "gantt-chart",
+      "type": "registry:ui",
+      "title": "Gantt Chart",
+      "description": "A customizable, animated project timeline with draggable/resizable task bars, day/week/month views, dependency connectors, and milestones. Purely presentational + date math — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/gantt-chart.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "carousel",
       "type": "registry:ui",
       "title": "Carousel",
-      "description": "A scroll-snap-based slideshow. Purely presentational \u2014 no Morphos equivalent, no Embla dependency.",
-      "dependencies": [],
+      "description": "A scroll-snap-based slideshow. Purely presentational — no Morphos equivalent, no Embla dependency.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
       "registryDependencies": [],
       "files": [
         {
@@ -883,10 +896,42 @@
       ]
     },
     {
+      "name": "reel",
+      "type": "registry:ui",
+      "title": "Reel",
+      "description": "A full-height, story-style video/image viewer with segmented progress bars. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/reel.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "video-player",
+      "type": "registry:ui",
+      "title": "Video Player",
+      "description": "A native HTML5 video player with a custom control bar. Purely presentational — no Morphos equivalent, no media-chrome dependency.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/video-player.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "chart",
       "type": "registry:ui",
       "title": "Chart",
-      "description": "A lightweight SVG bar/line chart with the shadcn-style ChartConfig CSS-variable convention. No Recharts dependency.",
+      "description": "A lightweight SVG bar/line chart with a ChartConfig CSS-variable convention for per-series colors. No Recharts dependency.",
       "dependencies": [],
       "registryDependencies": [],
       "files": [
@@ -901,7 +946,9 @@
       "type": "registry:ui",
       "title": "Pagination",
       "description": "Page navigation links, composing Button's variants. Purely presentational.",
-      "dependencies": [],
+      "dependencies": [
+        "@morphos/icons"
+      ],
       "registryDependencies": [
         "button"
       ],
@@ -916,8 +963,10 @@
       "name": "resizable",
       "type": "registry:ui",
       "title": "Resizable",
-      "description": "Drag-resizable panel group using native pointer events. Purely presentational \u2014 no Morphos equivalent.",
-      "dependencies": [],
+      "description": "Drag-resizable panel group using native pointer events. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
       "registryDependencies": [],
       "files": [
         {
@@ -932,7 +981,8 @@
       "title": "Sidebar",
       "description": "A collapsible application sidebar composing a mobile sheet and a desktop rail. No Morphos equivalent.",
       "dependencies": [
-        "@morphos/core"
+        "@morphos/core",
+        "@morphos/icons"
       ],
       "registryDependencies": [],
       "files": [
@@ -947,7 +997,9 @@
       "type": "registry:ui",
       "title": "Breadcrumb",
       "description": "A breadcrumb trail with separators and an ellipsis. Purely presentational.",
-      "dependencies": [],
+      "dependencies": [
+        "@morphos/icons"
+      ],
       "registryDependencies": [],
       "files": [
         {
@@ -961,7 +1013,9 @@
       "type": "registry:ui",
       "title": "Attachment",
       "description": "A file/media attachment chip, typically used inside Message. Purely presentational.",
-      "dependencies": [],
+      "dependencies": [
+        "@morphos/icons"
+      ],
       "registryDependencies": [],
       "files": [
         {
@@ -990,7 +1044,7 @@
       "name": "message",
       "type": "registry:ui",
       "title": "Message",
-      "description": "Composes Bubble with an optional avatar and role-based layout for chat UIs.",
+      "description": "Composes Bubble with an optional avatar, role-based layout, and an optional trailing actions row, for chat UIs.",
       "dependencies": [],
       "registryDependencies": [
         "bubble"
@@ -1006,12 +1060,1001 @@
       "name": "message-scroller",
       "type": "registry:ui",
       "title": "Message Scroller",
-      "description": "A scrollable chat viewport with an imperative scrollToBottom(). Pairs with Message.",
+      "description": "A scrollable chat viewport with an imperative scrollToBottom() that auto-scrolls on mount and surfaces a ScrollButton when scrolled away from the bottom. Pairs with Message.",
+      "dependencies": [],
+      "registryDependencies": [
+        "scroll-button"
+      ],
+      "files": [
+        {
+          "path": "ui/tailwind/message-scroller.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "steps",
+      "type": "registry:ui",
+      "title": "Steps",
+      "description": "A numbered step indicator with a connecting rail between steps. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/steps.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "timeline",
+      "type": "registry:ui",
+      "title": "Timeline",
+      "description": "A vertical list of dated events with a connecting rail. Purely presentational — no Morphos equivalent.",
       "dependencies": [],
       "registryDependencies": [],
       "files": [
         {
-          "path": "ui/tailwind/message-scroller.tsx",
+          "path": "ui/tailwind/timeline.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "radio-card",
+      "type": "registry:ui",
+      "title": "Radio Card",
+      "description": "A card-shaped radio option, wrapping Morphos's RadioGroup + Radio.",
+      "dependencies": [
+        "@morphos/inputs"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/radio-card.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "rating",
+      "type": "registry:ui",
+      "title": "Rating",
+      "description": "An interactive star-rating control. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/rating.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "progress-circle",
+      "type": "registry:ui",
+      "title": "Progress Circle",
+      "description": "A circular progress ring with an indeterminate mode. Purely presentational — Morphos's Progress renders no children to nest an SVG ring inside.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/progress-circle.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "action-bar",
+      "type": "registry:ui",
+      "title": "Action Bar",
+      "description": "A floating contextual toolbar (bulk-selection actions, ...). Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [
+        "separator"
+      ],
+      "files": [
+        {
+          "path": "ui/tailwind/action-bar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "qr-code",
+      "type": "registry:ui",
+      "title": "QR Code",
+      "description": "Renders a QR code as a single SVG path, using the qrcode package's synchronous encoder.",
+      "dependencies": [
+        "qrcode"
+      ],
+      "devDependencies": [
+        "@types/qrcode"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/qr-code.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "tags-input",
+      "type": "registry:ui",
+      "title": "Tags Input",
+      "description": "A free-text chip input — type + Enter/comma to add, Backspace to remove the last. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/tags-input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "phone-input",
+      "type": "registry:ui",
+      "title": "Phone Input",
+      "description": "A dial-code select paired with a plain tel input. Purely presentational — no Morphos equivalent, deliberately avoids a heavy phone-formatting dependency.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/phone-input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "masked-input",
+      "type": "registry:ui",
+      "title": "Masked Input",
+      "description": "A pattern-formatted text input — phone numbers, dates, credit cards, and the like. Purely presentational — no Morphos equivalent, no external masking dependency.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/masked-input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "scrollspy",
+      "type": "registry:ui",
+      "title": "Scrollspy",
+      "description": "Highlights the nav link for whichever section is in view, using IntersectionObserver. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/scrollspy.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "grid",
+      "type": "registry:ui",
+      "title": "Grid",
+      "description": "A responsive grid layout primitive with a colSpan/rowSpan item. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/grid.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "bento-grid",
+      "type": "registry:ui",
+      "title": "Bento Grid",
+      "description": "A card-styled grid for irregularly-sized tiles. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/bento-grid.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "dock",
+      "type": "registry:ui",
+      "title": "Dock",
+      "description": "A macOS-style magnifying dock, driven by pointer-distance DOM queries. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/dock.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "animated-list",
+      "type": "registry:ui",
+      "title": "Animated List",
+      "description": "A list whose items fade/slide in with a per-item stagger delay. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/animated-list.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "presence",
+      "type": "registry:ui",
+      "title": "Presence",
+      "description": "An overlapping avatar stack with a +N overflow badge and an online/away/offline status dot. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/presence.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "tree-view",
+      "type": "registry:ui",
+      "title": "Tree View",
+      "description": "A recursive expand/collapse/select tree. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/tree-view.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "sortable",
+      "type": "registry:ui",
+      "title": "Sortable",
+      "description": "A pointer-driven drag-to-reorder list. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/sortable.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "drag-items",
+      "type": "registry:ui",
+      "title": "Drag Items",
+      "description": "Free-form draggable positioning within a bounded container. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/drag-items.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "kanban",
+      "type": "registry:ui",
+      "title": "Kanban",
+      "description": "A drag-across-columns board. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/kanban.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "onboarding-tour",
+      "type": "registry:ui",
+      "title": "Onboarding Tour",
+      "description": "A spotlight product tour anchored to CSS selectors. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/onboarding-tour.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "motion",
+      "type": "registry:ui",
+      "title": "Motion",
+      "description": "An animate-on-mount / animate-on-scroll-into-view wrapper with 28 built-in effect presets (fade, slide, zoom, flip, rotate, skew, blur, bounce, elastic, ...). Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/motion.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "text-animation",
+      "type": "registry:ui",
+      "title": "Text Animation",
+      "description": "A per-word/per-character/per-line staggered text reveal with 29 built-in effect presets (fade, slide, zoom, flip, rotate, skew, blur, bounce, elastic, wave, ...). Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/text-animation.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "marquee",
+      "type": "registry:ui",
+      "title": "Marquee",
+      "description": "A seamless infinite-scroll content ticker. Purely presentational — no Morphos equivalent, no react-fast-marquee dependency.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/marquee.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "sticky-scroll",
+      "type": "registry:ui",
+      "title": "Sticky Scroll",
+      "description": "A two-column scroll-linked reveal with a sticky synced panel. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/sticky-scroll.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "mouse-trail",
+      "type": "registry:ui",
+      "title": "Mouse Trail",
+      "description": "A canvas particle trail following the pointer within its bounding box. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/mouse-trail.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "pointer",
+      "type": "registry:ui",
+      "title": "Pointer",
+      "description": "A custom cursor that tracks 1:1 within a bounded PointerArea. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/pointer.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "smooth-cursor",
+      "type": "registry:ui",
+      "title": "Smooth Cursor",
+      "description": "A viewport-global custom cursor that eases toward the pointer. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/smooth-cursor.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "progressive-blur",
+      "type": "registry:ui",
+      "title": "Progressive Blur",
+      "description": "A stacked-layer approximation of an iOS-style progressive blur edge. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/progressive-blur.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "beam",
+      "type": "registry:ui",
+      "title": "Beam",
+      "description": "An animated beam connecting two elements by ref. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/beam.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "shimmer",
+      "type": "registry:ui",
+      "title": "Shimmer",
+      "description": "A pure-CSS shimmer sweep for text, built on `currentColor` and `background-clip: text`. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/shimmer.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "video-mask",
+      "type": "registry:ui",
+      "title": "Video Masking",
+      "description": "A video revealed only inside a circle following the pointer. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/video-mask.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "morphing-dialog",
+      "type": "registry:ui",
+      "title": "Morphing Dialog",
+      "description": "A dialog that animates from its trigger's exact position/size to a centered modal. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/morphing-dialog.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "lens",
+      "type": "registry:ui",
+      "title": "Lens",
+      "description": "A magnifying-glass image zoom that follows the pointer. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/lens.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "comparison",
+      "type": "registry:ui",
+      "title": "Comparison",
+      "description": "A slider-based component for comparing two items in an overlay. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/comparison.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "chain-of-thought",
+      "type": "registry:ui",
+      "title": "Chain of Thought",
+      "description": "A collapsible list of an AI response's named reasoning steps. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/chain-of-thought.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "reasoning",
+      "type": "registry:ui",
+      "title": "Reasoning",
+      "description": "A collapsible block for an AI response's raw reasoning/thinking text. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/reasoning.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "source",
+      "type": "registry:ui",
+      "title": "Source",
+      "description": "A collapsible list of citation links backing an AI response. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/source.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "ai-steps",
+      "type": "registry:ui",
+      "title": "AI Steps",
+      "description": "A plain status list for an agent's task execution. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/ai-steps.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "prompt-input",
+      "type": "registry:ui",
+      "title": "Prompt Input",
+      "description": "A chat composer — auto-resizing textarea + submit button + a toolbar slot. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/prompt-input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "prompt-suggestion",
+      "type": "registry:ui",
+      "title": "Prompt Suggestion",
+      "description": "A row of clickable suggestion chips for a PromptInput. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/prompt-suggestion.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "scroll-button",
+      "type": "registry:ui",
+      "title": "Scroll Button",
+      "description": "A floating scroll-to-bottom button, meant to pair with MessageScroller. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/scroll-button.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "code-block",
+      "type": "registry:ui",
+      "title": "Code Block",
+      "description": "A plain code display with a copy button. Purely presentational — no Morphos equivalent, deliberately avoids a heavy syntax-highlighter dependency.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/code-block.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "task",
+      "type": "registry:ui",
+      "title": "Task",
+      "description": "A single collapsible agent task card with a live status pill. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/task.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "branch",
+      "type": "registry:ui",
+      "title": "Branch",
+      "description": "Navigable alternate responses (regenerations) for one AI turn. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/branch.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "tool-call",
+      "type": "registry:ui",
+      "title": "Tool Call",
+      "description": "A collapsible tool/function call an agent made, with its input/output as children. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/tool-call.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "actions",
+      "type": "registry:ui",
+      "title": "Actions",
+      "description": "A row of small icon action buttons under an AI response. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/actions.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "web-preview",
+      "type": "registry:ui",
+      "title": "Web Preview",
+      "description": "A link-preview card for a web page an AI response references. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/web-preview.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "ai-image",
+      "type": "registry:ui",
+      "title": "AI Image",
+      "description": "An image the AI generated or referenced, with a fade-in once loaded. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/ai-image.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "inline-citation",
+      "type": "registry:ui",
+      "title": "Inline Citation",
+      "description": "A small superscript citation marker. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/inline-citation.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "credit-card",
+      "type": "registry:ui",
+      "title": "Credit Card",
+      "description": "A visual credit card face with multiple color variants and a flippable front/back. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/credit-card.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "pricing-table",
+      "type": "registry:ui",
+      "title": "Pricing Table",
+      "description": "A responsive row of pricing plan cards with a features list. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/pricing-table.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "payment-method-selector",
+      "type": "registry:ui",
+      "title": "Payment Method Selector",
+      "description": "A radio-driven list of payment method rows, wrapping Morphos's RadioGroup + Radio.",
+      "dependencies": [
+        "@morphos/inputs"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/payment-method-selector.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "order-summary",
+      "type": "registry:ui",
+      "title": "Order Summary",
+      "description": "A line-item + total breakdown card. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/order-summary.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "invoice-card",
+      "type": "registry:ui",
+      "title": "Invoice Card",
+      "description": "A single invoice summary row. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/invoice-card.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "plan-card",
+      "type": "registry:ui",
+      "title": "Plan Card",
+      "description": "A single subscription/account plan card. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/plan-card.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "payment-status",
+      "type": "registry:ui",
+      "title": "Payment Status",
+      "description": "A payment-state badge with a colored dot. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/payment-status.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "receipt",
+      "type": "registry:ui",
+      "title": "Receipt",
+      "description": "A purchase receipt, either a thermal-paper printout or a modern card. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/receipt.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "ticket",
+      "type": "registry:ui",
+      "title": "Ticket",
+      "description": "An event/boarding ticket, either a paper stub or a modern boarding-pass card. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/ticket.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "product-card",
+      "type": "registry:ui",
+      "title": "Product Card",
+      "description": "A product tile with image, name, and price. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/product-card.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "cart",
+      "type": "registry:ui",
+      "title": "Cart",
+      "description": "A divided list of CartItems. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/cart.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "cart-item",
+      "type": "registry:ui",
+      "title": "Cart Item",
+      "description": "A single cart row with a quantity stepper. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/cart-item.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "stock-badge",
+      "type": "registry:ui",
+      "title": "Stock Badge",
+      "description": "A product stock-level badge. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/stock-badge.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "promo-code-input",
+      "type": "registry:ui",
+      "title": "Promo Code Input",
+      "description": "A coupon-code input + apply button. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/promo-code-input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "review-summary",
+      "type": "registry:ui",
+      "title": "Review Summary",
+      "description": "An average-rating + star-count breakdown. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/review-summary.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "product-gallery",
+      "type": "registry:ui",
+      "title": "Product Gallery",
+      "description": "A main-image + thumbnail-strip product gallery. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/product-gallery.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "shipping-estimator",
+      "type": "registry:ui",
+      "title": "Shipping Estimator",
+      "description": "A postal-code form for a shipping estimate. Purely presentational — no Morphos equivalent.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/tailwind/shipping-estimator.tsx",
           "type": "registry:ui"
         }
       ]

@@ -1,0 +1,71 @@
+---
+title: Text Animation
+description: A per-word/per-character/per-line staggered text reveal with 29 built-in effect presets. Purely presentational — no Morphos equivalent.
+icon: CaseSensitive
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="text-animation" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="text-animation" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-text-animation--default" title="Default" height={100} />
+    <StorybookEmbed story="tailwind-text-animation--effect-gallery" title="Effect gallery (all 29 presets)" height={700} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-text-animation--default" title="Default" height={100} />
+    <StorybookEmbed story="praxiscss-text-animation--effect-gallery" title="Effect gallery (all 29 presets)" height={700} />
+  </Tab>
+</Tabs>
+
+## About
+
+Purely presentational — no Morphos equivalent. Each unit (word, character, or line) gets a plain
+CSS `animation`, not a JS-driven transition — there's no single shared trigger point to toggle like
+`Motion` has, so every named `effect`'s `@keyframes` is generated once (from the same `from`/`to`
+model `Motion` uses, kept as a small local, duplicated copy — every registry component is
+standalone copy-paste source) and `animation-delay` staggers each unit's start. The Tailwind flavor
+embeds the current effect's `@keyframes` via one `<style>` tag; the `@praxisjs/css` flavor registers
+all 29 via `keyframes()` at module load. Either way, `animation-fill-mode: backwards` holds each
+unit at its `from` state until its delay elapses, so units don't flash visible before their turn.
+
+**29 built-in `effect` presets** — the same 28 families as `Motion`'s `MotionEffect` (see that page
+for the direction-suffix convention), plus `"wave"`: a continuous, infinitely-looping bob with no
+Motion equivalent, since it only makes sense applied per-unit with a phase offset from the stagger.
+
+## Usage
+
+```tsx
+import { TextAnimation } from "@/components/ui/text-animation";
+
+<TextAnimation text="Build beautiful interfaces faster" by="word" effect="fade-up" />
+<TextAnimation text="BOUNCE" by="character" effect="bounce-in" stagger={60} />
+<TextAnimation text="Line one\nLine two" by="line" effect="slide-left" />
+```
+
+## Props
+
+| Prop | Type | Default |
+|---|---|---|
+| `text` | `string` | — |
+| `by` | `"word" \| "character" \| "line"` | `"word"` |
+| `effect` | `TextAnimationEffect` (29 presets — same families as `MotionEffect`, plus `"wave"`) | `"fade-up"` |
+| `duration` | `number` (ms; ignored by `"wave"`, which always runs at 1200ms) | `400` |
+| `stagger` | `number` (ms between each unit's animation start) | `40` |
+| `class` | `string` | — |
