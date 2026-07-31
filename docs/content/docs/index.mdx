@@ -38,7 +38,7 @@ Kosmesis relates to Morphos, and adding your first component.
 ## Browse components [#browse-components]
 
 <Cards>
-  <Card title="Components · 65" href="/docs/components/button" description="Everything from Button and Dialog to Data Table and Chart, in both style systems." />
+  <Card title="Components · 134" href="/docs/components/button" description="Everything from Button and Dialog to Data Table and Chart, in both style systems." />
 </Cards>
 
 ## Design philosophy [#design-philosophy]
@@ -62,98 +62,216 @@ Kosmesis relates to Morphos, and adding your first component.
 
 ## Full component list [#full-component-list]
 
-### Inputs — wrapping `@morphos/inputs` [#inputs--morphosinputs]
+Every component page states which Morphos primitive backs it (or whether it's purely presentational), grouped here the same way as the [sidebar](/docs/components/button):
+
+### Actions [#actions]
 
 | Component | Description |
 | --------- | ------------ |
-| `Button` | Polymorphic button with shadcn-style variants |
-| `Input` | Single-line text input |
-| `NumberField` | Decrement/input/increment stepper |
-| `Checkbox` | Checkbox with indeterminate support |
-| `Switch` | Toggle switch |
-| `RadioGroup` | Radio group with keyboard navigation |
-| `Select` | Custom listbox select with keyboard support |
-| `Toggle` | Two-state toggle button |
-| `ToggleGroup` | Single- or multiple-selection toggle group |
-| `Slider` | Range slider |
-| `Field` | Form field wrapper with label, description, and error message |
-| `InputOTP` | One-time password input |
-| `Combobox` | Searchable select with text filtering |
+| `Button` | A button, wrapping Morphos's polymorphic Button primitive with variant/size styling. |
+| `Button Group` | Visually groups adjacent buttons into one control. |
+| `Toggle` | A two-state toggle button, wrapping Morphos's Toggle primitive. |
+| `Toggle Group` | Single- or multiple-selection toggle group, wrapping Morphos's ToggleGroup primitive. |
+| `Action Bar` | A floating contextual toolbar (bulk-selection actions, ...). |
 
-### Overlays — wrapping `@morphos/overlays` [#overlays--morphosoverlays]
+### Communication [#communication]
 
 | Component | Description |
 | --------- | ------------ |
-| `Tooltip` | Hover/focus-activated tooltip |
-| `Popover` | Click-toggled floating panel |
-| `Dialog` | Modal dialog with focus trap and scroll lock |
-| `AlertDialog` | Confirmation dialog for destructive/important actions |
-| `DropdownMenu` | Menu with full keyboard navigation |
-| `ContextMenu` | Right-click context menu |
-| `HoverCard` | Hover-activated preview card |
-| `Drawer` | Side panel sliding in from any edge |
-| `DatePicker` | Popover + Calendar composition for picking a single date |
-| `Command` | cmdk-style, always-filtered command list |
+| `Attachment` | A file/media attachment chip, typically used inside Message. |
+| `Bubble` | A single chat message bubble. |
+| `Message` | Composes Bubble with an optional avatar, role-based layout, and an optional trailing actions row, for chat UIs. |
+| `Message Scroller` | A scrollable chat viewport with an imperative scrollToBottom() that auto-scrolls on mount and surfaces a ScrollButton when scrolled away from the bottom. Pairs with Message. |
+| `Scroll Button` | A floating scroll-to-bottom button, meant to pair with MessageScroller. |
 
-### Layout — wrapping `@morphos/layout` [#layout--morphoslayout]
+### Data Display [#data-display]
 
 | Component | Description |
 | --------- | ------------ |
-| `Separator` | Horizontal or vertical divider |
-| `Tabs` | Tab panel with keyboard navigation |
-| `Accordion` | Collapsible item list, single or multiple open at once |
-| `Collapsible` | Single expand/collapse toggle |
-| `NavigationMenu` | Site navigation with submenus |
-| `Menubar` | Horizontal menu bar with dropdown menus |
-| `ScrollArea` | Custom-styled scroll container with a proportional thumb |
-| `Sidebar` | Collapsible application sidebar, composing a mobile sheet and a desktop rail |
+| `Avatar` | An image with automatic fallback, wrapping Morphos's Avatar/AvatarImage/AvatarFallback. |
+| `Badge` | A small status/label pill. |
+| `Card` | A bordered content container with Header, Title, Description, Action, Content, and Footer parts. |
+| `Chart` | A lightweight SVG bar/line chart with a ChartConfig CSS-variable convention for per-series colors. No Recharts dependency. |
+| `Data Table` | A sortable, paginated data table composing Table with a lightweight table-model helper (no external table library). |
+| `Gantt Chart` | A customizable, animated project timeline with draggable/resizable task bars, day/week/month views, dependency connectors, and milestones. |
+| `Empty` | A blank/empty-state layout with header, media, title, description, and content slots. |
+| `Item` | A generic list-row layout primitive with media/content/actions slots. |
+| `Kbd` | Represents a keyboard key or shortcut. |
+| `Table` | A responsive table with Header/Body/Footer/Row/Head/Cell/Caption parts. |
+| `Typography` | Prose text primitives (headings, lead, muted, inline code, blockquote). |
+| `Code Block` | A plain code display with a copy button. |
+| `Timeline` | A vertical list of dated events with a connecting rail. |
+| `Steps` | A numbered step indicator with a connecting rail between steps. |
+| `QR Code` | Renders a QR code as a single SVG path, using the qrcode package's synchronous encoder. |
+| `Radio Card` | A card-shaped radio option, wrapping Morphos's RadioGroup + Radio. |
+| `Progress Circle` | A circular progress ring with an indeterminate mode. |
+| `Rating` | An interactive star-rating control. |
+| `Grid` | A responsive grid layout primitive with a colSpan/rowSpan item. |
+| `Bento Grid` | A card-styled grid for irregularly-sized tiles. |
+| `Presence` | An overlapping avatar stack with a +N overflow badge and an online/away/offline status dot. |
+| `Tree View` | A recursive expand/collapse/select tree. |
 
-### Feedback — wrapping `@morphos/feedback` [#feedback--morphosfeedback]
+### Date & Time [#date-time]
 
 | Component | Description |
 | --------- | ------------ |
-| `Avatar` | Image with automatic fallback on load failure |
-| `Alert` | Static inline notification |
-| `Progress` | Progress bar with an indeterminate mode |
-| `Spinner` | Loading indicator |
-| `Sonner` | Auto-dismissing notification queue with a global `toast()` helper |
+| `Calendar` | A month-grid date picker with real date math. |
+| `Date Picker` | A Popover + Calendar composition for picking a single date. |
 
-### Presentational — no Morphos primitive [#presentational--no-morphos-primitive]
-
-Radix UI / Base UI don't cover these either — shadcn/ui builds them from scratch, and so does
-Kosmesis:
+### Feedback [#feedback]
 
 | Component | Description |
 | --------- | ------------ |
-| `Badge` | Small status/label pill |
-| `Skeleton` | Pulsing placeholder for loading content |
-| `Card` | Bordered content container with Header/Title/Description/Content/Footer parts |
-| `AspectRatio` | Constrains content to a fixed width/height ratio |
-| `Label` | Accessible label, typically paired with `Field` |
-| `Textarea` | Multi-line text input |
-| `Table` | Responsive table with Header/Body/Footer/Row/Head/Cell/Caption parts |
-| `Typography` | Prose text primitives (headings, lead, muted, inline code, blockquote) |
-| `Kbd` | Represents a keyboard key or shortcut |
-| `NativeSelect` | Plain, styled native `<select>` |
-| `ButtonGroup` | Visually groups adjacent buttons into one control |
-| `InputGroup` | Pairs an Input with leading/trailing addons |
-| `Item` | Generic list-row layout with media/content/actions slots |
-| `Empty` | Blank/empty-state layout with header, media, title, description slots |
-| `Marker` | Small positional dot/pin |
-| `Direction` | Sets ambient text direction (ltr/rtl) via the native `dir` attribute |
-| `Sheet` | Side panel sliding in from any edge — a thin re-export of `Drawer` |
-| `Toast` | Classic toast API — a thin re-export of `Sonner` |
-| `Calendar` | Month-grid date picker with real date math |
-| `DataTable` | Sortable, paginated table composing `Table`, no external table library |
-| `Carousel` | Scroll-snap-based slideshow, no Embla dependency |
-| `Chart` | Lightweight SVG bar/line chart, no Recharts dependency |
-| `Pagination` | Page navigation links, composing `Button`'s variants |
-| `Resizable` | Drag-resizable panel group using native pointer events |
-| `Breadcrumb` | Breadcrumb trail with separators and an ellipsis |
-| `Attachment` | File/media attachment chip, typically used inside `Message` |
-| `Bubble` | Single chat message bubble |
-| `Message` | Composes `Bubble` with an optional avatar and role-based layout |
-| `MessageScroller` | Scrollable chat viewport with an imperative `scrollToBottom()` |
+| `Alert` | A static inline notification with Title/Description parts, wrapping Morphos's Alert primitive. |
+| `Progress` | A progress bar with an indeterminate mode, wrapping Morphos's Progress primitive. |
+| `Skeleton` | A pulsing placeholder for loading content. |
+| `Sonner` | An auto-dismissing notification queue with a global toast() helper, wrapping Morphos's ToastProvider. |
+| `Spinner` | A loading indicator, wrapping Morphos's Spinner primitive. |
+
+### Forms [#forms]
+
+| Component | Description |
+| --------- | ------------ |
+| `Checkbox` | A checkbox with indeterminate support, wrapping Morphos's Checkbox primitive. |
+| `Color Picker` | A Popover + hue/alpha/saturation-value composition for picking a color. |
+| `Combobox` | A searchable select with text filtering, wrapping Morphos's Combobox primitive. |
+| `Field` | A form field wrapper with label, description, and error message, wrapping Morphos's Field/Fieldset. |
+| `Input` | A single-line text input, wrapping Morphos's Input primitive. |
+| `Input Group` | Pairs an Input with leading/trailing addons. |
+| `Input OTP` | A one-time password input, wrapping Morphos's OtpField primitive. |
+| `Label` | An accessible label, typically paired with Morphos's Field. |
+| `Native Select` | A plain, styled native `<select>`. |
+| `Number Field` | A decrement/input/increment stepper, wrapping Morphos's NumberField primitive. |
+| `Radio Group` | A radio group with keyboard navigation, wrapping Morphos's RadioGroup + Radio. |
+| `Select` | A custom listbox select with keyboard support, wrapping Morphos's Select primitive. |
+| `Slider` | A range slider, wrapping Morphos's Slider primitive. |
+| `Switch` | A toggle switch, wrapping Morphos's Switch primitive. |
+| `Textarea` | A multi-line text input. |
+| `Tags Input` | A free-text chip input — type + Enter/comma to add, Backspace to remove the last. |
+| `Phone Input` | A dial-code select paired with a plain tel input. |
+| `Masked Input` | A pattern-formatted text input — phone numbers, dates, credit cards, and the like. |
+
+### Layout [#layout]
+
+| Component | Description |
+| --------- | ------------ |
+| `Aspect Ratio` | Constrains content to a fixed width/height ratio. |
+| `Carousel` | A scroll-snap-based slideshow. |
+| `Reel` | A full-height, story-style video/image viewer with segmented progress bars. |
+| `Video Player` | A native HTML5 video player with a custom control bar. |
+| `Direction` | Sets the ambient text direction (ltr/rtl) via the native dir attribute. |
+| `Marker` | A small positional dot/pin, e.g. to annotate a chart point or status. |
+| `Resizable` | Drag-resizable panel group using native pointer events. |
+| `Scroll Area` | A custom-styled scroll container, composing Morphos's ScrollArea + Viewport + Scrollbar + Thumb. |
+| `Separator` | A horizontal or vertical divider, wrapping Morphos's Separator primitive. |
+| `Sidebar` | A collapsible application sidebar composing a mobile sheet and a desktop rail. |
+
+### Navigation [#navigation]
+
+| Component | Description |
+| --------- | ------------ |
+| `Breadcrumb` | A breadcrumb trail with separators and an ellipsis. |
+| `Command` | A cmdk-style, always-filtered command list, with a CommandDialog composition over Morphos's Dialog. |
+| `Menubar` | A horizontal menu bar with dropdown menus, wrapping Morphos's Menubar primitive. |
+| `Navigation Menu` | Site navigation with submenus, wrapping Morphos's NavigationMenu primitive. |
+| `Pagination` | Page navigation links, composing Button's variants. |
+| `Tabs` | A tab panel with keyboard navigation, wrapping Morphos's Tabs primitive. |
+| `Scrollspy` | Highlights the nav link for whichever section is in view, using IntersectionObserver. |
+
+### Overlays [#overlays]
+
+| Component | Description |
+| --------- | ------------ |
+| `Accordion` | A collapsible item list, single or multiple open at once, wrapping Morphos's Accordion primitive. |
+| `Alert Dialog` | A confirmation dialog for destructive/important actions, wrapping Morphos's AlertDialog primitive. |
+| `Collapsible` | A single expand/collapse toggle, wrapping Morphos's Disclosure primitive. |
+| `Context Menu` | A right-click context menu, wrapping Morphos's ContextMenu primitive. |
+| `Dialog` | A modal dialog with focus trap and scroll lock, wrapping Morphos's Dialog primitive. |
+| `Drawer` | A side panel sliding in from any edge, wrapping Morphos's Drawer primitive. |
+| `Dropdown Menu` | A menu with full keyboard navigation, wrapping Morphos's Dropdown primitive. |
+| `Hover Card` | A hover-activated preview card, wrapping Morphos's PreviewCard primitive. |
+| `Popover` | A click-toggled floating panel, wrapping Morphos's Popover primitive. |
+| `Tooltip` | A hover/focus-activated tooltip, wrapping Morphos's Tooltip primitive. |
+| `Morphing Dialog` | A dialog that animates from its trigger's exact position/size to a centered modal. |
+
+### Interaction [#interaction]
+
+| Component | Description |
+| --------- | ------------ |
+| `Sortable` | A pointer-driven drag-to-reorder list. |
+| `Drag Items` | Free-form draggable positioning within a bounded container. |
+| `Kanban` | A drag-across-columns board. |
+| `Onboarding Tour` | A spotlight product tour anchored to CSS selectors. |
+| `Dock` | A macOS-style magnifying dock, driven by pointer-distance DOM queries. |
+
+### Animation & Effects [#animation-effects]
+
+| Component | Description |
+| --------- | ------------ |
+| `Motion` | An animate-on-mount / animate-on-scroll-into-view wrapper with 28 built-in effect presets (fade, slide, zoom, flip, rotate, skew, blur, bounce, elastic, ...). |
+| `Text Animation` | A per-word/per-character/per-line staggered text reveal with 29 built-in effect presets (fade, slide, zoom, flip, rotate, skew, blur, bounce, elastic, wave, ...). |
+| `Marquee` | A seamless infinite-scroll content ticker. |
+| `Video Masking` | A video revealed only inside a circle following the pointer. |
+| `Sticky Scroll` | A two-column scroll-linked reveal with a sticky synced panel. |
+| `Mouse Trail` | A canvas particle trail following the pointer within its bounding box. |
+| `Pointer` | A custom cursor that tracks 1:1 within a bounded PointerArea. |
+| `Smooth Cursor` | A viewport-global custom cursor that eases toward the pointer. |
+| `Progressive Blur` | A stacked-layer approximation of an iOS-style progressive blur edge. |
+| `Beam` | An animated beam connecting two elements by ref. |
+| `Shimmer` | A pure-CSS shimmer sweep for text, built on `currentColor` and `background-clip: text`. |
+| `Animated List` | A list whose items fade/slide in with a per-item stagger delay. |
+| `Lens` | A magnifying-glass image zoom that follows the pointer. |
+| `Comparison` | A slider-based component for comparing two items in an overlay. |
+
+### AI Elements [#ai-elements]
+
+| Component | Description |
+| --------- | ------------ |
+| `Chain of Thought` | A collapsible list of an AI response's named reasoning steps. |
+| `Reasoning` | A collapsible block for an AI response's raw reasoning/thinking text. |
+| `Source` | A collapsible list of citation links backing an AI response. |
+| `AI Steps` | A plain status list for an agent's task execution. |
+| `Prompt Input` | A chat composer — auto-resizing textarea + submit button + a toolbar slot. |
+| `Prompt Suggestion` | A row of clickable suggestion chips for a PromptInput. |
+| `Task` | A single collapsible agent task card with a live status pill. |
+| `Branch` | Navigable alternate responses (regenerations) for one AI turn. |
+| `Tool Call` | A collapsible tool/function call an agent made, with its input/output as children. |
+| `Actions` | A row of small icon action buttons under an AI response. |
+| `Web Preview` | A link-preview card for a web page an AI response references. |
+| `AI Image` | An image the AI generated or referenced, with a fade-in once loaded. |
+| `Inline Citation` | A small superscript citation marker. |
+
+### Payments [#payments]
+
+| Component | Description |
+| --------- | ------------ |
+| `Credit Card` | A visual credit card face with multiple color variants and a flippable front/back. |
+| `Pricing Table` | A responsive row of pricing plan cards with a features list. |
+| `Payment Method Selector` | A radio-driven list of payment method rows, wrapping Morphos's RadioGroup + Radio. |
+| `Order Summary` | A line-item + total breakdown card. |
+| `Invoice Card` | A single invoice summary row. |
+| `Plan Card` | A single subscription/account plan card. |
+| `Payment Status` | A payment-state badge with a colored dot. |
+
+### Documents [#documents]
+
+| Component | Description |
+| --------- | ------------ |
+| `Receipt` | A purchase receipt, either a thermal-paper printout or a modern card. |
+| `Ticket` | An event/boarding ticket, either a paper stub or a modern boarding-pass card. |
+
+### Ecommerce [#ecommerce]
+
+| Component | Description |
+| --------- | ------------ |
+| `Product Card` | A product tile with image, name, and price. |
+| `Cart` | A divided list of CartItems. |
+| `Cart Item` | A single cart row with a quantity stepper. |
+| `Stock Badge` | A product stock-level badge. |
+| `Promo Code Input` | A coupon-code input + apply button. |
+| `Review Summary` | An average-rating + star-count breakdown. |
+| `Product Gallery` | A main-image + thumbnail-strip product gallery. |
+| `Shipping Estimator` | A postal-code form for a shipping estimate. |
 
 ## Getting help [#getting-help]
 

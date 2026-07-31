@@ -57,29 +57,56 @@ const CATEGORIES = [
     name: "Inputs",
     href: "/docs/components/button",
     description:
-      "Button · Button Group · Checkbox · Switch · Toggle · Toggle Group · Radio Group · Select · Native Select · Slider · Input · Input Group · Number Field · Input OTP · Textarea · Label · Combobox · Date Picker · Calendar · Field",
-    count: 20,
+      "Button · Button Group · Toggle · Toggle Group · Action Bar · Checkbox · Switch · Radio Group · Select · Native Select · Slider · Input · Input Group · Number Field · Input OTP · Textarea · Label · Combobox · Color Picker · Tags Input · Phone Input · Masked Input · Field",
+    count: 23,
   },
   {
     name: "Overlays",
     href: "/docs/components/dialog",
     description:
-      "Dialog · Alert Dialog · Drawer · Sheet · Popover · Tooltip · Hover Card · Dropdown Menu · Context Menu · Command",
-    count: 10,
+      "Dialog · Alert Dialog · Drawer · Morphing Dialog · Popover · Tooltip · Hover Card · Dropdown Menu · Context Menu · Accordion · Collapsible · Date Picker · Calendar",
+    count: 13,
   },
   {
     name: "Layout",
-    href: "/docs/components/accordion",
+    href: "/docs/components/aspect-ratio",
     description:
-      "Accordion · Tabs · Collapsible · Separator · Scroll Area · Navigation Menu · Menubar · Sidebar · Breadcrumb · Aspect Ratio · Resizable · Direction",
-    count: 12,
+      "Aspect Ratio · Carousel · Reel · Video Player · Direction · Marker · Resizable · Scroll Area · Separator · Sidebar · Breadcrumb · Command · Menubar · Navigation Menu · Pagination · Tabs · Scrollspy",
+    count: 17,
   },
   {
     name: "Display",
     href: "/docs/components/alert",
     description:
-      "Alert · Toast · Sonner · Progress · Spinner · Skeleton · Avatar · Badge · Card · Table · Data Table · Typography · Kbd · Empty · Item · Marker · Chart · Carousel · Pagination · Message · Message Scroller · Bubble · Attachment",
-    count: 23,
+      "Alert · Sonner · Progress · Spinner · Skeleton · Avatar · Badge · Card · Table · Data Table · Typography · Kbd · Empty · Item · Chart · Gantt Chart · Code Block · Timeline · Steps · QR Code · Radio Card · Progress Circle · Rating · Grid · Bento Grid · Presence · Tree View · Message · Message Scroller · Bubble · Attachment · Scroll Button",
+    count: 32,
+  },
+  {
+    name: "Interaction",
+    href: "/docs/components/sortable",
+    description: "Sortable · Drag Items · Kanban · Onboarding Tour · Dock",
+    count: 5,
+  },
+  {
+    name: "Animation & Effects",
+    href: "/docs/components/motion",
+    description:
+      "Motion · Text Animation · Marquee · Video Masking · Sticky Scroll · Mouse Trail · Pointer · Smooth Cursor · Progressive Blur · Beam · Shimmer · Animated List · Lens · Comparison",
+    count: 14,
+  },
+  {
+    name: "AI Elements",
+    href: "/docs/components/chain-of-thought",
+    description:
+      "Chain of Thought · Reasoning · Source · AI Steps · Prompt Input · Prompt Suggestion · Task · Branch · Tool Call · Actions · Web Preview · AI Image · Inline Citation",
+    count: 13,
+  },
+  {
+    name: "Commerce",
+    href: "/docs/components/credit-card",
+    description:
+      "Credit Card · Pricing Table · Payment Method Selector · Order Summary · Invoice Card · Plan Card · Payment Status · Receipt · Ticket · Product Card · Cart · Cart Item · Stock Badge · Promo Code Input · Review Summary · Product Gallery · Shipping Estimator",
+    count: 17,
   },
 ];
 
@@ -97,7 +124,7 @@ const FOOTER_LINKS = [
     links: [
       { label: "Inputs", href: "/docs/components/button" },
       { label: "Overlays", href: "/docs/components/dialog" },
-      { label: "Layout", href: "/docs/components/accordion" },
+      { label: "Layout", href: "/docs/components/aspect-ratio" },
       { label: "Display", href: "/docs/components/alert" },
     ],
   },
@@ -212,7 +239,7 @@ export default function HomePage() {
                     href="/docs/components/button"
                     className="text-sm text-fd-muted-foreground transition-colors hover:text-fd-foreground"
                   >
-                    Browse 65 components
+                    Browse 134 components
                   </Link>
                 </div>
               </div>
@@ -222,7 +249,7 @@ export default function HomePage() {
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-fd-border pt-6 font-mono text-[10px] text-fd-muted-foreground">
               <span>Copy-paste, not npm install</span>
               <span className="text-fd-border" aria-hidden>·</span>
-              <span>65 components</span>
+              <span>134 components</span>
               <span className="text-fd-border" aria-hidden>·</span>
               <span>TypeScript</span>
               <span className="text-fd-border" aria-hidden>·</span>
@@ -317,7 +344,7 @@ export default function HomePage() {
         {/* ── Component categories ──────────────────────────────────────── */}
         <section className="border-t border-fd-border px-6 py-20 md:px-16">
           <div className="mx-auto max-w-6xl">
-            <SectionRule label="Components" count="64 total" />
+            <SectionRule label="Components" count="134 total" />
 
             <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
               {CATEGORIES.map(({ name, href, description, count }) => (
