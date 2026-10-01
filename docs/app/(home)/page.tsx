@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 const GITHUB_URL = `https://github.com/${gitConfig.user}/${gitConfig.repo}`;
 
 const LOGO_PATH =
-  "M605.411 445.66L641.322 498.293L641.342 498.278L697.538 578.57L742.673 512.806L512.5 178.878L281.327 512.806L512.5 848.182L603.519 715.561L650.559 782.142L512.701 983L187 510.478L512.701 40L837 510.478L698.206 712.709L668.895 671.104L604.033 578.775L512 712.504L373.199 511.5L512.233 309.092L584.13 414.469L536.746 480.456L513.69 445.66L466.305 511.5L512.166 577.425L556.48 513.91L605.411 445.66Z";
+  "M605.411 445.66L641.322 498.293L641.342 498.278L697.538 578.57L742.673 512.806L512.5 178.878L281.327 512.806L512.5 848.182L603.519 715.561L650.559 782.143L512.701 983L187 510.478L512.701 40L837 510.478L698.206 712.709L668.895 671.104L604.033 578.775L512 712.504L373.199 511.5L512.233 309.092L584.13 414.469L536.746 480.456L513.69 445.66L466.305 511.5L512.166 577.425L556.48 513.91L605.411 445.66Z";
 
 const PRINCIPLES = [
   {
@@ -64,8 +64,8 @@ const CATEGORIES = [
     name: "Overlays",
     href: "/docs/components/dialog",
     description:
-      "Dialog · Alert Dialog · Drawer · Morphing Dialog · Popover · Tooltip · Hover Card · Dropdown Menu · Context Menu · Accordion · Collapsible · Date Picker · Calendar · Time Picker · Date Time Picker",
-    count: 15,
+      "Dialog · Alert Dialog · Drawer · Morphing Dialog · Popover · Tooltip · Hover Card · Dropdown Menu · Context Menu · Accordion · Collapsible · Date Picker · Calendar · Time Picker · Month Picker · Date Time Picker",
+    count: 16,
   },
   {
     name: "Layout",
@@ -239,7 +239,7 @@ export default function HomePage() {
                     href="/docs/components/button"
                     className="text-sm text-fd-muted-foreground transition-colors hover:text-fd-foreground"
                   >
-                    Browse 142 components
+                    Browse 143 components
                   </Link>
                 </div>
               </div>
@@ -249,7 +249,7 @@ export default function HomePage() {
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-fd-border pt-6 font-mono text-[10px] text-fd-muted-foreground">
               <span>Copy-paste, not npm install</span>
               <span className="text-fd-border" aria-hidden>·</span>
-              <span>142 components</span>
+              <span>143 components</span>
               <span className="text-fd-border" aria-hidden>·</span>
               <span>TypeScript</span>
               <span className="text-fd-border" aria-hidden>·</span>
@@ -344,7 +344,7 @@ export default function HomePage() {
         {/* ── Component categories ──────────────────────────────────────── */}
         <section className="border-t border-fd-border px-6 py-20 md:px-16">
           <div className="mx-auto max-w-6xl">
-            <SectionRule label="Components" count="142 total" />
+            <SectionRule label="Components" count="143 total" />
 
             <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
               {CATEGORIES.map(({ name, href, description, count }) => (

@@ -831,6 +831,26 @@
       ]
     },
     {
+      "name": "month-picker",
+      "type": "registry:ui",
+      "title": "Month Picker",
+      "description": "A Popover + year-navigable month grid composition for picking a month. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/overlays",
+        "@morphos/icons"
+      ],
+      "registryDependencies": [
+        "button",
+        "popover"
+      ],
+      "files": [
+        {
+          "path": "ui/tailwind/month-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "date-time-picker",
       "type": "registry:ui",
       "title": "Date Time Picker",

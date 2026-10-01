@@ -54,7 +54,8 @@ export interface FileDropzoneProps {
   zoneRef: Ref<HTMLDivElement>;
   title?: string;
   description?: string;
-  disabled?: boolean;
+  /** Pass a getter (`() => busy`) to toggle it at runtime — a plain value changing re-creates the component and drops the `DropZone` listeners. */
+  disabled?: boolean | (() => boolean);
   class?: string;
   children?: unknown;
 }
@@ -73,19 +74,30 @@ export class FileDropzone extends StatelessComponent<FileDropzoneProps> {
       class: cls,
       children,
     } = this.props;
+    const isDisabled = (): boolean => (typeof disabled === "function" ? disabled() : (disabled ?? false));
+
+    // Registered before `DropZone`'s own listeners, so stopping propagation here keeps it from adding files.
+    const block = (e: DragEvent) => {
+      if (!isDisabled()) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    };
 
     return (
       <div
         ref={zoneRef}
         role="button"
-        tabIndex={disabled ? -1 : 0}
-        aria-disabled={disabled}
+        tabIndex={() => (isDisabled() ? -1 : 0)}
+        aria-disabled={() => isDisabled()}
         data-dragging={() => (drop.dragging ? "" : undefined)}
-        data-disabled={disabled ? "" : undefined}
+        data-disabled={() => (isDisabled() ? "" : undefined)}
         class={cx(this.$s.$root, cls)}
-        onClick={() => { if (!disabled) drop.open(); }}
+        onDragEnter={block}
+        onDragOver={block}
+        onDrop={block}
+        onClick={() => { if (!isDisabled()) drop.open(); }}
         onKeyDown={(e: KeyboardEvent) => {
-          if (disabled || (e.key !== "Enter" && e.key !== " ")) return;
+          if (isDisabled() || (e.key !== "Enter" && e.key !== " ")) return;
           e.preventDefault();
           drop.open();
         }}

@@ -95,8 +95,12 @@ class WithUploadDemo extends StatefulComponent {
   render() {
     return (
       <div style="display:flex;flex-direction:column;gap:12px;width:420px">
-        <FileDropzone drop={this.drop} zoneRef={this.zoneRef} description="Files are sent to httpbin.org when you press Upload">
-        </FileDropzone>
+        <FileDropzone
+          drop={this.drop}
+          zoneRef={this.zoneRef}
+          disabled={() => this.upload.uploading}
+          description="Files are sent to httpbin.org when you press Upload — the zone locks while uploading"
+        />
         <FileErrors source={this.drop} />
         <FileList source={this.drop} />
         {() => this.drop.files.length > 0 && <button onClick={this._send}>Upload {this.drop.files.length} file(s)</button>}

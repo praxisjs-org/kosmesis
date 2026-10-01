@@ -72,6 +72,10 @@ class Attachments extends StatefulComponent {
 `@Ref()` you passed to `@Compose`. Clicking the zone (or pressing Enter / Space) opens the native
 dialog; `data-dragging` is set while files are dragged over it.
 
+To disable the zone at runtime (for example while uploading), pass a getter: `disabled={() => this.upload.uploading}`.
+A plain boolean that changes re-creates the component, which drops the `DropZone` drag listeners. A disabled
+zone also ignores dropped files.
+
 ## Props
 
 | Prop | Type | Default |
@@ -80,5 +84,5 @@ dialog; `data-dragging` is set while files are dragged over it.
 | `zoneRef` | `Ref<HTMLDivElement>` | — required |
 | `title` | `string` | `"Drop files here or click to browse"` |
 | `description` | `string` | — |
-| `disabled` | `boolean` | — |
+| `disabled` | `boolean \| (() => boolean)` | — |
 | `class` | `string` | — |
