@@ -43,6 +43,9 @@
     "---Date & Time---",
     "calendar",
     "date-picker",
+    "time-picker",
+    "date-time-picker",
+    "date-time-input",
 
     "---Feedback---",
     "alert",
@@ -70,6 +73,13 @@
     "tags-input",
     "phone-input",
     "masked-input",
+
+    "---File Upload---",
+    "file-dropzone",
+    "file-picker",
+    "file-list",
+    "file-upload-list",
+    "avatar-upload",
 
     "---Layout---",
     "aspect-ratio",

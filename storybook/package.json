@@ -15,6 +15,7 @@
     "@morphos/inputs": "^1.0.2",
     "@morphos/layout": "^1.1.2",
     "@morphos/overlays": "^1.0.3",
+    "@praxisjs/composables": "^1.2.0",
     "@praxisjs/core": "^2.1.0",
     "@praxisjs/css": "^0.3.3",
     "@praxisjs/decorators": "^1.6.1",

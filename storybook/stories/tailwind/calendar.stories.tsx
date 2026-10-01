@@ -99,3 +99,28 @@ export const DisabledWeekends: Story = {
   name: "Disabled weekends",
   render: () => <DisabledWeekendsDemo />,
 };
+
+@Component()
+class RangeDemo extends StatefulComponent {
+  @State() state = new CalendarState({ mode: "range", defaultMonth: new Date(2026, 6, 1) });
+
+  onBeforeMount() {
+    this.state.onBeforeMount();
+  }
+
+  render() {
+    return (
+      <div>
+        <Calendar state={this.state} />
+        <p style="margin:8px 0 0;font-size:.8rem;color:var(--muted-foreground)">
+          Range: {() => this.state.formattedRange ?? "none"}
+        </p>
+      </div>
+    );
+  }
+}
+
+export const Range: Story = {
+  name: "Range",
+  render: () => <RangeDemo />,
+};

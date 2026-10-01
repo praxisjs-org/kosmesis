@@ -1,0 +1,88 @@
+---
+title: Date Time Picker
+description: A Popover + Calendar + time columns composition for picking a date and time, or a date-time range.
+icon: CalendarClock
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="date-time-picker" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="date-time-picker" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-datetimepicker--default" title="Default" height={560} />
+    <StorybookEmbed story="tailwind-datetimepicker--range" title="Range" height={560} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-datetimepicker--default" title="Default" height={560} />
+    <StorybookEmbed story="praxiscss-datetimepicker--range" title="Range" height={560} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Popover } from "@morphos/overlays";
+import { CalendarState } from "@/components/ui/calendar";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
+import { TimePickerState } from "@/components/ui/time-picker";
+
+@Component()
+class EventForm extends StatefulComponent {
+  @State() popover = new Popover();
+  @State() calendar = new CalendarState();
+  @State() time = new TimePickerState({ minuteStep: 5 });
+
+  onBeforeMount() {
+    this.popover.onBeforeMount();
+    this.calendar.onBeforeMount();
+    this.time.onBeforeMount();
+  }
+
+  render() {
+    return <DateTimePicker popover={this.popover} calendar={this.calendar} time={this.time} />;
+  }
+}
+```
+
+For a range, create the calendar with `mode: "range"` and use `DateTimeRangePicker` with a
+`startTime` and an `endTime` state. Unlike [Date Picker](/docs/components/date-picker), the popover
+stays open after a selection, since both a date and a time need to be chosen.
+
+## Props
+
+### DateTimePicker
+
+| Prop | Type | Default |
+|---|---|---|
+| `popover` | `Popover` | — required |
+| `calendar` | `CalendarState` | — required |
+| `time` | `TimePickerState` | — required |
+| `placeholder` | `string` | `"Pick date and time"` |
+| `class` | `string` | — |
+
+### DateTimeRangePicker
+
+| Prop | Type | Default |
+|---|---|---|
+| `popover` | `Popover` | — required |
+| `calendar` | `CalendarState` | — required, `mode: "range"` |
+| `startTime` | `TimePickerState` | — required |
+| `endTime` | `TimePickerState` | — required |
+| `placeholder` | `string` | `"Pick a date and time range"` |
+| `class` | `string` | — |

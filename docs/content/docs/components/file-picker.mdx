@@ -1,0 +1,87 @@
+---
+title: File Picker
+description: A button and an input-style field that open the native file dialog via FileSelection.
+icon: Paperclip
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="file-picker" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="file-picker" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-filepicker--button" title="Button" height={360} />
+    <StorybookEmbed story="tailwind-filepicker--input" title="Input" height={200} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-filepicker--button" title="Button" height={360} />
+    <StorybookEmbed story="praxiscss-filepicker--input" title="Input" height={200} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+These components are presentation for the file upload composables in
+[`@praxisjs/composables`](https://praxisjs.org/docs/composables/upload) (installed automatically by the
+CLI). The composable is attached with `@Compose` in **your** component, so validation options (`accept`,
+`maxSize`, `maxFiles`, …) stay yours, and is passed to the Kosmesis component as a prop.
+
+```tsx
+import { FileSelection } from "@praxisjs/composables";
+import { FileInput, FilePicker } from "@/components/ui/file-picker";
+
+@Component()
+class Form extends StatefulComponent {
+  @Compose(FileSelection, { accept: ".pdf", maxSize: 2 * 1024 * 1024 })
+  selection!: FileSelection;
+
+  render() {
+    return (
+      <>
+        <FilePicker selection={this.selection} label="Choose file" />
+        <FileInput selection={this.selection} />
+      </>
+    );
+  }
+}
+```
+
+`FileInput` looks like a text input and shows the chosen file name (or a count) in place of its
+placeholder. Pair either with [File List](/docs/components/file-list) to show and remove the selection.
+
+## Props
+
+### FilePicker
+
+| Prop | Type | Default |
+|---|---|---|
+| `selection` | `FileSelection` | — required |
+| `label` | `string` | `"Choose file"` |
+| `variant` / `size` | `Button` variant / size | `"outline"` / — |
+| `disabled` | `boolean` | — |
+| `class` | `string` | — |
+
+### FileInput
+
+| Prop | Type | Default |
+|---|---|---|
+| `selection` | `FileSelection` | — required |
+| `placeholder` | `string` | `"No file chosen"` |
+| `buttonLabel` | `string` | `"Browse"` |
+| `disabled` | `boolean` | — |
+| `class` | `string` | — |

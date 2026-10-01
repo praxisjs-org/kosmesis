@@ -1,6 +1,6 @@
 ---
 title: Calendar
-description: A month-grid date picker with real date math. Purely presentational — no Morphos equivalent.
+description: A month-grid date picker (single date or range) with real date math. Purely presentational — no Morphos equivalent.
 icon: Calendar
 ---
 
@@ -28,11 +28,13 @@ import { StorybookEmbed } from '@/components/storybook-embed';
     <StorybookEmbed story="tailwind-calendar--default" title="Default" height={600} />
     <StorybookEmbed story="tailwind-calendar--with-selection" title="With initial selection" height={600} />
     <StorybookEmbed story="tailwind-calendar--disabled-weekends" title="Disabled weekends" height={600} />
+    <StorybookEmbed story="tailwind-calendar--range" title="Range" height={600} />
   </Tab>
   <Tab value="PraxisCSS">
     <StorybookEmbed story="praxiscss-calendar--default" title="Default" height={600} />
     <StorybookEmbed story="praxiscss-calendar--with-selection" title="With initial selection" height={600} />
     <StorybookEmbed story="praxiscss-calendar--disabled-weekends" title="Disabled weekends" height={600} />
+    <StorybookEmbed story="praxiscss-calendar--range" title="Range" height={600} />
   </Tab>
 </Tabs>
 
@@ -60,8 +62,11 @@ class BookingCalendar extends StatefulComponent {
 | Prop | Type | Default |
 |---|---|---|
 | `defaultMonth` | `Date` | today |
-| `selected` | `Date` | — (controlled) |
-| `onSelect` | `(date: Date) => void` | — |
+| `mode` | `"single" \| "range"` | `"single"` |
+| `selected` | `Date` | — (controlled, `single` mode) |
+| `selectedRange` | `{ from?: Date; to?: Date }` | — (controlled, `range` mode) |
+| `onSelect` | `(date: Date) => void` | — (`single` mode) |
+| `onSelectRange` | `(range: { from?: Date; to?: Date }) => void` | — (`range` mode) |
 | `disabled` | `(date: Date) => boolean` | — |
 
 ### Calendar
@@ -69,5 +74,15 @@ class BookingCalendar extends StatefulComponent {
 | Prop | Type | Default |
 |---|---|---|
 | `state` | `CalendarState` | — required |
+
+In `range` mode the first click sets `from`, the second sets `to`; clicking before `from`, or after a
+completed range, starts a new range.
+
+```tsx
+@State() calendarState = new CalendarState({
+  mode: "range",
+  onSelectRange: ({ from, to }) => console.log(from, to),
+});
+```
 
 For a Popover-triggered variant, see [Date Picker](/docs/components/date-picker).

@@ -1,0 +1,63 @@
+---
+title: File List
+description: Selected-file list, thumbnail grid and validation errors, with image previews via FilePreview.
+icon: Files
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="file-list" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="file-list" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-filelist--list" title="List" height={420} />
+    <StorybookEmbed story="tailwind-filelist--grid" title="Thumbnail grid" height={420} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-filelist--list" title="List" height={420} />
+    <StorybookEmbed story="praxiscss-filelist--grid" title="Thumbnail grid" height={420} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+These components are presentation for the file upload composables in
+[`@praxisjs/composables`](https://praxisjs.org/docs/composables/upload) (installed automatically by the
+CLI). The composable is attached with `@Compose` in **your** component, so validation options (`accept`,
+`maxSize`, `maxFiles`, …) stay yours, and is passed to the Kosmesis component as a prop.
+
+```tsx
+import { FileErrors, FileList, FileThumbnailGrid } from "@/components/ui/file-list";
+
+<FileErrors source={this.selection} />
+<FileList source={this.selection} />
+<FileThumbnailGrid source={this.selection} />
+```
+
+`source` is anything with `files` and `remove(file)` — a `FileSelection` or a `DropZone`. Image
+thumbnails are produced with the `FilePreview` composable, which revokes each object URL when the file
+is removed or the component unmounts. `FileErrors` reads `errors` from the same source.
+
+## Props
+
+| Component | Prop | Type |
+|---|---|---|
+| `FileList` / `FileThumbnailGrid` | `source` | `{ files: File[]; remove: (file: File) => void }` |
+| `FileErrors` | `source` | `{ errors: FileError[] }` |
+| `FileThumbnail` | `file` | `File` |
+| all | `class` | `string` |

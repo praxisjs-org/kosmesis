@@ -1,0 +1,101 @@
+---
+title: Time Picker
+description: A Popover + scrollable columns composition for picking a time or a time range.
+icon: Clock
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="time-picker" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="time-picker" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-timepicker--panel" title="Panel" height={420} />
+    <StorybookEmbed story="tailwind-timepicker--default" title="Default" height={460} />
+    <StorybookEmbed story="tailwind-timepicker--twelve-hour" title="12-hour with initial value" height={460} />
+    <StorybookEmbed story="tailwind-timepicker--with-seconds" title="With seconds" height={460} />
+    <StorybookEmbed story="tailwind-timepicker--range" title="Range" height={460} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-timepicker--panel" title="Panel" height={420} />
+    <StorybookEmbed story="praxiscss-timepicker--default" title="Default" height={460} />
+    <StorybookEmbed story="praxiscss-timepicker--twelve-hour" title="12-hour with initial value" height={460} />
+    <StorybookEmbed story="praxiscss-timepicker--with-seconds" title="With seconds" height={460} />
+    <StorybookEmbed story="praxiscss-timepicker--range" title="Range" height={460} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { Popover } from "@morphos/overlays";
+import { TimePicker, TimePickerState } from "@/components/ui/time-picker";
+
+@Component()
+class MeetingForm extends StatefulComponent {
+  @State() popover = new Popover();
+  @State() time = new TimePickerState({ hourCycle: 12, minuteStep: 5 });
+
+  onBeforeMount() {
+    this.popover.onBeforeMount();
+    this.time.onBeforeMount();
+  }
+
+  render() {
+    return <TimePicker popover={this.popover} time={this.time} />;
+  }
+}
+```
+
+The trigger shows the chosen value in place of the placeholder. Values are always `"HH:mm"` (or
+`"HH:mm:ss"` with `showSeconds`) in 24-hour form, regardless of `hourCycle` — that only changes how
+the picker displays and edits them.
+
+For a range, use `TimeRangePicker` with two `TimePickerState` instances (`from` / `to`). To embed the
+columns without a popover, render `TimePickerPanel` with a `TimePickerState` directly.
+
+## Props
+
+### TimePickerState
+
+| Prop | Type | Default |
+|---|---|---|
+| `selected` | `string` | — (controlled) |
+| `onSelect` | `(value: string) => void` | — |
+| `hourCycle` | `12 \| 24` | `24` |
+| `showSeconds` | `boolean` | `false` |
+| `minuteStep` | `number` | `1` |
+
+### TimePicker
+
+| Prop | Type | Default |
+|---|---|---|
+| `popover` | `Popover` | — required |
+| `time` | `TimePickerState` | — required |
+| `placeholder` | `string` | `"Pick a time"` |
+| `class` | `string` | — |
+
+### TimeRangePicker
+
+| Prop | Type | Default |
+|---|---|---|
+| `popover` | `Popover` | — required |
+| `from` | `TimePickerState` | — required |
+| `to` | `TimePickerState` | — required |
+| `placeholder` | `string` | `"Pick a time range"` |
+| `class` | `string` | — |

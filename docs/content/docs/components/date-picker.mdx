@@ -1,6 +1,6 @@
 ---
 title: Date Picker
-description: A Popover + Calendar composition for picking a single date.
+description: A Popover + Calendar composition for picking a single date or a date range.
 icon: CalendarDays
 ---
 
@@ -26,9 +26,11 @@ import { StorybookEmbed } from '@/components/storybook-embed';
 <Tabs items={['Tailwind', 'PraxisCSS']}>
   <Tab value="Tailwind">
     <StorybookEmbed story="tailwind-datepicker--default" title="Default" height={380} />
+    <StorybookEmbed story="tailwind-datepicker--range" title="Range" height={380} />
   </Tab>
   <Tab value="PraxisCSS">
     <StorybookEmbed story="praxiscss-datepicker--default" title="Default" height={380} />
+    <StorybookEmbed story="praxiscss-datepicker--range" title="Range" height={380} />
   </Tab>
 </Tabs>
 
@@ -53,8 +55,13 @@ class BookingForm extends StatefulComponent {
 ```
 
 This is a composition, not a new primitive — [Popover](/docs/components/popover) (Morphos) +
-[Calendar](/docs/components/calendar) (built from scratch). If you need a different trigger
-style or a range picker, compose those two components directly instead of using `DatePicker`.
+[Calendar](/docs/components/calendar) (built from scratch). The trigger shows the
+chosen date in place of the placeholder. If you need a different trigger style, compose those two
+components directly instead of using `DatePicker`.
+
+For a range, create the calendar with `mode: "range"` and use `DateRangePicker` — same props, and the
+trigger shows `from – to`. To pick a time as well, see
+[Date Time Picker](/docs/components/date-time-picker).
 
 ## Props
 

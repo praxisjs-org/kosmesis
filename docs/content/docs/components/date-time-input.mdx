@@ -1,0 +1,90 @@
+---
+title: Date Time Input
+description: Native date, time and date-time inputs, plus start/end range variants of each.
+icon: CalendarClock
+---
+
+import { KosmesisInstall } from '@/components/kosmesis-install';
+import { ManualInstall } from '@/components/manual-install';
+import { SlimTabs, SlimTab } from '@/components/tabs';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { StorybookEmbed } from '@/components/storybook-embed';
+
+## Installation
+
+<SlimTabs items={['CLI', 'Manual']}>
+  <SlimTab value="CLI">
+    <KosmesisInstall name="date-time-input" />
+  </SlimTab>
+  <SlimTab value="Manual">
+    <ManualInstall name="date-time-input" />
+  </SlimTab>
+</SlimTabs>
+
+## Examples
+
+<Tabs items={['Tailwind', 'PraxisCSS']}>
+  <Tab value="Tailwind">
+    <StorybookEmbed story="tailwind-datetimeinput--date" title="Date" height={120} />
+    <StorybookEmbed story="tailwind-datetimeinput--time" title="Time" height={120} />
+    <StorybookEmbed story="tailwind-datetimeinput--date-time" title="Date and time" height={120} />
+    <StorybookEmbed story="tailwind-datetimeinput--date-range" title="Date range" height={140} />
+    <StorybookEmbed story="tailwind-datetimeinput--time-range" title="Time range" height={120} />
+    <StorybookEmbed story="tailwind-datetimeinput--date-time-range" title="Date and time range" height={120} />
+  </Tab>
+  <Tab value="PraxisCSS">
+    <StorybookEmbed story="praxiscss-datetimeinput--date" title="Date" height={120} />
+    <StorybookEmbed story="praxiscss-datetimeinput--time" title="Time" height={120} />
+    <StorybookEmbed story="praxiscss-datetimeinput--date-time" title="Date and time" height={120} />
+    <StorybookEmbed story="praxiscss-datetimeinput--date-range" title="Date range" height={140} />
+    <StorybookEmbed story="praxiscss-datetimeinput--time-range" title="Time range" height={120} />
+    <StorybookEmbed story="praxiscss-datetimeinput--date-time-range" title="Date and time range" height={120} />
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx
+import { DateInput, DateRangeInput, TimeInput } from "@/components/ui/date-time-input";
+
+<DateInput defaultValue="2026-07-15" onChange={(value) => console.log(value)} />
+<TimeInput min="09:00" max="18:00" />
+<DateRangeInput onChange={({ from, to }) => console.log(from, to)} />
+```
+
+These wrap the browser's native `date`, `time` and `datetime-local` inputs, so values use the native
+string formats (`YYYY-MM-DD`, `HH:mm`, `YYYY-MM-DDTHH:mm`) and the platform supplies the keyboard
+editing, localization and picker. Use the [pickers](/docs/components/date-time-picker) when you want
+the Kosmesis calendar and time columns instead.
+
+Range variants render a start and an end field and keep them consistent: the start's `max` follows the
+end value and the end's `min` follows the start.
+
+## Props
+
+Exports: `DateInput`, `TimeInput`, `DateTimeInput` and `DateRangeInput`, `TimeRangeInput`,
+`DateTimeRangeInput`.
+
+### DateInput / TimeInput / DateTimeInput
+
+| Prop | Type | Default |
+|---|---|---|
+| `value` | `string` | — (controlled) |
+| `defaultValue` | `string` | — |
+| `min` / `max` | `string` | — |
+| `step` | `number` | — |
+| `onChange` | `(value: string) => void` | — |
+| `disabled` / `readonly` / `required` / `invalid` | `boolean` | — |
+| `name` / `id` / `class` / `aria-label` | `string` | — |
+
+### DateRangeInput / TimeRangeInput / DateTimeRangeInput
+
+| Prop | Type | Default |
+|---|---|---|
+| `value` | `{ from?: string; to?: string }` | — (controlled) |
+| `defaultValue` | `{ from?: string; to?: string }` | — |
+| `min` / `max` | `string` | — |
+| `step` | `number` | — |
+| `onChange` | `(range: { from?: string; to?: string }) => void` | — |
+| `disabled` / `readonly` / `required` / `invalid` | `boolean` | — |
+| `id` / `class` | `string` | — |

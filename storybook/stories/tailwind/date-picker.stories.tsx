@@ -2,8 +2,8 @@ import { StatefulComponent } from "@praxisjs/core";
 import { Component, State } from "@praxisjs/decorators";
 import type { Meta, StoryObj } from "@praxisjs/storybook";
 
-import { CalendarState } from "@/ui/tailwind/calendar";
-import { DatePicker } from "@/ui/tailwind/date-picker";
+import { type DateRange, CalendarState } from "@/ui/tailwind/calendar";
+import { DatePicker, DateRangePicker } from "@/ui/tailwind/date-picker";
 import { Popover } from "@/ui/tailwind/popover";
 
 const meta: Meta = {
@@ -15,7 +15,7 @@ const meta: Meta = {
         component:
           "A composition, not a new primitive: `Popover` (Morphos) + `Calendar` (built from " +
           "scratch). Morphos's `PopoverTrigger` always renders its own `<button>` (there's no " +
-          "`asChild` merge like Radix's) — so the trigger is styled directly with `buttonVariants()` " +
+          "`asChild` merge like Radix's) — so the trigger is styled directly with the button styles " +
           "rather than nesting a separate `Button` inside it.",
       },
     },
@@ -46,4 +46,29 @@ class DefaultDemo extends StatefulComponent {
 export const Default: Story = {
   name: "Default",
   render: () => <DefaultDemo />,
+};
+
+@Component()
+class RangeDemo extends StatefulComponent {
+  @State() popover = new Popover();
+  @State() calendar = new CalendarState({
+    mode: "range",
+    onSelectRange: (range: DateRange) => {
+      if (range.from && range.to) this.popover.closePopover();
+    },
+  });
+
+  onBeforeMount() {
+    this.popover.onBeforeMount();
+    this.calendar.onBeforeMount();
+  }
+
+  render() {
+    return <DateRangePicker popover={this.popover} calendar={this.calendar} />;
+  }
+}
+
+export const Range: Story = {
+  name: "Range",
+  render: () => <RangeDemo />,
 };

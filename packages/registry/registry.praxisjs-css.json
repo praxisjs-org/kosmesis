@@ -832,7 +832,7 @@
       "name": "calendar",
       "type": "registry:ui",
       "title": "Calendar",
-      "description": "A month-grid date picker with real date math. Purely presentational — no Morphos equivalent.",
+      "description": "A month-grid date picker (single date or range) with real date math. Purely presentational — no Morphos equivalent.",
       "dependencies": [
         "@praxisjs/css",
         "@morphos/icons"
@@ -849,9 +849,10 @@
       "name": "date-picker",
       "type": "registry:ui",
       "title": "Date Picker",
-      "description": "A Popover + Calendar composition for picking a single date.",
+      "description": "A Popover + Calendar composition for picking a single date or a date range.",
       "dependencies": [
         "@morphos/overlays",
+        "@morphos/icons",
         "@praxisjs/css"
       ],
       "registryDependencies": [
@@ -862,6 +863,160 @@
       "files": [
         {
           "path": "ui/praxisjs-css/date-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "time-picker",
+      "type": "registry:ui",
+      "title": "Time Picker",
+      "description": "A Popover + scrollable hour/minute/second columns composition for picking a time or a time range. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@morphos/overlays",
+        "@morphos/icons",
+        "@praxisjs/css"
+      ],
+      "registryDependencies": [
+        "button",
+        "popover"
+      ],
+      "files": [
+        {
+          "path": "ui/praxisjs-css/time-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "date-time-picker",
+      "type": "registry:ui",
+      "title": "Date Time Picker",
+      "description": "A Popover + Calendar + time columns composition for picking a date and time, or a date-time range.",
+      "dependencies": [
+        "@morphos/overlays",
+        "@morphos/icons",
+        "@praxisjs/css"
+      ],
+      "registryDependencies": [
+        "button",
+        "calendar",
+        "popover",
+        "time-picker"
+      ],
+      "files": [
+        {
+          "path": "ui/praxisjs-css/date-time-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "date-time-input",
+      "type": "registry:ui",
+      "title": "Date Time Input",
+      "description": "Native date, time and date-time inputs, plus start/end range variants of each. Purely presentational — no Morphos equivalent.",
+      "dependencies": [
+        "@praxisjs/css"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/praxisjs-css/date-time-input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "file-dropzone",
+      "type": "registry:ui",
+      "title": "File Dropzone",
+      "description": "A drag-and-drop file area driven by the DropZone composable from @praxisjs/composables.",
+      "dependencies": [
+        "@praxisjs/composables",
+        "@morphos/icons",
+        "@praxisjs/css"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/praxisjs-css/file-dropzone.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "file-picker",
+      "type": "registry:ui",
+      "title": "File Picker",
+      "description": "A button and an input-style field that open the native file dialog via the FileSelection composable.",
+      "dependencies": [
+        "@praxisjs/composables",
+        "@morphos/icons",
+        "@praxisjs/css"
+      ],
+      "registryDependencies": [
+        "button"
+      ],
+      "files": [
+        {
+          "path": "ui/praxisjs-css/file-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "file-list",
+      "type": "registry:ui",
+      "title": "File List",
+      "description": "Selected-file list, thumbnail grid and validation errors, with image previews via the FilePreview composable.",
+      "dependencies": [
+        "@praxisjs/composables",
+        "@morphos/icons",
+        "@praxisjs/css"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/praxisjs-css/file-list.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "file-upload-list",
+      "type": "registry:ui",
+      "title": "File Upload List",
+      "description": "Per-file upload rows with progress, cancel, retry and remove, plus an overall summary bar, driven by the FileUpload composable.",
+      "dependencies": [
+        "@praxisjs/composables",
+        "@morphos/icons",
+        "@praxisjs/css"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "ui/praxisjs-css/file-upload-list.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "avatar-upload",
+      "type": "registry:ui",
+      "title": "Avatar Upload",
+      "description": "A circular image picker with live preview, driven by the FileSelection and FilePreview composables.",
+      "dependencies": [
+        "@praxisjs/composables",
+        "@morphos/icons",
+        "@praxisjs/css"
+      ],
+      "registryDependencies": [
+        "button"
+      ],
+      "files": [
+        {
+          "path": "ui/praxisjs-css/avatar-upload.tsx",
           "type": "registry:ui"
         }
       ]
