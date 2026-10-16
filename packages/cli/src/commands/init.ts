@@ -271,7 +271,8 @@ export async function init(): Promise<void> {
       log.warn(`Couldn't find ${pc.cyan(path.relative(projectRoot, mainFilePath))} — add it manually:`);
       note(
         `Add ${pc.cyan("@IconProvider(LucideSource)")} above ${pc.cyan("@Component()")} on your root component, ` +
-          `importing both from ${pc.cyan('"@morphos/icons"')}.`,
+          `importing ${pc.cyan("IconProvider")} from ${pc.cyan('"@morphos/icons"')} and ${pc.cyan("LucideSource")} ` +
+          `from ${pc.cyan('"@morphos/icons/lucide"')}.`,
         "One more step",
       );
     }

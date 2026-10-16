@@ -1,6 +1,13 @@
 /** Filename for the per-project Kosmesis configuration. */
 export const CONFIG_FILE_NAME = "components.json";
 
+/**
+ * Filename, next to `components.json`, recording each installed component's registry version and
+ * the hash of every file as installed — how `kosmesis outdated`/`update` tell an available update
+ * from a local edit. Meant to be committed.
+ */
+export const LOCK_FILE_NAME = "components.lock.json";
+
 /** Default registry base URL, served by the Kosmesis docs site at `/r/<styleSystem>/<name>.json`. */
 export const DEFAULT_REGISTRY_URL = "https://kosmesis.praxisjs.org/r";
 
@@ -73,11 +80,17 @@ export const DEFAULT_ICON_LIBRARY: IconLibrary = "lucide";
 
 /**
  * npm packages to add per icon library when running `kosmesis init`. `@morphos/icons` is the
- * provider/registry package itself; `lucide` is a real peer dependency it reads icon data from
- * live (`import { icons } from "lucide"`) rather than bundling its own copy.
+ * provider/registry package itself; `lucide` is the optional peer dependency its `LucideSource`
+ * reads icon data from live (`import { icons } from "lucide"`) rather than bundling its own copy.
+ *
+ * Both are pinned to a major range: the `@IconProvider(LucideSource)` wiring `init` writes imports
+ * `LucideSource` from `@morphos/icons/lucide`, a subpath that only exists from `@morphos/icons`
+ * 2.0.0, and an unpinned install would pick up the next breaking major the day it's published. The
+ * ranges must match `packages/registry/package.json`, which is what the registry is typechecked
+ * against (a test enforces it).
  */
 export const ICON_LIBRARY_DEPENDENCIES: Record<IconLibrary, readonly string[]> = {
-  lucide: ["@morphos/icons", "lucide"],
+  lucide: ["@morphos/icons@^2.0.1", "lucide@^1.27.0"],
   none: [],
 };
 

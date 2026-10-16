@@ -13,6 +13,11 @@ export interface RegistryFile {
   type: RegistryItemType;
   /** Filename relative to the consumer's `ui` alias directory. Defaults to the basename of `path`. */
   target?: string;
+  /**
+   * `hashContent(content)`, written by the registry build. Optional: registries built before
+   * versioning don't serve it, and the CLI hashes `content` itself whenever it has it.
+   */
+  hash?: string;
 }
 
 export interface RegistryItem {
@@ -21,6 +26,12 @@ export interface RegistryItem {
   type: RegistryItemType;
   title?: string;
   description?: string;
+  /**
+   * Semver version of this item, bumped by the registry author whenever its files or dependencies
+   * change. Absent on items from registries built before versioning: the CLI reports those as
+   * "unknown" and never as outdated.
+   */
+  version?: string;
   /** npm packages this component needs at runtime (e.g. `@morphos/inputs`). */
   dependencies?: string[];
   /** npm packages only needed at build/type-check time (e.g. `@types/...`), installed with `-D`. */
@@ -119,6 +130,21 @@ export async function resolveRegistryTree(
   config: RegistryResolutionConfig,
   styleSystem: StyleSystem,
 ): Promise<RegistryItem[]> {
+  return (await resolveRegistryEntries(addresses, config, styleSystem)).map((entry) => entry.item);
+}
+
+/** A resolved item plus the address it was resolved under (`"button"`, `"@acme/button"`). */
+export interface ResolvedRegistryEntry {
+  address: string;
+  item: RegistryItem;
+}
+
+/** Same as `resolveRegistryTree`, keeping each item's address, which is how `components.lock.json` tracks it. */
+export async function resolveRegistryEntries(
+  addresses: string[],
+  config: RegistryResolutionConfig,
+  styleSystem: StyleSystem,
+): Promise<ResolvedRegistryEntry[]> {
   const resolved = new Map<string, RegistryItem>();
 
   async function visit(address: string): Promise<void> {
@@ -137,5 +163,43 @@ export async function resolveRegistryTree(
     await visit(address);
   }
 
-  return [...resolved.values()];
+  return [...resolved].map(([address, item]) => ({ address, item }));
+}
+
+/** What a registry serves at `<registryBase>/<styleSystem>/index.json`: every item, without file content. */
+export interface RegistryIndexListing {
+  name?: string;
+  items: Array<Omit<RegistryItem, "files"> & { files: Array<Omit<RegistryFile, "content">> }>;
+}
+
+/**
+ * Fetches a registry's `index.json` (one request for every item's version and file hashes), or
+ * returns `undefined` when the registry doesn't serve one, as with registries built before
+ * versioning. Callers fall back to fetching items one by one.
+ */
+export async function fetchRegistryIndex(
+  registryBase: string,
+  styleSystem: StyleSystem,
+): Promise<RegistryIndexListing | undefined> {
+  const relativePath = path.join(styleSystem, "index.json");
+
+  if (isLocalPath(registryBase)) {
+    const filePath = path.join(registryBase, relativePath);
+    if (!fs.existsSync(filePath)) return undefined;
+    return parseIndexListing(JSON.parse(fs.readFileSync(filePath, "utf-8")));
+  }
+  if (!/^https?:\/\//.test(registryBase)) return undefined;
+
+  try {
+    const response = await fetch(`${registryBase.replace(/\/$/, "")}/${styleSystem}/index.json`);
+    if (!response.ok) return undefined;
+    return parseIndexListing(await response.json());
+  } catch {
+    return undefined;
+  }
+}
+
+function parseIndexListing(value: unknown): RegistryIndexListing | undefined {
+  if (typeof value !== "object" || value === null || !Array.isArray((value as { items?: unknown }).items)) return undefined;
+  return value as RegistryIndexListing;
 }

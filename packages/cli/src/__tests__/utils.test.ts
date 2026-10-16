@@ -31,7 +31,7 @@ import {
   ensureVirtualStylesImport,
   ensureVirtualStylesTypeDeclaration,
 } from "../utils/praxisjs-css";
-import { getMissingDependencies, isPraxisProject } from "../utils/project";
+import { getMissingDependencies, isPraxisProject, packageNameOfSpec } from "../utils/project";
 import { fetchRegistryItem, RegistryFetchError, resolveRegistryTree } from "../utils/registry";
 import { buildRegistry, RegistryBuildError } from "../utils/registry-build";
 import { ensureTailwindCss, ensureTailwindVitePlugin } from "../utils/tailwind";
@@ -320,6 +320,12 @@ describe("project package.json helpers", () => {
     expect(isPraxisProject(tmpDir)).toBe(true);
   });
 
+  it("matches pinned install specs by package name and returns the spec itself when missing", () => {
+    writePkg({ "@morphos/icons": "^1.0.0" });
+    const missing = getMissingDependencies(tmpDir, ["@morphos/icons@^2.0.0", "lucide@^1.27.0", "clsx"]);
+    expect(missing).toEqual(["lucide@^1.27.0", "clsx"]);
+  });
+
   it("does not rewrite package.json when every dependency is already present", () => {
     writePkg({ clsx: "^2.0.0" });
     const before = fs.readFileSync(path.join(tmpDir, "package.json"), "utf-8");
@@ -575,8 +581,23 @@ describe("praxisjs-css helpers", () => {
     expect(result).toBe("updated");
 
     const updated = fs.readFileSync(mainPath, "utf-8");
-    expect(updated).toContain('import { IconProvider, LucideSource } from "@morphos/icons";');
+    expect(updated).toContain('import { IconProvider } from "@morphos/icons";\nimport { LucideSource } from "@morphos/icons/lucide";\n');
     expect(updated).toContain("@IconProvider(LucideSource)\n@Component()");
+  });
+
+  it("merges IconProvider into an existing @morphos/icons import and imports LucideSource from the /lucide subpath", () => {
+    const mainPath = path.join(tmpDir, "app.tsx");
+    fs.writeFileSync(
+      mainPath,
+      `import { Icon } from "@morphos/icons";\nimport { Component } from "@praxisjs/decorators";\n\n@Component()\nclass App {}\n`,
+    );
+
+    expect(ensureIconProviderDecorator(mainPath)).toBe("updated");
+
+    const updated = fs.readFileSync(mainPath, "utf-8");
+    expect(updated).toContain('import { Icon, IconProvider } from "@morphos/icons";');
+    expect(updated).toContain('import { LucideSource } from "@morphos/icons/lucide";');
+    expect(updated).not.toMatch(/LucideSource[^;]*from "@morphos\/icons";/);
   });
 
   it("reports not-found when the entry file doesn't exist", () => {
@@ -877,6 +898,17 @@ describe("registry resolution", () => {
   });
 });
 
+describe("packageNameOfSpec", () => {
+  it.each([
+    ["clsx", "clsx"],
+    ["lucide@^1.27.0", "lucide"],
+    ["@morphos/icons", "@morphos/icons"],
+    ["@morphos/icons@^2.0.0", "@morphos/icons"],
+  ])("%s -> %s", (spec, name) => {
+    expect(packageNameOfSpec(spec)).toBe(name);
+  });
+});
+
 describe("buildRegistry", () => {
   function writeSource(sourceDir: string, relativePath: string, content: string): void {
     const filePath = path.join(sourceDir, relativePath);
@@ -895,7 +927,7 @@ describe("buildRegistry", () => {
     const outDir = path.join(tmpDir, "dist");
     const results = buildRegistry(tmpDir, outDir, "tailwind");
 
-    expect(results).toEqual([{ styleSystem: "tailwind", count: 1 }]);
+    expect(results).toEqual([expect.objectContaining({ styleSystem: "tailwind", count: 1 })]);
     const built = JSON.parse(fs.readFileSync(path.join(outDir, "tailwind", "example-button.json"), "utf-8")) as {
       files: { content: string; target: string }[];
     };
@@ -918,8 +950,8 @@ describe("buildRegistry", () => {
 
     expect(results).toEqual(
       expect.arrayContaining([
-        { styleSystem: "tailwind", count: 1 },
-        { styleSystem: "praxisjs-css", count: 1 },
+        expect.objectContaining({ styleSystem: "tailwind", count: 1 }),
+        expect.objectContaining({ styleSystem: "praxisjs-css", count: 1 }),
       ]),
     );
     expect(fs.existsSync(path.join(outDir, "tailwind", "button.json"))).toBe(true);
@@ -984,5 +1016,74 @@ describe("buildRegistry", () => {
     expect(() => buildRegistry(tmpDir, path.join(tmpDir, "dist"), "tailwind")).toThrow(
       /"card" declares registryDependency "missing-dep", which does not exist/,
     );
+  });
+
+  it("fails on every undeclared import at once and writes nothing", () => {
+    writeSource(tmpDir, "registry.json", JSON.stringify({
+      name: "acme-ui",
+      homepage: "",
+      items: [
+        {
+          name: "card",
+          type: "registry:ui",
+          dependencies: ["@morphos/layout"],
+          files: [{ path: "src/card.tsx", type: "registry:ui" }],
+        },
+        { name: "badge", type: "registry:ui", files: [{ path: "src/badge.tsx", type: "registry:ui" }] },
+      ],
+    }));
+    writeSource(
+      tmpDir,
+      "src/card.tsx",
+      'import { Component } from "@praxisjs/decorators";\nimport type { Children } from "@praxisjs/shared";\nimport { Separator } from "@morphos/layout";\nimport { Badge } from "./badge";\n',
+    );
+    writeSource(tmpDir, "src/badge.tsx", 'import { cva } from "class-variance-authority";\n');
+
+    const outDir = path.join(tmpDir, "dist");
+    let error: unknown;
+    try {
+      buildRegistry(tmpDir, outDir, "tailwind");
+    } catch (caught) {
+      error = caught;
+    }
+
+    expect(error).toBeInstanceOf(RegistryBuildError);
+    const message = (error as Error).message;
+    expect(message).toContain("3 undeclared import(s) in registry.json");
+    expect(message).toContain('"card" imports "@praxisjs/shared" in src/card.tsx');
+    expect(message).toContain('"card" imports "./badge" in src/card.tsx');
+    expect(message).toContain('"badge" imports "class-variance-authority" in src/badge.tsx');
+    expect(fs.existsSync(outDir)).toBe(false);
+  });
+
+  it("builds once every import is declared", () => {
+    writeSource(tmpDir, "registry.json", JSON.stringify({
+      name: "acme-ui",
+      homepage: "",
+      items: [
+        {
+          name: "card",
+          type: "registry:ui",
+          dependencies: ["@morphos/layout"],
+          devDependencies: ["@praxisjs/shared"],
+          registryDependencies: ["badge"],
+          files: [{ path: "src/card.tsx", type: "registry:ui" }],
+        },
+        {
+          name: "badge",
+          type: "registry:ui",
+          dependencies: ["class-variance-authority"],
+          files: [{ path: "src/badge.tsx", type: "registry:ui" }],
+        },
+      ],
+    }));
+    writeSource(
+      tmpDir,
+      "src/card.tsx",
+      'import type { Children } from "@praxisjs/shared";\nimport { Separator } from "@morphos/layout";\nimport { Badge } from "./badge";\n',
+    );
+    writeSource(tmpDir, "src/badge.tsx", 'import { cva } from "class-variance-authority";\n');
+
+    expect(buildRegistry(tmpDir, path.join(tmpDir, "dist"), "tailwind")).toEqual([expect.objectContaining({ styleSystem: "tailwind", count: 2 })]);
   });
 });

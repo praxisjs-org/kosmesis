@@ -20,8 +20,15 @@ export function isPraxisProject(projectRoot: string): boolean {
   return Boolean(pkg.dependencies?.["@praxisjs/core"] ?? pkg.devDependencies?.["@praxisjs/core"]);
 }
 
+/** Strips the version range from an install spec: `"@morphos/icons@^2.0.0"` -> `"@morphos/icons"`, `"clsx"` -> `"clsx"`. */
+export function packageNameOfSpec(spec: string): string {
+  const versionAt = spec.indexOf("@", 1);
+  return versionAt === -1 ? spec : spec.slice(0, versionAt);
+}
+
 /**
- * Returns packages that are not already present in dependencies or devDependencies.
+ * Returns the install specs (bare names or `name@range`) whose package is not already present in
+ * dependencies or devDependencies. A package that is present is left alone whatever its range.
  * The package manager is responsible for writing package.json and the lockfile.
  */
 export function getMissingDependencies(projectRoot: string, packages: string[]): string[] {
@@ -30,10 +37,11 @@ export function getMissingDependencies(projectRoot: string, packages: string[]):
 
   const missing: string[] = [];
 
-  for (const name of packages) {
+  for (const spec of packages) {
+    const name = packageNameOfSpec(spec);
     const alreadyPresent = Boolean(pkg.dependencies?.[name] ?? pkg.devDependencies?.[name]);
     if (!alreadyPresent) {
-      missing.push(name);
+      missing.push(spec);
     }
   }
 

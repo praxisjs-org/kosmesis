@@ -25,10 +25,11 @@ const EXAMPLE_REGISTRY_INDEX: RegistryIndex = {
   items: [
     {
       name: "example-button",
+      version: "1.0.0",
       type: "registry:ui",
       title: "Example Button",
       dependencies: [],
-      devDependencies: [],
+      devDependencies: ["@praxisjs/shared"],
       registryDependencies: [],
       files: [{ path: "src/example-button.tsx", type: "registry:ui" }],
     },
@@ -113,7 +114,8 @@ export async function registry(): Promise<void> {
       return;
     }
 
-    for (const { styleSystem, count } of results) {
+    for (const { styleSystem, count, warnings } of results) {
+      for (const warning of warnings) log.warn(warning);
       log.success(
         `Built ${String(count)} component${count === 1 ? "" : "s"} into ${pc.cyan(path.join(path.relative(projectRoot, outDir) || ".", styleSystem))}`,
       );

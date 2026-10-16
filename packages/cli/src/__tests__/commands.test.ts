@@ -515,6 +515,37 @@ describe("kosmesis registry init", () => {
 });
 
 describe("kosmesis registry build", () => {
+  it("builds the registry `kosmesis registry init` scaffolds, without import errors", async () => {
+    setArgv("registry", ["init"]);
+    await registry();
+    vi.clearAllMocks();
+
+    setArgv("registry", ["build"]);
+    await registry();
+
+    expect(clack.cancel).not.toHaveBeenCalled();
+    expect(fs.existsSync(path.join(tmpDir, "dist/r/tailwind/example-button.json"))).toBe(true);
+  });
+
+  it("cancels with every undeclared import listed", async () => {
+    fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
+    fs.writeFileSync(path.join(tmpDir, "src/chart.tsx"), 'import { scaleLinear } from "d3-scale";\n');
+    fs.writeFileSync(
+      path.join(tmpDir, "registry.json"),
+      JSON.stringify({
+        name: "my-registry",
+        homepage: "",
+        items: [{ name: "chart", type: "registry:ui", files: [{ path: "src/chart.tsx", type: "registry:ui" }] }],
+      }),
+    );
+
+    setArgv("registry", ["build"]);
+    await registry();
+
+    expect(clack.cancel).toHaveBeenCalledWith(expect.stringContaining('"chart" imports "d3-scale" in src/chart.tsx'));
+    expect(fs.existsSync(path.join(tmpDir, "dist"))).toBe(false);
+  });
+
   it("builds a scaffolded registry.json into dist/r without needing components.json", async () => {
     fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
     fs.writeFileSync(path.join(tmpDir, "src/example-button.tsx"), "// example button");
@@ -1213,12 +1244,62 @@ describe("kosmesis init", () => {
     await init();
 
     const appContent = fs.readFileSync(path.join(tmpDir, "src/app.tsx"), "utf-8");
-    expect(appContent).toContain('import { IconProvider, LucideSource } from "@morphos/icons";');
+    expect(appContent).toContain('import { IconProvider } from "@morphos/icons";');
+    expect(appContent).toContain('import { LucideSource } from "@morphos/icons/lucide";');
     expect(appContent).toContain("@IconProvider(LucideSource)\n@Component()");
     expect(clack.log.success).toHaveBeenCalledWith(expect.stringContaining("Wired"));
 
     const config = readConfig(tmpDir);
     expect(config?.iconLibrary).toBe("lucide");
+  });
+
+  it("installs @morphos/icons and lucide pinned to the ranges the generated @morphos/icons/lucide import needs", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("lucide");
+    hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    expect(hoisted.spawnMock).toHaveBeenCalledWith(
+      "npm",
+      ["install", "@morphos/icons@^2.0.1", "lucide@^1.27.0"],
+      expect.objectContaining({ cwd: tmpDir }),
+    );
+  });
+
+  it("leaves an already-installed @morphos/icons alone instead of reinstalling it at the pinned range", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0", "@morphos/icons": "^2.1.0" });
+
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("lucide");
+    hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    expect(hoisted.spawnMock).toHaveBeenCalledWith("npm", ["install", "lucide@^1.27.0"], expect.objectContaining({ cwd: tmpDir }));
+    expect(hoisted.spawnMock).not.toHaveBeenCalledWith(
+      "npm",
+      expect.arrayContaining(["@morphos/icons@^2.0.1"]),
+      expect.anything(),
+    );
+  });
+
+  it("prints the pinned install command when installing the icon dependencies fails", async () => {
+    writePackageJson({ "@praxisjs/core": "^2.0.0", ...Object.fromEntries([...COMMON_DEPENDENCIES, ...STYLE_SYSTEM_DEPENDENCIES.tailwind].map((d) => [d, "1.0.0"])) });
+    mockInstallExit(1);
+
+    hoisted.selectMock.mockResolvedValueOnce("tailwind").mockResolvedValueOnce("lucide");
+    hoisted.textMock.mockResolvedValueOnce("").mockResolvedValueOnce("");
+
+    setArgv("init", []);
+    await init();
+
+    expect(clack.note).toHaveBeenCalledWith(
+      "npm install @morphos/icons@^2.0.1 lucide@^1.27.0",
+      "Run this command to install icon dependencies",
+    );
   });
 
   it("skips icon setup entirely when 'none' is selected", async () => {
