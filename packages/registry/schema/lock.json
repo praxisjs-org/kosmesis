@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kosmesis.praxisjs.org/schema/lock.json",
+  "title": "Kosmesis components.lock.json",
+  "description": "Per-project record, written by `kosmesis add` and `kosmesis update`, of each installed component's registry version and the hash of every file as installed. `kosmesis outdated` and `kosmesis update` use it to tell an available update from a local edit. Commit it.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
+    "lockfileVersion": {
+      "const": 1
+    },
+    "components": {
+      "type": "object",
+      "description": "Keyed by component address: \"button\" for the default registry, \"@namespace/button\" for a registry added with `kosmesis registry add`.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "The registry item's version when it was installed or last updated. Absent when unknown: the registry doesn't version the item, or the component was installed before versioning."
+          },
+          "registry": {
+            "type": "string",
+            "description": "The registry base the component was installed from, recorded only for a `kosmesis add --registry <base>` override."
+          },
+          "adopted": {
+            "type": "boolean",
+            "description": "The files were already on disk when Kosmesis started tracking them, so their recorded hashes are what was found rather than what a registry served. `kosmesis update` treats such files as possibly edited."
+          },
+          "files": {
+            "type": "object",
+            "description": "Project-relative file path -> SHA-256 of its content as installed (line endings normalized to LF).",
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^sha256-[0-9a-f]{64}$"
+            }
+          }
+        },
+        "required": ["files"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["lockfileVersion", "components"],
+  "additionalProperties": false
+}

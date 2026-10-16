@@ -231,6 +231,10 @@ export class ReelMedia extends StatelessComponent<ReelMediaProps> {
   }
 }
 
+function segmentPercent(state: ReelState, index: number): number {
+  return index < state.currentIndex ? 100 : index === state.currentIndex ? state.progress : 0;
+}
+
 export interface ReelProgressProps {
   state: ReelState;
   class?: string;
@@ -243,14 +247,11 @@ export class ReelProgress extends StatelessComponent<ReelProgressProps> {
     return (
       <div data-slot="reel-progress" class={cn("absolute inset-x-0 top-0 z-20 flex gap-1 p-2", cls)}>
         {() =>
-          state.items.map((item, index) => {
-            const pct = index < state.currentIndex ? 100 : index === state.currentIndex ? state.progress : 0;
-            return (
-              <div key={item.id} class="h-0.5 flex-1 overflow-hidden rounded-full bg-white/30">
-                <div class="h-full bg-white" style={{ width: `${String(pct)}%` }} />
-              </div>
-            );
-          })
+          state.items.map((item, index) => (
+            <div key={item.id} class="h-0.5 flex-1 overflow-hidden rounded-full bg-white/30">
+              <div class="h-full bg-white" style={{ width: `${String(segmentPercent(state, index))}%` }} />
+            </div>
+          ))
         }
       </div>
     );

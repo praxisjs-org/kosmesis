@@ -39,6 +39,11 @@
         "target": {
           "type": "string",
           "description": "Filename to write inside the consumer's ui alias directory. Defaults to the basename of `path`."
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^sha256-[0-9a-f]{64}$",
+          "description": "SHA-256 of the file's content (line endings normalized to LF), written by the registry build into served items and index.json. Never written by hand."
         }
       },
       "required": ["path", "type"],
@@ -48,23 +53,28 @@
       "type": "object",
       "properties": {
         "name": { "type": "string" },
+        "version": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+          "description": "Semver version of this item. Bump it whenever the item's files or dependencies change: `kosmesis outdated` compares it with the version a project installed, and the registry build fails when content changed but the version didn't (see registry-lock.json). Optional for third-party registries: an item without one is served as unversioned, which projects see as \"unknown\" and never as outdated."
+        },
         "type": { "$ref": "#/$defs/registryItemType" },
         "title": { "type": "string" },
         "description": { "type": "string" },
         "dependencies": {
           "type": "array",
           "items": { "type": "string" },
-          "description": "npm packages this component needs at runtime."
+          "description": "npm packages this component imports at runtime. Every package a component imports must be listed here (or, if all its imports are type-only, in devDependencies), except the ones every PraxisJS app already has: @praxisjs/core, @praxisjs/decorators, @praxisjs/jsx and @praxisjs/runtime. The registry build fails on an undeclared import."
         },
         "devDependencies": {
           "type": "array",
           "items": { "type": "string" },
-          "description": "npm packages only needed at build/type-check time (e.g. @types/...), installed with -D."
+          "description": "npm packages only needed at build/type-check time (e.g. @types/..., or a package imported only with `import type`), installed with -D."
         },
         "registryDependencies": {
           "type": "array",
           "items": { "type": "string" },
-          "description": "Other registry item names this component's source imports from."
+          "description": "Other registry item names this component's source imports from. A relative import (./button) must point at a file of the item itself or of one of these."
         },
         "files": {
           "type": "array",

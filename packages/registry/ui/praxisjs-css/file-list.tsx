@@ -82,8 +82,6 @@ class FileListStyles extends Stylesheet {
     .on("&:empty", { display: "none" });
 }
 
-const fileKey = (file: File): string => `${file.name}-${String(file.lastModified)}-${String(file.size)}`;
-
 export interface FileListSource {
   files: File[];
   remove: (file: File) => void;
@@ -135,7 +133,7 @@ export class FileList extends StatelessComponent<FileListProps> {
       <ul class={cx(this.$s.$list, cls)}>
         {() =>
           source.files.map((file) => (
-            <li key={fileKey(file)} class={this.$s.$row}>
+            <li key={`${file.name}-${String(file.lastModified)}-${String(file.size)}`} class={this.$s.$row}>
               <FileThumbnail file={file} />
               <div class={this.$s.$meta}>
                 <p class={this.$s.$name}>{file.name}</p>
@@ -168,7 +166,7 @@ export class FileThumbnailGrid extends StatelessComponent<FileThumbnailGridProps
       <ul class={cx(this.$s.$grid, cls)}>
         {() =>
           source.files.map((file) => (
-            <li key={fileKey(file)} class={this.$s.$cell}>
+            <li key={`${file.name}-${String(file.lastModified)}-${String(file.size)}`} class={this.$s.$cell}>
               <FileThumbnail file={file} class={this.$s.$thumbFill} />
               <button type="button" aria-label={`Remove ${file.name}`} class={this.$s.$overlayRemove} onClick={() => { source.remove(file); }}>
                 <Icon name="X" size={12} />
