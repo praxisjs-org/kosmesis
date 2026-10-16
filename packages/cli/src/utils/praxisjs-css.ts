@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { ensureDir } from "./fs";
+import { insertAfterViteImport } from "./vite-config";
 import { KOSMESIS_TOKENS_TS } from "../templates/kosmesis-tokens-ts";
 
 /**
@@ -45,10 +46,7 @@ export function ensurePraxisjsCssVitePlugin(viteConfigPath: string): "updated" |
     const names = existingImport[1].trim();
     content = content.replace(existingImport[0], `import { ${names}, praxisjsCSS } from "@praxisjs/vite-plugin";`);
   } else {
-    content = content.replace(
-      /(import\s+\{\s*defineConfig\s*\}\s+from\s+["']vite["'];?\n)/,
-      `$1import { praxisjsCSS } from "@praxisjs/vite-plugin";\n`,
-    );
+    content = insertAfterViteImport(content, 'import { praxisjsCSS } from "@praxisjs/vite-plugin";');
   }
 
   content = content.replace(/plugins:\s*\[/, "plugins: [praxisjsCSS(), ");

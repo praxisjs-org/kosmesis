@@ -1360,3 +1360,191 @@ describe("kosmesis init", () => {
     expect(hoisted.textMock).not.toHaveBeenCalled();
   });
 });
+
+describe("kosmesis init (flags)", () => {
+  const TAURI_VITE_CONFIG = [
+    'import { defineConfig, loadEnv } from "vite";',
+    'import { praxisjs } from "@praxisjs/vite-plugin";',
+    "",
+    "export default defineConfig(({ mode }) => {",
+    '  const env = loadEnv(mode, ".", "TAURI_");',
+    "",
+    "  return {",
+    "    plugins: [praxisjs()],",
+    "    clearScreen: false,",
+    "  };",
+    "});",
+    "",
+  ].join("\n");
+
+  function writeScaffold(viteConfig = TAURI_VITE_CONFIG): void {
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    fs.writeFileSync(path.join(tmpDir, "vite.config.ts"), viteConfig);
+    fs.writeFileSync(path.join(tmpDir, "tsconfig.json"), JSON.stringify({ compilerOptions: { strict: true } }));
+    fs.mkdirSync(path.join(tmpDir, "src"), { recursive: true });
+    fs.writeFileSync(path.join(tmpDir, "src/style.css"), "body { margin: 0; }\n");
+    fs.writeFileSync(path.join(tmpDir, "src/main.tsx"), 'import "./style.css";\n');
+    fs.writeFileSync(path.join(tmpDir, "src/vite-env.d.ts"), '/// <reference types="vite/client" />\n');
+    fs.writeFileSync(
+      path.join(tmpDir, "src/app.tsx"),
+      'import { Component } from "@praxisjs/decorators";\n\n@Component()\nexport class App {}\n',
+    );
+  }
+
+  function expectNoPrompts(): void {
+    expect(hoisted.selectMock).not.toHaveBeenCalled();
+    expect(hoisted.textMock).not.toHaveBeenCalled();
+    expect(hoisted.confirmMock).not.toHaveBeenCalled();
+  }
+
+  it("runs without prompts on --yes, with every default, keeping existing content", async () => {
+    writeScaffold();
+
+    setArgv("init", ["--yes"]);
+    await init();
+
+    expectNoPrompts();
+    const config = readConfig(tmpDir);
+    expect(config?.styleSystem).toBe("tailwind");
+    expect(config?.iconLibrary).toBe("lucide");
+    expect(config?.css).toBe("src/style.css");
+    const css = fs.readFileSync(path.join(tmpDir, "src/style.css"), "utf-8");
+    expect(css).toContain("--color-background");
+    expect(css).toContain("body { margin: 0; }");
+    expect(fs.readFileSync(path.join(tmpDir, "src/app.tsx"), "utf-8")).toContain("@IconProvider(LucideSource)");
+  });
+
+  it("wires Tailwind and the @ alias into a Tauri-patched vite.config.ts", async () => {
+    writeScaffold();
+
+    setArgv("init", ["-y", "--icon-library", "none"]);
+    await init();
+
+    const vite = fs.readFileSync(path.join(tmpDir, "vite.config.ts"), "utf-8");
+    expect(vite).toContain('import path from "node:path";\nimport { defineConfig, loadEnv } from "vite";\nimport tailwindcss from "@tailwindcss/vite";');
+    expect(vite).toContain('    resolve: {\n      alias: { "@": path.resolve(__dirname, "./src") },\n    },\n    plugins: [tailwindcss(), praxisjs()],');
+  });
+
+  it("takes every answer from flags, in both --flag value and --flag=value forms", async () => {
+    writeScaffold();
+
+    setArgv("init", [
+      "--style-system=praxisjs-css",
+      "--icon-library",
+      "none",
+      "--css",
+      "src/theme.ts",
+      "--root-component=src/app.tsx",
+      "--erase",
+      "--yes",
+    ]);
+    await init();
+
+    expectNoPrompts();
+    const config = readConfig(tmpDir);
+    expect(config?.styleSystem).toBe("praxisjs-css");
+    expect(config?.css).toBe("src/theme.ts");
+    expect(fs.readFileSync(path.join(tmpDir, "src/theme.ts"), "utf-8")).toContain("KosmesisTokens");
+    expect(fs.readFileSync(path.join(tmpDir, "src/style.css"), "utf-8")).toBe("");
+    expect(fs.readFileSync(path.join(tmpDir, "src/app.tsx"), "utf-8")).toContain('from "@/theme"');
+    expect(fs.readFileSync(path.join(tmpDir, "vite.config.ts"), "utf-8")).toContain(
+      'import { praxisjs, praxisjsCSS } from "@praxisjs/vite-plugin";',
+    );
+  });
+
+  it("keeps the template stylesheet with --no-erase and only prompts for what flags left open", async () => {
+    writeScaffold();
+    hoisted.selectMock.mockResolvedValueOnce("none");
+
+    setArgv("init", ["--style-system", "praxisjs-css", "--no-erase"]);
+    await init();
+
+    expect(hoisted.selectMock).toHaveBeenCalledTimes(1);
+    expect(hoisted.selectMock).toHaveBeenCalledWith(expect.objectContaining({ message: "Which icon library do you want to use?" }));
+    expect(hoisted.textMock).toHaveBeenCalledTimes(2);
+    expect(hoisted.confirmMock).not.toHaveBeenCalled();
+    expect(fs.readFileSync(path.join(tmpDir, "src/style.css"), "utf-8")).toBe("body { margin: 0; }\n");
+  });
+
+  it("stops with exit code 1 when components.json exists and --yes has no --overwrite", async () => {
+    writeConfig(tmpDir, defaultConfig());
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+    const { exit } = await import("node:process");
+
+    setArgv("init", ["--yes"]);
+    await init();
+
+    expect(clack.cancel).toHaveBeenCalledWith("components.json already exists. Pass --overwrite to replace it.");
+    expect(exit).toHaveBeenCalledWith(1);
+    expectNoPrompts();
+  });
+
+  it("overwrites components.json with --overwrite and cancels with --no-overwrite", async () => {
+    writeConfig(tmpDir, defaultConfig({ styleSystem: "praxisjs-css" }));
+    writePackageJson({ "@praxisjs/core": "^2.0.0" });
+
+    setArgv("init", ["--no-overwrite"]);
+    await init();
+    expect(clack.cancel).toHaveBeenCalledWith("Operation cancelled");
+    expect(readConfig(tmpDir)?.styleSystem).toBe("praxisjs-css");
+
+    setArgv("init", ["--overwrite", "--yes", "--icon-library", "none"]);
+    await init();
+    expect(readConfig(tmpDir)?.styleSystem).toBe("tailwind");
+    expect(hoisted.confirmMock).not.toHaveBeenCalled();
+  });
+
+  it("needs --force under --yes in a project without @praxisjs/core", async () => {
+    writePackageJson({ react: "^19.0.0" });
+    const { exit } = await import("node:process");
+
+    setArgv("init", ["--yes"]);
+    await init();
+    expect(clack.cancel).toHaveBeenCalledWith("Pass --force to set up Kosmesis anyway.");
+    expect(exit).toHaveBeenCalledWith(1);
+
+    setArgv("init", ["--yes", "--force", "--icon-library", "none"]);
+    await init();
+    expect(readConfig(tmpDir)?.styleSystem).toBe("tailwind");
+    expect(hoisted.confirmMock).not.toHaveBeenCalled();
+  });
+
+  it("accepts the flags without the init command name", async () => {
+    writeScaffold();
+    hoisted.processState.argv.length = 0;
+    hoisted.processState.argv.push("node", "kosmesis", "--yes", "--icon-library=none");
+
+    await init();
+
+    expect(readConfig(tmpDir)?.iconLibrary).toBe("none");
+  });
+
+  it("prints the usage on --help without touching the project", async () => {
+    setArgv("init", ["--help"]);
+    await init();
+
+    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("--style-system"), "kosmesis init");
+    expect(readConfig(tmpDir)).toBeUndefined();
+  });
+
+  it("exits with code 1 and the usage on an invalid flag", async () => {
+    const { exit } = await import("node:process");
+
+    setArgv("init", ["--style-system", "bootstrap"]);
+    await init();
+
+    expect(clack.cancel).toHaveBeenCalledWith(expect.stringContaining('Invalid value "bootstrap" for --style-system'));
+    expect(clack.cancel).toHaveBeenCalledWith(expect.stringContaining("Usage: kosmesis init"));
+    expect(exit).toHaveBeenCalledWith(1);
+    expect(readConfig(tmpDir)).toBeUndefined();
+  });
+
+  it("warns when vite.config.ts has nothing to anchor the @ alias on", async () => {
+    writeScaffold("export default {};\n");
+
+    setArgv("init", ["--yes", "--icon-library", "none"]);
+    await init();
+
+    expect(clack.log.warn).toHaveBeenCalledWith(expect.stringContaining("Couldn't wire the @ alias"));
+  });
+});

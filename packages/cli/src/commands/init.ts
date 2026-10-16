@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { cwd } from "node:process";
+import { argv, cwd, exit } from "node:process";
 
 import { cancel, confirm, intro, isCancel, log, note, outro, select, text } from "@clack/prompts";
 import pc from "picocolors";
@@ -8,8 +8,10 @@ import pc from "picocolors";
 import {
   COMMON_DEPENDENCIES,
   DEFAULT_CSS_PATH,
+  DEFAULT_ICON_LIBRARY,
   DEFAULT_MAIN_COMPONENT_PATH,
   DEFAULT_MAIN_ENTRY_PATH,
+  DEFAULT_STYLE_SYSTEM,
   DEFAULT_THEME_MODULE_PATH,
   DEFAULT_VITE_ENV_PATH,
   ICON_LIBRARY_DEPENDENCIES,
@@ -22,6 +24,7 @@ import { defaultConfig, readConfig, writeConfig } from "../utils/config";
 import { ensureDir, writeFile } from "../utils/fs";
 import { ensureIconProviderDecorator } from "../utils/icons";
 import { ensureTsconfigAlias, ensureViteAlias } from "../utils/import-alias";
+import { INIT_USAGE, parseInitArgs, type InitOptions, type InitOptionsError } from "../utils/init-options";
 import { detectPackageManagerFromLockfile, execCommand, installCommand, installPackages } from "../utils/package-manager";
 import {
   ensurePraxisjsCssTheme,
@@ -35,11 +38,17 @@ import { ensureTailwindCss, ensureTailwindVitePlugin } from "../utils/tailwind";
 
 /**
  * If `filePath` exists with non-trivial content that doesn't already contain `configuredMarker`
- * (when given), asks the user whether to erase it before Kosmesis writes to it. Returns `false`
- * when no prompt was needed (file missing, empty, or already configured) — otherwise the user's
- * answer, which callers must check with `isCancel()` before using, same as any other prompt.
+ * (when given), asks the user whether to erase it before Kosmesis writes to it — unless `--erase`
+ * / `--no-erase` answered already, or `--yes` keeps it. Returns `false` when no prompt was needed
+ * (file missing, empty, or already configured) — otherwise the answer, which callers must check
+ * with `isCancel()` before using, same as any other prompt.
  */
-async function promptEraseExisting(filePath: string, message: string, configuredMarker?: string): Promise<boolean | symbol> {
+async function promptEraseExisting(
+  filePath: string,
+  message: string,
+  options: InitOptions,
+  configuredMarker?: string,
+): Promise<boolean | symbol> {
   if (!fs.existsSync(filePath)) return false;
 
   const existingContent = fs.readFileSync(filePath, "utf-8");
@@ -48,7 +57,15 @@ async function promptEraseExisting(filePath: string, message: string, configured
     return false;
   }
 
+  if (options.erase !== undefined) return options.erase;
+  if (options.yes) return false;
   return confirm({ message, initialValue: true });
+}
+
+/** Ends a `--yes` run that needs an answer only a flag can give: the caller (a script, another CLI) sees exit code 1. */
+function stopNonInteractive(message: string): void {
+  cancel(message);
+  exit(1);
 }
 
 /** Converts a `src/...`-relative path into the `@/...` import specifier Kosmesis-generated files use. */
@@ -58,14 +75,35 @@ function toAliasImportPath(relativePath: string): string {
 
 export async function init(): Promise<void> {
   const projectRoot = cwd();
+  const rawArgs = argv[2] === "init" ? argv.slice(3) : argv.slice(2);
 
   intro(pc.bgMagenta(pc.bold(pc.black(" Kosmesis "))) + "  " + pc.dim("init"));
 
+  let options: InitOptions;
+  try {
+    options = parseInitArgs(rawArgs);
+  } catch (error) {
+    cancel(`${(error as InitOptionsError).message}\n\n${INIT_USAGE}`);
+    exit(1);
+    return;
+  }
+
+  if (options.help) {
+    note(INIT_USAGE, "kosmesis init");
+    return;
+  }
+
   if (readConfig(projectRoot)) {
-    const overwrite = await confirm({
-      message: "components.json already exists. Overwrite it?",
-      initialValue: false,
-    });
+    if (options.overwrite === undefined && options.yes) {
+      stopNonInteractive("components.json already exists. Pass --overwrite to replace it.");
+      return;
+    }
+    const overwrite =
+      options.overwrite ??
+      (await confirm({
+        message: "components.json already exists. Overwrite it?",
+        initialValue: false,
+      }));
     if (isCancel(overwrite) || !overwrite) {
       cancel("Operation cancelled");
       return;
@@ -77,28 +115,36 @@ export async function init(): Promise<void> {
       "This doesn't look like a PraxisJS project (no @praxisjs/core dependency found). " +
         "Kosmesis components are written for PraxisJS and won't work elsewhere.",
     );
-    const proceed = await confirm({ message: "Continue anyway?", initialValue: false });
+    if (!options.force && options.yes) {
+      stopNonInteractive("Pass --force to set up Kosmesis anyway.");
+      return;
+    }
+    const proceed = options.force ?? (await confirm({ message: "Continue anyway?", initialValue: false }));
     if (isCancel(proceed) || !proceed) {
       cancel("Operation cancelled");
       return;
     }
   }
 
-  const styleSystemResult = await select<StyleSystem>({
-    message: "Which styling system do you want to use?",
-    options: [
-      {
-        value: "tailwind",
-        label: "Tailwind CSS",
-        hint: "utility classes + class-variance-authority",
-      },
-      {
-        value: "praxisjs-css",
-        label: "@praxisjs/css",
-        hint: "typed CSS-in-TS through the PraxisJS decorator model, no Tailwind dependency",
-      },
-    ],
-  });
+  const styleSystemResult =
+    options.styleSystem ??
+    (options.yes
+      ? DEFAULT_STYLE_SYSTEM
+      : await select<StyleSystem>({
+          message: "Which styling system do you want to use?",
+          options: [
+            {
+              value: "tailwind",
+              label: "Tailwind CSS",
+              hint: "utility classes + class-variance-authority",
+            },
+            {
+              value: "praxisjs-css",
+              label: "@praxisjs/css",
+              hint: "typed CSS-in-TS through the PraxisJS decorator model, no Tailwind dependency",
+            },
+          ],
+        }));
   if (isCancel(styleSystemResult)) {
     cancel("Operation cancelled");
     return;
@@ -106,32 +152,41 @@ export async function init(): Promise<void> {
   const styleSystem = styleSystemResult;
   const isTailwind = styleSystem === "tailwind";
 
-  const iconLibraryResult = await select<IconLibrary>({
-    message: "Which icon library do you want to use?",
-    options: [
-      {
-        value: "lucide",
-        label: "Lucide",
-        hint: "@morphos/icons' built-in provider — wires @IconProvider(LucideSource) on your root component",
-      },
-      {
-        value: "none",
-        label: "None",
-        hint: "skip icon setup — configure @morphos/icons yourself later",
-      },
-    ],
-  });
+  const iconLibraryResult =
+    options.iconLibrary ??
+    (options.yes
+      ? DEFAULT_ICON_LIBRARY
+      : await select<IconLibrary>({
+          message: "Which icon library do you want to use?",
+          options: [
+            {
+              value: "lucide",
+              label: "Lucide",
+              hint: "@morphos/icons' built-in provider — wires @IconProvider(LucideSource) on your root component",
+            },
+            {
+              value: "none",
+              label: "None",
+              hint: "skip icon setup — configure @morphos/icons yourself later",
+            },
+          ],
+        }));
   if (isCancel(iconLibraryResult)) {
     cancel("Operation cancelled");
     return;
   }
   const iconLibrary = iconLibraryResult;
 
-  const cssPathResult = await text({
-    message: isTailwind ? "Where is your global CSS file?" : "Where should Kosmesis write your theme module?",
-    placeholder: isTailwind ? DEFAULT_CSS_PATH : DEFAULT_THEME_MODULE_PATH,
-    defaultValue: isTailwind ? DEFAULT_CSS_PATH : DEFAULT_THEME_MODULE_PATH,
-  });
+  const defaultCssPath = isTailwind ? DEFAULT_CSS_PATH : DEFAULT_THEME_MODULE_PATH;
+  const cssPathResult =
+    options.css ??
+    (options.yes
+      ? defaultCssPath
+      : await text({
+          message: isTailwind ? "Where is your global CSS file?" : "Where should Kosmesis write your theme module?",
+          placeholder: defaultCssPath,
+          defaultValue: defaultCssPath,
+        }));
   if (isCancel(cssPathResult)) {
     cancel("Operation cancelled");
     return;
@@ -142,11 +197,15 @@ export async function init(): Promise<void> {
   const needsMainFile = !isTailwind || iconLibrary !== "none";
   let mainFilePathResult = "";
   if (needsMainFile) {
-    const result = await text({
-      message: "Where is your root component?",
-      placeholder: DEFAULT_MAIN_COMPONENT_PATH,
-      defaultValue: DEFAULT_MAIN_COMPONENT_PATH,
-    });
+    const result =
+      options.rootComponent ??
+      (options.yes
+        ? DEFAULT_MAIN_COMPONENT_PATH
+        : await text({
+            message: "Where is your root component?",
+            placeholder: DEFAULT_MAIN_COMPONENT_PATH,
+            defaultValue: DEFAULT_MAIN_COMPONENT_PATH,
+          }));
     if (isCancel(result)) {
       cancel("Operation cancelled");
       return;
@@ -157,7 +216,7 @@ export async function init(): Promise<void> {
   const config = defaultConfig({
     styleSystem,
     iconLibrary,
-    css: cssPathResult || (isTailwind ? DEFAULT_CSS_PATH : DEFAULT_THEME_MODULE_PATH),
+    css: cssPathResult || defaultCssPath,
   });
   writeConfig(projectRoot, config);
   log.success(`Created ${pc.cyan("components.json")} (${pc.dim(`styleSystem: "${styleSystem}"`)})`);
@@ -166,6 +225,7 @@ export async function init(): Promise<void> {
   const eraseAnswer = await promptEraseExisting(
     cssPath,
     `${pc.cyan(config.css)} already has content. Erase it before adding Kosmesis's ${isTailwind ? "theme tokens" : "theme module"}?`,
+    options,
     isTailwind ? "--color-background" : "KosmesisTokens",
   );
   if (isCancel(eraseAnswer)) {
@@ -204,6 +264,7 @@ export async function init(): Promise<void> {
       defaultCssPath,
       `${pc.cyan(DEFAULT_CSS_PATH)} still has the create-praxisjs template's default styles, which ` +
         `@praxisjs/css's ${pc.cyan("preflight()")}/${pc.cyan("globalStyle()")} replace. Erase it?`,
+      options,
     );
     if (isCancel(eraseDefaultCssAnswer)) {
       cancel("Operation cancelled");
@@ -279,9 +340,15 @@ export async function init(): Promise<void> {
   }
 
   const tsconfigResult = ensureTsconfigAlias(path.join(projectRoot, "tsconfig.json"));
-  const viteAliasResult = ensureViteAlias(path.join(projectRoot, "vite.config.ts"));
+  const viteConfigPath = path.join(projectRoot, "vite.config.ts");
+  const viteAliasResult = ensureViteAlias(viteConfigPath);
   if (tsconfigResult === "updated" || viteAliasResult === "updated") {
     log.success(`Wired the ${pc.cyan("@/*")} import alias into tsconfig.json and vite.config.ts.`);
+  }
+  if (viteAliasResult === "not-found" && fs.existsSync(viteConfigPath)) {
+    log.warn(
+      `Couldn't wire the ${pc.cyan("@")} alias into vite.config.ts — add ${pc.cyan('resolve: { alias: { "@": path.resolve(__dirname, "./src") } }')} to your Vite config.`,
+    );
   }
 
   if (isTailwind) {

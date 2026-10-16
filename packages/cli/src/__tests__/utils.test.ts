@@ -17,6 +17,7 @@ import { defaultConfig, readConfig, resolveAlias, writeConfig } from "../utils/c
 import { ensureDir, isLocalPath, writeFile } from "../utils/fs";
 import { ensureIconProviderDecorator } from "../utils/icons";
 import { ensureTsconfigAlias, ensureViteAlias } from "../utils/import-alias";
+import { InitOptionsError, parseInitArgs } from "../utils/init-options";
 import {
   detectPackageManagerFromAgent,
   detectPackageManagerFromLockfile,
@@ -35,6 +36,7 @@ import { getMissingDependencies, isPraxisProject, packageNameOfSpec } from "../u
 import { fetchRegistryItem, RegistryFetchError, resolveRegistryTree } from "../utils/registry";
 import { buildRegistry, RegistryBuildError } from "../utils/registry-build";
 import { ensureTailwindCss, ensureTailwindVitePlugin } from "../utils/tailwind";
+import { insertAfterViteImport, insertBeforeViteImport } from "../utils/vite-config";
 
 let tmpDir: string;
 
@@ -397,6 +399,24 @@ describe("tailwind helpers", () => {
     const content = fs.readFileSync(cssPath, "utf-8");
     expect(content).toContain("--color-background");
     expect(content).toContain(".custom { color: red; }");
+  });
+
+  it("keeps plain existing CSS inside @layer base, so Tailwind utilities beat its resets", () => {
+    const cssPath = path.join(tmpDir, "style.css");
+    fs.writeFileSync(cssPath, "*, *::before, *::after {\n  padding: 0;\n}\n\n@media (prefers-color-scheme: dark) {\n  :root { --bg: #000; }\n}\n");
+    ensureTailwindCss(cssPath);
+    const content = fs.readFileSync(cssPath, "utf-8");
+    expect(content).toContain("@layer base {\n*, *::before, *::after {\n  padding: 0;\n}");
+    expect(content.trimEnd().endsWith(":root { --bg: #000; }\n}\n}")).toBe(true);
+  });
+
+  it("leaves existing CSS unlayered when it has top-level-only at-rules", () => {
+    const cssPath = path.join(tmpDir, "style.css");
+    fs.writeFileSync(cssPath, '@import url("https://fonts.example/inter.css");\nbody { margin: 0; }\n');
+    ensureTailwindCss(cssPath);
+    const content = fs.readFileSync(cssPath, "utf-8");
+    expect(content).toContain('\n@import url("https://fonts.example/inter.css");\nbody { margin: 0; }\n');
+    expect(content).not.toMatch(/@layer base \{\n@import/);
   });
 
   it("discards the existing stylesheet content when eraseExisting is true", () => {
@@ -1085,5 +1105,81 @@ describe("buildRegistry", () => {
     writeSource(tmpDir, "src/badge.tsx", 'import { cva } from "class-variance-authority";\n');
 
     expect(buildRegistry(tmpDir, path.join(tmpDir, "dist"), "tailwind")).toEqual([expect.objectContaining({ styleSystem: "tailwind", count: 2 })]);
+  });
+});
+
+describe("parseInitArgs", () => {
+  it("returns no answers and no --yes for an empty argument list", () => {
+    expect(parseInitArgs([])).toEqual({ yes: false, help: false });
+  });
+
+  it("reads -d and --defaults as --yes, and -h as --help", () => {
+    expect(parseInitArgs(["-d"]).yes).toBe(true);
+    expect(parseInitArgs(["--defaults"]).yes).toBe(true);
+    expect(parseInitArgs(["-h"]).help).toBe(true);
+  });
+
+  it("reads the negated boolean flags", () => {
+    expect(parseInitArgs(["--no-overwrite", "--no-erase"])).toMatchObject({ overwrite: false, erase: false });
+    expect(parseInitArgs(["--overwrite", "--erase", "--force"])).toMatchObject({ overwrite: true, erase: true, force: true });
+  });
+
+  it.each([
+    [["--css"], "Missing value for --css."],
+    [["--css", "--yes"], "Missing value for --css."],
+    [["--root-component="], "Missing value for --root-component."],
+    [["--icon-library", "feather"], 'Invalid value "feather" for --icon-library. Expected one of: lucide, none.'],
+    [["--colors"], 'Unknown option "--colors".'],
+    [["button"], 'Unexpected argument "button".'],
+  ])("rejects %j", (args, message) => {
+    expect(() => parseInitArgs(args)).toThrow(InitOptionsError);
+    expect(() => parseInitArgs(args)).toThrow(message);
+  });
+
+  it("keeps a value starting with a dash when it is given inline", () => {
+    expect(parseInitArgs(["--css=-theme.css"]).css).toBe("-theme.css");
+  });
+});
+
+describe("vite config insertion", () => {
+  it("inserts after a multi-name vite import", () => {
+    const source = 'import { defineConfig, loadEnv } from "vite";\nexport default defineConfig({});\n';
+    expect(insertAfterViteImport(source, "import a from \"a\";")).toBe(
+      'import { defineConfig, loadEnv } from "vite";\nimport a from "a";\nexport default defineConfig({});\n',
+    );
+  });
+
+  it("falls back to the top of the file when there is no vite import", () => {
+    expect(insertAfterViteImport("export default {};\n", "import a from \"a\";")).toBe('import a from "a";\nexport default {};\n');
+    expect(insertBeforeViteImport("export default {};\n", "import a from \"a\";")).toBe('import a from "a";\nexport default {};\n');
+  });
+
+  it("wires the tailwind plugin import after a Tauri-style vite import", () => {
+    const viteConfigPath = path.join(tmpDir, "vite.config.ts");
+    fs.writeFileSync(
+      viteConfigPath,
+      'import { defineConfig, loadEnv } from "vite";\n\nexport default defineConfig(({ mode }) => {\n  return {\n    plugins: [],\n  };\n});\n',
+    );
+    expect(ensureTailwindVitePlugin(viteConfigPath)).toBe("updated");
+    expect(fs.readFileSync(viteConfigPath, "utf-8")).toContain(
+      'import { defineConfig, loadEnv } from "vite";\nimport tailwindcss from "@tailwindcss/vite";\n',
+    );
+  });
+
+  it("reports not-found for the @ alias when vite.config.ts has nothing to anchor on, leaving it untouched", () => {
+    const viteConfigPath = path.join(tmpDir, "vite.config.ts");
+    fs.writeFileSync(viteConfigPath, "export default {};\n");
+    expect(ensureViteAlias(viteConfigPath)).toBe("not-found");
+    expect(fs.readFileSync(viteConfigPath, "utf-8")).toBe("export default {};\n");
+  });
+
+  it("does not add a second node:path import when one exists", () => {
+    const viteConfigPath = path.join(tmpDir, "vite.config.ts");
+    fs.writeFileSync(
+      viteConfigPath,
+      'import path from "node:path";\nimport { defineConfig } from "vite";\n\nexport default defineConfig({\n  plugins: [],\n});\n',
+    );
+    expect(ensureViteAlias(viteConfigPath)).toBe("updated");
+    expect(fs.readFileSync(viteConfigPath, "utf-8").match(/node:path/g)).toHaveLength(1);
   });
 });

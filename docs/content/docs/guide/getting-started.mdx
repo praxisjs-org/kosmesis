@@ -71,6 +71,37 @@ class MyPage extends StatefulComponent {
   to use relative imports instead.
 </Callout>
 
+## Non-interactive setup
+
+Every `init` question has a flag. With `--yes` (or `--defaults`) nothing is asked: each choice you
+don't pass takes its default. Handy for scripts, CI and other CLIs.
+
+```bash
+npx kosmesis init --yes --style-system praxisjs-css --icon-library none
+```
+
+| Flag | Answers | Default with `--yes` |
+| --- | --- | --- |
+| `--style-system <tailwind\|praxisjs-css>` | Which styling system to use | `tailwind` |
+| `--icon-library <lucide\|none>` | Which icon library to wire | `lucide` |
+| `--css <path>` | Global stylesheet (Tailwind) or theme module (`@praxisjs/css`) | `src/style.css` / `src/lib/kosmesis-theme.ts` |
+| `--root-component <path>` | Root component that gets `@Themed(...)` / `@IconProvider(...)` | `src/app.tsx` |
+| `--erase` / `--no-erase` | Erase what the stylesheet or theme module already has, instead of keeping it below Kosmesis's tokens (with Tailwind, inside `@layer base`) | keep it |
+| `--overwrite` / `--no-overwrite` | Replace an existing `components.json` | stop |
+| `--force` | Continue in a project without `@praxisjs/core` | stop |
+| `-y`, `--yes`, `-d`, `--defaults` | Don't prompt | |
+
+With `--yes`, nothing is erased or overwritten unless its flag says so. When a run needs an
+answer only `--overwrite` or `--force` can give, it stops with exit code 1 and names the flag.
+Without `--yes`, flags still answer their question and `init` asks only the rest.
+`kosmesis init --help` prints the list.
+
+<Callout type="info">
+  New PraxisJS projects can start with Kosmesis already set up: `create-praxisjs` asks for it (or
+  takes `--kosmesis`), and `praxisjs add kosmesis` adds it to a project you already have. Both run
+  `kosmesis init` with these flags. See the [PraxisJS quickstart](https://praxisjs.org/docs/guide/getting-started).
+</Callout>
+
 ## Fetching from another registry
 
 Every component so far came from `components.json`'s default `registry` field

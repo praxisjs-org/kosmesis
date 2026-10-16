@@ -4,6 +4,25 @@ description: Changelog for kosmesis.
 icon: Terminal
 ---
 
+## 0.6.0
+
+- `kosmesis init` can run without prompts. Every question has a flag (`--style-system`,
+  `--icon-library`, `--css`, `--root-component`, `--overwrite`, `--erase` / `--no-erase`,
+  `--force`), and `--yes` (or `--defaults`) answers the rest with their default. In that mode
+  nothing is erased or overwritten unless its flag says so, and a run that needs one of those
+  answers stops with exit code 1 and names the flag. Flags you pass also skip their prompt in the
+  interactive flow, which is otherwise unchanged. `kosmesis init --help` lists them.
+- `kosmesis init` wires `@tailwindcss/vite`, `praxisjsCSS()` and the `@` alias into the
+  `vite.config.ts` create-praxisjs writes for Tauri v2 apps (`defineConfig(({ mode }) => ...)`
+  with `import { defineConfig, loadEnv } from "vite"`). Before, the plugin call was added without
+  its import and the alias was skipped, so the build failed. When the file has no shape it can
+  edit, `init` now says to add the alias by hand.
+- With Tailwind, the stylesheet content `kosmesis init` keeps below the theme tokens now goes
+  inside `@layer base`. Unlayered CSS beats every Tailwind layer, so a kept reset such as the
+  create-praxisjs template's `* { margin: 0; padding: 0 }` stripped the padding and margins off
+  every component. Content that is already written for Tailwind (`@import`, `@theme`, `@plugin`,
+  `@utility`, ...) is kept as it was.
+
 ## 0.5.0
 
 - `kosmesis init` works with `@morphos/icons` 2.0.0, which moved `LucideSource` to the

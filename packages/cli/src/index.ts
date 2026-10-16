@@ -11,7 +11,8 @@ const KNOWN_COMMANDS = ["init", "add", "outdated", "update", "registry"] as cons
 const command = argv[2];
 
 let handler: () => Promise<void>;
-if (!command || command === "init") {
+// `kosmesis --yes ...` is `kosmesis init --yes ...`, as a bare `kosmesis` already is `kosmesis init`.
+if (!command || command === "init" || command.startsWith("-")) {
   handler = init;
 } else if (command === "add") {
   handler = add;

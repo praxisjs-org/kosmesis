@@ -235,7 +235,14 @@ instead of `registry`; its own `registryDependencies` stay within that same name
   `@morphos/icons/lucide`) and installs `ICON_LIBRARY_DEPENDENCIES` (`constants.ts`), which are
   pinned to a major range (`@morphos/icons@^2.0.1`) because the generated import only exists from
   2.0.0. Those ranges must match `packages/registry/package.json` exactly (a test enforces it): when a
-  `chore: bump` moves `@morphos/icons` or `lucide`, update both.
+  `chore: bump` moves `@morphos/icons` or `lucide`, update both. Every prompt has a flag
+  (`utils/init-options.ts`: `--style-system`, `--icon-library`, `--css`, `--root-component`,
+  `--overwrite`, `--erase`/`--no-erase`, `--force`); a given flag skips its prompt, and `--yes`
+  (`--defaults`) skips the rest with defaults, never erasing/overwriting without the flag and
+  exiting 1 when `--overwrite`/`--force` is needed. create-praxisjs (`--kosmesis`) and
+  `praxisjs add kosmesis` call it this way, so keep the flags backwards compatible. Vite config
+  edits go through `utils/vite-config.ts`, which also handles the function-form config
+  create-praxisjs writes for Tauri.
 - **`kosmesis add <component...>`** (`packages/cli/src/commands/add.ts`): reads `components.json`,
   resolves the requested components' registry dependency closure, writes every file into the
   consumer's `aliases.ui` directory, and installs missing `dependencies` and `devDependencies`
