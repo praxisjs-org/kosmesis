@@ -32,8 +32,8 @@ consumer project records which registries it trusts.
 
 ### Scaffold it
 
-```bash
-kosmesis registry init my-registry
+```npm
+npx kosmesis registry init my-registry
 ```
 
 This writes:
@@ -78,9 +78,9 @@ or changed without a version bump (see [Versioning](#versioning)).
 
 From inside any Kosmesis project (one that already ran `kosmesis init`):
 
-```bash
-kosmesis registry add acme ./path/to/my-registry/dist/r
-kosmesis add @acme/example-button
+```npm
+npx kosmesis registry add acme ./path/to/my-registry/dist/r
+npx kosmesis add @acme/example-button
 ```
 
 `src/components/ui/example-button.tsx` shows up, written straight from your local folder — no
@@ -110,8 +110,8 @@ Once the build output is worth sharing beyond your own machine, upload it to any
 (S3 behind a CDN, GitHub Pages, an internal file server — anything that serves plain files over
 HTTP) and point teammates at the URL instead of a local path:
 
-```bash
-kosmesis registry add acme https://ui.acme.internal/r
+```npm
+npx kosmesis registry add acme https://ui.acme.internal/r
 ```
 
 Nothing else changes — `kosmesis add @acme/example-button` resolves the same way whether

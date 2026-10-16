@@ -76,7 +76,7 @@ class MyPage extends StatefulComponent {
 Every `init` question has a flag. With `--yes` (or `--defaults`) nothing is asked: each choice you
 don't pass takes its default. Handy for scripts, CI and other CLIs.
 
-```bash
+```npm
 npx kosmesis init --yes --style-system praxisjs-css --icon-library none
 ```
 
@@ -109,18 +109,18 @@ Every component so far came from `components.json`'s default `registry` field
 
 **One-off, for a single `add`:**
 
-```bash
-kosmesis add button --registry ./packages/registry/dist/r
+```npm
+npx kosmesis add button --registry ./packages/registry/dist/r
 ```
 
 **Persistent, addressed by name:** register a namespace once, then reference it directly whenever
 you add a component — no flag needed, and it works alongside the default registry in the same
 `add` call.
 
-```bash
-kosmesis registry add acme https://ui.acme.internal/r
-kosmesis add @acme/button
-kosmesis add @acme/button badge   # mixes a namespaced and a default-registry component
+```npm
+npx kosmesis registry add acme https://ui.acme.internal/r
+npx kosmesis add @acme/button
+npx kosmesis add @acme/button badge   # mixes a namespaced and a default-registry component
 ```
 
 | Command | What it does |
@@ -146,9 +146,9 @@ Want to serve your own components this way? See [Custom Registry](/docs/guide/cu
 `kosmesis add` records each component's version, and a hash of every file it wrote, in
 `components.lock.json` (commit it). When a registry publishes a newer version:
 
-```bash
-kosmesis outdated          # what has an update, and which of your copies you edited
-kosmesis update button     # shows the diff and asks before writing anything
+```npm
+npx kosmesis outdated          # what has an update, and which of your copies you edited
+npx kosmesis update button     # shows the diff and asks before writing anything
 ```
 
 Files you edited are never replaced without asking. See

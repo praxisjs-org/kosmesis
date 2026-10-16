@@ -51,8 +51,8 @@ never tracked, never reported, and never touched by `update`.
 
 ## Checking for updates
 
-```bash
-kosmesis outdated
+```npm
+npx kosmesis outdated
 ```
 
 ```
@@ -75,9 +75,9 @@ checked in one request; older ones are checked one component at a time.
 
 ## Updating
 
-```bash
-kosmesis update button
-kosmesis update --all
+```npm
+npx kosmesis update button
+npx kosmesis update --all
 ```
 
 For each component, `update` compares every file on disk with what's recorded and with the new
@@ -129,8 +129,8 @@ When stdin isn't a terminal, or `CI` is set, `update` never prompts:
 - Files you edited are **never** overwritten, with or without `--yes`. They're skipped with a
   warning, and the component stays reported by `outdated`.
 
-```bash
-kosmesis update --all --yes
+```npm
+npx kosmesis update --all --yes
 ```
 
 ## Unknown versions
