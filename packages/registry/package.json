@@ -10,7 +10,7 @@
   "devDependencies": {
     "@morphos/core": "^0.1.6",
     "@morphos/feedback": "^1.1.2",
-    "@morphos/icons": "^2.0.3",
+    "@morphos/icons": "^2.0.4",
     "@morphos/inputs": "^1.1.2",
     "@morphos/layout": "^1.2.2",
     "@morphos/overlays": "^1.0.8",
