@@ -1,5 +1,23 @@
 # kosmesis
 
+## 0.5.0
+
+### Minor Changes
+
+- d57ba60: Version registry components and add `kosmesis outdated` and `kosmesis update`.
+
+  - Registry items carry a semver `version`. `kosmesis add` records it, and a hash of every file it wrote, in `components.lock.json` next to `components.json`.
+  - `kosmesis outdated` lists installed components (from the default registry and from custom ones) with the installed and latest version and whether they were edited. Items a registry serves without a version, and components installed before versioning, show as `unknown` and never as outdated.
+  - `kosmesis update <component...>` / `--all` shows a diff and asks before writing. Edited files are never overwritten silently: skip (default), overwrite, or write the new version next to the file as `<name>.new.tsx`. Non-interactive runs only write with `--yes` and never overwrite edited files.
+  - The first `outdated`/`update` in a project created before versioning starts tracking the registry components it finds on disk; components the user wrote are never tracked.
+  - `kosmesis add` asks before overwriting an edited or untracked file, skips it when not interactive, and accepts `--overwrite`.
+  - `kosmesis registry build` validates versions, fails when an item changed without a version bump (checked against a committed `registry-lock.json`), adds a `hash` to each built file, and writes an `index.json` per style system.
+
+- d57ba60: Fix `kosmesis init` for `@morphos/icons` 2.0.0 and check registry imports at build time.
+
+  - `kosmesis init` imports `LucideSource` from `@morphos/icons/lucide` (its home since `@morphos/icons` 2.0.0) instead of `@morphos/icons`, which made a fresh project fail to type-check. It also installs `@morphos/icons@^2.0.1` and `lucide@^1.27.0` instead of the latest versions, so a future major can't break the generated code again.
+  - `kosmesis registry build` fails when a component imports a package it doesn't declare in `dependencies` (or, for type-only imports, `devDependencies`), or a relative file that isn't its own or one of its `registryDependencies`. `@praxisjs/core`, `@praxisjs/decorators`, `@praxisjs/jsx` and `@praxisjs/runtime` are the only packages that may be imported undeclared. `kosmesis registry init`'s example lists `@praxisjs/shared` under `devDependencies` so it passes the new check.
+
 ## 0.4.0
 
 ### Minor Changes
