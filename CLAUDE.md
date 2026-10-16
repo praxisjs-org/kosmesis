@@ -234,8 +234,9 @@ instead of `registry`; its own `registryDependencies` stay within that same name
   `@IconProvider(LucideSource)` (`IconProvider` from `@morphos/icons`, `LucideSource` from
   `@morphos/icons/lucide`) and installs `ICON_LIBRARY_DEPENDENCIES` (`constants.ts`), which are
   pinned to a major range (`@morphos/icons@^2.0.3`) because the generated import only exists from
-  2.0.0. Those ranges must match `packages/registry/package.json` exactly (a test enforces it): when a
-  `chore: bump` moves `@morphos/icons` or `lucide`, update both. Every prompt has a flag
+  2.0.0. The versions `packages/registry/package.json` typechecks the registry against must fall
+  inside those ranges (a test enforces it): a `chore: bump` within the major only touches the registry,
+  and only a new major of `@morphos/icons` or `lucide` needs `constants.ts` (and a changeset) too. Every prompt has a flag
   (`utils/init-options.ts`: `--style-system`, `--icon-library`, `--css`, `--root-component`,
   `--overwrite`, `--erase`/`--no-erase`, `--force`); a given flag skips its prompt, and `--yes`
   (`--defaults`) skips the rest with defaults, never erasing/overwriting without the flag and

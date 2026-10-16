@@ -15,8 +15,24 @@ import {
   importedPackageName,
   type ImportCheckItem,
 } from "../utils/registry-imports";
+import { compareVersions, isValidVersion } from "../utils/registry-versions";
 
 const registryDir = fileURLToPath(new URL("../../../registry", import.meta.url));
+
+/** The lowest version a caret range allows (`"^2.0.3"` -> `"2.0.3"`), undefined for any other range. */
+function caretFloor(range: string): string | undefined {
+  const floor = /^\^(\d+\.\d+\.\d+)$/.exec(range)?.[1];
+  return floor !== undefined && isValidVersion(floor) ? floor : undefined;
+}
+
+/** Whether `version` falls inside the caret `range`, with npm's rules for 0.x majors and minors. */
+function satisfiesCaret(version: string, range: string): boolean {
+  const floor = caretFloor(range);
+  if (floor === undefined) return false;
+  const [major = 0, minor = 0, patch = 0] = floor.split(".").map(Number);
+  const ceiling = major > 0 ? `${major + 1}.0.0` : minor > 0 ? `0.${minor + 1}.0` : `0.0.${patch + 1}`;
+  return compareVersions(version, floor) >= 0 && compareVersions(version, ceiling) < 0;
+}
 
 type RegistryImportsModule = typeof import("../utils/registry-imports");
 
@@ -215,7 +231,7 @@ describe("packages/registry", () => {
     }
   });
 
-  it("is typechecked against the same @morphos/icons and lucide ranges `kosmesis init` installs", () => {
+  it("is typechecked against versions inside the @morphos/icons and lucide ranges `kosmesis init` installs", () => {
     const pkg = JSON.parse(fs.readFileSync(path.join(registryDir, "package.json"), "utf-8")) as {
       dependencies?: Record<string, string>;
       devDependencies?: Record<string, string>;
@@ -224,7 +240,19 @@ describe("packages/registry", () => {
 
     for (const spec of ICON_LIBRARY_DEPENDENCIES.lucide) {
       const name = packageNameOfSpec(spec);
-      expect(`${name}@${declared[name] ?? "<missing>"}`).toBe(spec);
+      const tested = caretFloor(declared[name] ?? "");
+      expect(tested, `${name} in packages/registry/package.json`).toBeDefined();
+      expect(satisfiesCaret(tested ?? "", spec.slice(name.length + 1)), `${name}@${declared[name] ?? ""} within ${spec}`).toBe(true);
     }
+  });
+
+  it("checks caret ranges the way npm does", () => {
+    expect(satisfiesCaret("2.0.4", "^2.0.3")).toBe(true);
+    expect(satisfiesCaret("2.0.2", "^2.0.3")).toBe(false);
+    expect(satisfiesCaret("3.0.0", "^2.0.3")).toBe(false);
+    expect(satisfiesCaret("0.2.5", "^0.2.1")).toBe(true);
+    expect(satisfiesCaret("0.3.0", "^0.2.1")).toBe(false);
+    expect(satisfiesCaret("0.0.4", "^0.0.3")).toBe(false);
+    expect(satisfiesCaret("2.0.4", "~2.0.3")).toBe(false);
   });
 });

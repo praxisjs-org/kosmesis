@@ -85,9 +85,9 @@ export const DEFAULT_ICON_LIBRARY: IconLibrary = "lucide";
  *
  * Both are pinned to a major range: the `@IconProvider(LucideSource)` wiring `init` writes imports
  * `LucideSource` from `@morphos/icons/lucide`, a subpath that only exists from `@morphos/icons`
- * 2.0.0, and an unpinned install would pick up the next breaking major the day it's published. The
- * ranges must match `packages/registry/package.json`, which is what the registry is typechecked
- * against (a test enforces it).
+ * 2.0.0, and an unpinned install would pick up the next breaking major the day it's published.
+ * The versions `packages/registry/package.json` typechecks the registry against must fall inside
+ * these ranges (a test enforces it), so a registry bump within the major leaves them alone.
  */
 export const ICON_LIBRARY_DEPENDENCIES: Record<IconLibrary, readonly string[]> = {
   lucide: ["@morphos/icons@^2.0.3", "lucide@^1.27.0"],
