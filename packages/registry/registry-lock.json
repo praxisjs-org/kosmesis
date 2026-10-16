@@ -195,24 +195,24 @@
         "hash": "sha256-3f36f17920fb1cc91a868fa27ca4fe7db0876dc6f76f21d0bad32e83faf5a826"
       },
       "sonner": {
-        "version": "1.0.0",
-        "hash": "sha256-a13054b9bfeb67494300b63e17237f402996f238eb5f6976f1f37916a7859ad6"
+        "version": "1.0.1",
+        "hash": "sha256-f31490fd01d5611167e5bbc0a60d95e66398f02a9127dc8d55f6b19dc242c2c5"
       },
       "calendar": {
-        "version": "1.0.0",
-        "hash": "sha256-b0f03b08964e0d403ac7eac8fea9a61b64fd62a12e2920684904faf20b21f844"
+        "version": "1.0.1",
+        "hash": "sha256-2da8a2ea270724d0b279ff5b6f3c4a5317e0b40ea0d1b70a36db4c4ca05790a4"
       },
       "date-picker": {
         "version": "1.0.0",
         "hash": "sha256-96bdc52afda5d1dc35dacaa7d22980a85e4a73ac5c72dcad3edb62949a072f68"
       },
       "time-picker": {
-        "version": "1.0.0",
-        "hash": "sha256-0e4018672b1ebb40a639e4e84e77794dd14afefa509a1ff62f17dc02318c9daa"
+        "version": "1.0.1",
+        "hash": "sha256-aa8bd1925806ac571e96237b3fe3ebdd41576c62db956e951bb9404215ff1625"
       },
       "month-picker": {
-        "version": "1.0.0",
-        "hash": "sha256-dabe0b3e50264c10a0971d0524c6c619a821b5c0a169c46e091909fd67b69411"
+        "version": "1.0.1",
+        "hash": "sha256-3fa047d3e71569ae1a7aa16767b8b135fd3a93c9468a7db4f007cccdcb82f5e3"
       },
       "date-time-picker": {
         "version": "1.0.0",
@@ -231,12 +231,12 @@
         "hash": "sha256-dc4d5887251e2abbd686df28d6dc4ea0bca9db66af5d895c07dd857f11ccf195"
       },
       "file-list": {
-        "version": "1.0.0",
-        "hash": "sha256-dbe330aa82574f8730c2c489b0b18a5e3e85c8c3b2ba585fc6d50ad2ccb8bcc9"
+        "version": "1.0.1",
+        "hash": "sha256-5bfa1ca72f0ca40bf08766fad9bba7d764790d97f98ea24dd58b03ed9f08ff4a"
       },
       "file-upload-list": {
-        "version": "1.0.0",
-        "hash": "sha256-09471539f3a1dd5b5e8da448f9da8c5a82bc6d48f58b6a465815626e498b70a7"
+        "version": "1.0.1",
+        "hash": "sha256-f819e0d51b818b3843109a02ef6707515de5bd711e8f4e53cddd1201b6d4e5ce"
       },
       "avatar-upload": {
         "version": "1.0.0",
@@ -247,24 +247,24 @@
         "hash": "sha256-85bff5b7aa06ba12196ba8228373c69611cf5d251c3309e97879d2ef5ac48d6f"
       },
       "command": {
-        "version": "1.0.0",
-        "hash": "sha256-d807937065d84a78bd4a9270ccf67ccb9b2247e9cf874a1b1682b0c84568c142"
+        "version": "1.0.1",
+        "hash": "sha256-a8879ff57a4b4227b500c011d881b5ccf10472c383d8563d2eb8c7bed25e3f8d"
       },
       "data-table": {
-        "version": "1.0.0",
-        "hash": "sha256-40fffcbf9170e1ddd9097935a76f4253a823e88543948c2f3f7d695387cef3a7"
+        "version": "1.0.1",
+        "hash": "sha256-debe98dd08f5a2c4a4a89e91f120192e2e06b598294b9006abc0875383b42841"
       },
       "gantt-chart": {
-        "version": "1.0.0",
-        "hash": "sha256-104934ce1f37370ca2837ab69eb9510f71e4fa6d8c1029c106ef2bf0a6504b45"
+        "version": "1.0.1",
+        "hash": "sha256-80221e69fb299f4a89ae4d4303f5da59abc52e8fd8c42ac79a12e98883cd3654"
       },
       "carousel": {
         "version": "1.0.0",
         "hash": "sha256-5cd0c19ca42ae124253f52bf8757823b0047551db8684041395e6207bcb57673"
       },
       "reel": {
-        "version": "1.0.0",
-        "hash": "sha256-a41bc44b4364ee4c27dad829be2d738ec1cc07ab7a36d6a335dca01ac73f441d"
+        "version": "1.0.1",
+        "hash": "sha256-325d487ba25350f1d362c1b6ebf8fcc3387743777ef595a9a9b6592ce8958177"
       },
       "video-player": {
         "version": "1.0.0",
@@ -335,8 +335,8 @@
         "hash": "sha256-558e8ec6f168a41f5bc3742c9785b210de2c82fdf0bbb7091f0224bd30eee245"
       },
       "tags-input": {
-        "version": "1.0.0",
-        "hash": "sha256-2b542c14b5c793d86811e5c71af7f20f424992c88ae94c9e2a52d47811a25cba"
+        "version": "1.0.1",
+        "hash": "sha256-d0afbf8644ae0082a098d1508e469ec6ac3251a6741ccb10153ff73a28d52b06"
       },
       "phone-input": {
         "version": "1.0.0",
@@ -371,8 +371,8 @@
         "hash": "sha256-f38b345dbc5c08e940a80936b1c4cfbcf6de1d1b944318752d404a9ca40d1508"
       },
       "tree-view": {
-        "version": "1.0.0",
-        "hash": "sha256-4b21b07bb038a091a5cb774b4c5d0d48601e9b07e26a1419fa4bad8b86450a01"
+        "version": "1.0.1",
+        "hash": "sha256-d3830ce7d50691e43cfbd4e72f5fe9492848856757ac81297d9516494341a985"
       },
       "sortable": {
         "version": "1.0.0",
@@ -403,8 +403,8 @@
         "hash": "sha256-6f29e232ff1cf577da39cc05cc96ccfb9ff2aeb935aece9f1e82b658be3d2648"
       },
       "sticky-scroll": {
-        "version": "1.0.0",
-        "hash": "sha256-6cfbeff1d83bd5fd03b90a9cc3eaf84aaec6bbfe4b93c09b623073e955d948b6"
+        "version": "1.0.1",
+        "hash": "sha256-9a273a37dd036a9e9d0ac58b2a32cfcac58261fd0081f58cda17ccd8a0afe8c0"
       },
       "mouse-trail": {
         "version": "1.0.0",
@@ -483,8 +483,8 @@
         "hash": "sha256-f6e12a1b61c56a189ed99a761236882e94671bd34dfda320f09e50ef74b13f1d"
       },
       "branch": {
-        "version": "1.0.0",
-        "hash": "sha256-c6f81c1b966c5ba5bdad10c0870b4fd39a98d022edf19bc0a977bd6e0c2dafd8"
+        "version": "1.0.1",
+        "hash": "sha256-5093095a5908188dd8d8981dbc03ab9625b665e5042516bf9b025999b052815b"
       },
       "tool-call": {
         "version": "1.0.0",
@@ -567,8 +567,8 @@
         "hash": "sha256-7d0ee9a8495d199cf72b63f8a5612458787cfdea71fe5a33e04803d1c0a24350"
       },
       "product-gallery": {
-        "version": "1.0.0",
-        "hash": "sha256-c9d75b1bcba150c50b2459dadcc83554a4fcbfbc84b72db88fb871a5a8c736e3"
+        "version": "1.0.1",
+        "hash": "sha256-4607a3901998d462f9fc0a9a7f4721aeb19c4fd97844f6d6b1c46c7de621f7c0"
       },
       "shipping-estimator": {
         "version": "1.0.0",
@@ -769,24 +769,24 @@
         "hash": "sha256-2346fc6317d6127680724d4919bffc5bf7e54ea943ce2274dca68eae6c25cac3"
       },
       "sonner": {
-        "version": "1.0.0",
-        "hash": "sha256-07b9fa9aa4e196a2bf2c1230d3ae1f94d6d9d02d188d19540ab0a77bce777aca"
+        "version": "1.0.1",
+        "hash": "sha256-880198c4f767f42ab426c38b289af4171286e3e681fc04cf54d1e15355d858f9"
       },
       "calendar": {
-        "version": "1.0.0",
-        "hash": "sha256-843a324f5e41952f99c0444dc20a9419874a7c026eeb715ee8bdd57d784945c7"
+        "version": "1.0.1",
+        "hash": "sha256-0e29bd9dde23162d7f5c1757e1314cfc0283d50078d2a91ff6a31b18796c3386"
       },
       "date-picker": {
         "version": "1.0.0",
         "hash": "sha256-273a02be3235cb4214c4af9fe9f86beb03287e279d97b48a59db88dc292487bc"
       },
       "time-picker": {
-        "version": "1.0.0",
-        "hash": "sha256-4a79a15926a8c4a709ea900583fa2a4b1573e4145c422b48df49558eb0605712"
+        "version": "1.0.1",
+        "hash": "sha256-53ae40e3c15c618ff1924e915f0b603ac1b8ad9a7753de6b6187cb9ad89b1331"
       },
       "month-picker": {
-        "version": "1.0.0",
-        "hash": "sha256-6ba3d87aeff36e5e9efe2f463f1493898df2f6005356b54a3fc794892a945c11"
+        "version": "1.0.1",
+        "hash": "sha256-06d078f8039376d9866c23776341c29abc7f22b8e50c49e258f775a6a7b2469a"
       },
       "date-time-picker": {
         "version": "1.0.0",
@@ -805,12 +805,12 @@
         "hash": "sha256-c7032837296e491a852957a4d492816f20b5f119dba645737197ad104f7af329"
       },
       "file-list": {
-        "version": "1.0.0",
-        "hash": "sha256-e819b4b2216e024a1efdda7adea75291180541920eec928f00eaf51db7d76a86"
+        "version": "1.0.1",
+        "hash": "sha256-b18f86d0b6a212395c8a490dd3337dba4bd9083d3b2064f617cad16d87b4e16a"
       },
       "file-upload-list": {
-        "version": "1.0.0",
-        "hash": "sha256-c352b78769c749dca0359115505e7ce312c4ac742098c64e3379bc6e42be8d96"
+        "version": "1.0.1",
+        "hash": "sha256-ef3f51a319c9af9c5a82de6bd88147efe9ed17712435130e33154271877065ef"
       },
       "avatar-upload": {
         "version": "1.0.0",
@@ -821,24 +821,24 @@
         "hash": "sha256-d3f95f2b71b8d7dc14f97c57dfd15c00d52c0a76c2aaa201ce481ee38b4d8dec"
       },
       "command": {
-        "version": "1.0.0",
-        "hash": "sha256-9d0d2e26043994a6a7f1cc230af046ecf68d758da695b4df27da17bc088a8d88"
+        "version": "1.0.1",
+        "hash": "sha256-17f67a43457d2533996217c4be3f2154ab645dd9af088d955ed1ab43d2263942"
       },
       "data-table": {
-        "version": "1.0.0",
-        "hash": "sha256-a7b3b35987d32594870cc46349a00b50f9a94a58137c5f32855f26755301fa8e"
+        "version": "1.0.1",
+        "hash": "sha256-9d32bb166d963d63405e1770d7559aa6dee6e453d425682d6d3c2aeb2305fff1"
       },
       "gantt-chart": {
-        "version": "1.0.0",
-        "hash": "sha256-9701d0082928696d877f63dbebd85b542fb467acac2aa84b748107c6eef70ced"
+        "version": "1.0.1",
+        "hash": "sha256-d822a7901c672601483a3b470420415fbf2dfd25c68365a0714eb38f0f1d1478"
       },
       "carousel": {
         "version": "1.0.0",
         "hash": "sha256-b5052863b7fbf2567eba64a9b529e913738d7abbb8045042ac16c933a9db2b1b"
       },
       "reel": {
-        "version": "1.0.0",
-        "hash": "sha256-c4c85cd1c8a09340de44f62db9d2e3fec2ab0613ebbe6ca887a2f99118f38646"
+        "version": "1.0.1",
+        "hash": "sha256-2e42af2eaa48a56646868af168fd8c12350a4a4fff523079195a0042b25f522e"
       },
       "video-player": {
         "version": "1.0.0",
@@ -909,8 +909,8 @@
         "hash": "sha256-38a461507ccbec3f1acd8775e4bf3cdd4bc7a94bdbda1e733434cbc1ab4ac230"
       },
       "tags-input": {
-        "version": "1.0.0",
-        "hash": "sha256-f62ae2e345fb6fb02fe27c3b837a20a5a02f05cf553cab55d2307a79b6cac3ec"
+        "version": "1.0.1",
+        "hash": "sha256-d2bff14cbeee9613d6584c0aca6883143f2161f651847b236cc8560875d2adca"
       },
       "phone-input": {
         "version": "1.0.0",
@@ -945,8 +945,8 @@
         "hash": "sha256-caf95f6935414ec195ec0ad4bc7712db5c427f636a80a116d81b9346151fdecc"
       },
       "tree-view": {
-        "version": "1.0.0",
-        "hash": "sha256-40b349fc737b8a4b5e36d5fda43143b7a9e6c9150f5636f951df7687ef04b3eb"
+        "version": "1.0.1",
+        "hash": "sha256-62dc338faeb3d4c72dac6399d46cae533103b57a3c1349462e5c082f9d842cc1"
       },
       "sortable": {
         "version": "1.0.0",
@@ -977,8 +977,8 @@
         "hash": "sha256-38d123b4af508fe0111608eb98e60042ae104189b3a6f07f8a56c2982141f744"
       },
       "sticky-scroll": {
-        "version": "1.0.0",
-        "hash": "sha256-5ac207e75d0332a141a6e8c371938a4b2e81c3a3a0af4101234cbf18e3e8e0db"
+        "version": "1.0.1",
+        "hash": "sha256-9a4b862049789580028eadf919829676b5e6b811cb80e3689d1faf238f15ca0d"
       },
       "mouse-trail": {
         "version": "1.0.0",
@@ -1057,8 +1057,8 @@
         "hash": "sha256-59ae148f675344aa5edc6b4ed7c4a514589d97617887735eda469bd525bb1680"
       },
       "branch": {
-        "version": "1.0.0",
-        "hash": "sha256-77f6d2ea9f0f4e894533d92db5b5a23aaf868d886c087c210c4a5213ce9debc7"
+        "version": "1.0.1",
+        "hash": "sha256-05c2b769e5da7c74445ea38c502dc39d2a8073ddfdf0591803e9889f6a402009"
       },
       "tool-call": {
         "version": "1.0.0",
@@ -1141,8 +1141,8 @@
         "hash": "sha256-50778c87995a5a0b2b3e0653dea31bdfefdb221ed02fff4ef5a4f73c9230498a"
       },
       "product-gallery": {
-        "version": "1.0.0",
-        "hash": "sha256-be8cf7dbb529f16f954fce3283aad201a8d768ec1cb1de943c30df1c9456adc5"
+        "version": "1.0.1",
+        "hash": "sha256-416ed5a4f3e387e185f1d1e2a6c26224681ceda553572e5cde8fbb97de8527d9"
       },
       "shipping-estimator": {
         "version": "1.0.0",

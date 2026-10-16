@@ -1,6 +1,7 @@
 import { FilePreview, formatFileSize, type FileError } from "@praxisjs/composables";
 import { StatefulComponent, StatelessComponent } from "@praxisjs/core";
 import { Component, Compose, getter, Prop } from "@praxisjs/decorators";
+import { For } from "@praxisjs/runtime";
 
 import { Icon } from "@morphos/icons";
 
@@ -53,25 +54,25 @@ export class FileList extends StatelessComponent<FileListProps> {
 
     return (
       <ul class={cn("flex w-full flex-col gap-2", cls)}>
-        {() =>
-          source.files.map((file) => (
-            <li key={`${file.name}-${String(file.lastModified)}-${String(file.size)}`} class="flex items-center gap-3 rounded-md border p-2 text-sm">
-              <FileThumbnail file={file} />
+        <For each={() => source.files} by={(file) => `${file.name}-${String(file.lastModified)}-${String(file.size)}`}>
+          {(file) => (
+            <li class="flex items-center gap-3 rounded-md border p-2 text-sm">
+              <FileThumbnail file={file()} />
               <div class="min-w-0 flex-1">
-                <p class="truncate font-medium">{file.name}</p>
-                <p class="text-xs text-muted-foreground">{formatFileSize(file.size)}</p>
+                <p class="truncate font-medium">{file().name}</p>
+                <p class="text-xs text-muted-foreground">{formatFileSize(file().size)}</p>
               </div>
               <button
                 type="button"
-                aria-label={`Remove ${file.name}`}
+                aria-label={`Remove ${file().name}`}
                 class="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-accent hover:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                onClick={() => { source.remove(file); }}
+                onClick={() => { source.remove(file()); }}
               >
                 <Icon name="X" size={14} />
               </button>
             </li>
-          ))
-        }
+          )}
+        </For>
       </ul>
     );
   }
@@ -89,21 +90,21 @@ export class FileThumbnailGrid extends StatelessComponent<FileThumbnailGridProps
 
     return (
       <ul class={cn("grid grid-cols-3 gap-2 sm:grid-cols-4", cls)}>
-        {() =>
-          source.files.map((file) => (
-            <li key={`${file.name}-${String(file.lastModified)}-${String(file.size)}`} class="group relative aspect-square">
-              <FileThumbnail file={file} class="size-full" />
+        <For each={() => source.files} by={(file) => `${file.name}-${String(file.lastModified)}-${String(file.size)}`}>
+          {(file) => (
+            <li class="group relative aspect-square">
+              <FileThumbnail file={file()} class="size-full" />
               <button
                 type="button"
-                aria-label={`Remove ${file.name}`}
+                aria-label={`Remove ${file().name}`}
                 class="absolute right-1 top-1 inline-flex size-6 items-center justify-center rounded-full bg-background/90 text-foreground opacity-0 shadow-xs outline-none transition-opacity hover:bg-background focus-visible:opacity-100 group-hover:opacity-100"
-                onClick={() => { source.remove(file); }}
+                onClick={() => { source.remove(file()); }}
               >
                 <Icon name="X" size={12} />
               </button>
             </li>
-          ))
-        }
+          )}
+        </For>
       </ul>
     );
   }
@@ -121,7 +122,9 @@ export class FileErrors extends StatelessComponent<FileErrorsProps> {
 
     return (
       <ul role="alert" class={cn("flex flex-col gap-1 text-sm text-destructive empty:hidden", cls)}>
-        {() => source.errors.map((error) => <li key={error.message}>{error.message}</li>)}
+        <For each={() => source.errors} by="message">
+          {(error) => <li>{error().message}</li>}
+        </For>
       </ul>
     );
   }

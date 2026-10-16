@@ -1,5 +1,6 @@
 import { StatefulComponent, StatelessComponent } from "@praxisjs/core";
 import { Component, Emit, FunctionProp, Prop, State } from "@praxisjs/decorators";
+import { For } from "@praxisjs/runtime";
 
 import { Icon } from "@morphos/icons";
 
@@ -216,31 +217,33 @@ export class Calendar extends StatelessComponent<CalendarProps> {
         </div>
 
         <div class="grid grid-cols-7 gap-1">
-          {() =>
-            state.grid.map(({ date, inMonth }) => (
-              <button
-                key={date.toISOString()}
-                type="button"
-                disabled={state.isDisabled(date)}
-                data-selected={state.isSelected(date) ? "" : undefined}
-                data-today={state.isToday(date) ? "" : undefined}
-                data-range-middle={state.isInRange(date) ? "" : undefined}
-                data-outside-month={!inMonth ? "" : undefined}
-                class={cn(
-                  "flex size-8 items-center justify-center rounded-md p-0 text-sm font-normal text-foreground",
-                  "hover:bg-accent hover:text-accent-foreground",
-                  "data-outside-month:text-muted-foreground data-outside-month:opacity-50",
-                  "data-selected:bg-primary data-selected:text-primary-foreground data-selected:hover:bg-primary data-selected:hover:text-primary-foreground",
-                  "data-range-middle:bg-accent data-range-middle:text-accent-foreground",
-                  "data-today:border data-today:border-input",
-                  "disabled:pointer-events-none disabled:opacity-30",
-                )}
-                onClick={() => { state.pick(date); }}
-              >
-                {date.getDate()}
-              </button>
-            ))
-          }
+          <For each={() => state.grid} by={(cell) => cell.date.toISOString()}>
+            {(cell) => {
+              const { date } = cell();
+              return (
+                <button
+                  type="button"
+                  disabled={() => state.isDisabled(date)}
+                  data-selected={() => (state.isSelected(date) ? "" : undefined)}
+                  data-today={() => (state.isToday(date) ? "" : undefined)}
+                  data-range-middle={() => (state.isInRange(date) ? "" : undefined)}
+                  data-outside-month={() => (!cell().inMonth ? "" : undefined)}
+                  class={cn(
+                    "flex size-8 items-center justify-center rounded-md p-0 text-sm font-normal text-foreground",
+                    "hover:bg-accent hover:text-accent-foreground",
+                    "data-outside-month:text-muted-foreground data-outside-month:opacity-50",
+                    "data-selected:bg-primary data-selected:text-primary-foreground data-selected:hover:bg-primary data-selected:hover:text-primary-foreground",
+                    "data-range-middle:bg-accent data-range-middle:text-accent-foreground",
+                    "data-today:border data-today:border-input",
+                    "disabled:pointer-events-none disabled:opacity-30",
+                  )}
+                  onClick={() => { state.pick(date); }}
+                >
+                  {date.getDate()}
+                </button>
+              );
+            }}
+          </For>
         </div>
       </div>
     );

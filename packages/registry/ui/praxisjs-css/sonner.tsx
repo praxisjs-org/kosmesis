@@ -1,5 +1,6 @@
 import { cx, Stylesheet, Styled, tokenVars } from "@praxisjs/css";
 import { Component } from "@praxisjs/decorators";
+import { For } from "@praxisjs/runtime";
 
 import { ToastProvider as MorphosToastProvider, type ToastItem  } from "@morphos/feedback";
 import { Icon } from "@morphos/icons";
@@ -74,19 +75,22 @@ export class Toaster extends MorphosToastProvider {
   render() {
     return (
       <div id={this.id} role="region" aria-label="Notifications" aria-live="polite" aria-atomic={"false" as const} class={cx(this.$s.$root, this.class)}>
-        {() =>
-          this.toasts.map((toast) => (
-            <div key={toast.id} role="status" aria-live="polite" data-variant={toast.variant ?? "info"} class={this.$s.$toast}>
-              <div class={this.$s.$content}>
-                <p class={this.$s.$title}>{toast.title}</p>
-                {toast.description && <p class={this.$s.$description}>{toast.description}</p>}
+        <For each={() => this.toasts} by="id">
+          {(toast) => {
+            const { id, title, description, variant } = toast();
+            return (
+              <div role="status" aria-live="polite" data-variant={variant ?? "info"} class={this.$s.$toast}>
+                <div class={this.$s.$content}>
+                  <p class={this.$s.$title}>{title}</p>
+                  {description && <p class={this.$s.$description}>{description}</p>}
+                </div>
+                <button type="button" aria-label="Dismiss notification" class={this.$s.$dismiss} onClick={() => { this.dismiss(id); }}>
+                  <Icon name="X" size={16} />
+                </button>
               </div>
-              <button type="button" aria-label="Dismiss notification" class={this.$s.$dismiss} onClick={() => { this.dismiss(toast.id); }}>
-                <Icon name="X" size={16} />
-              </button>
-            </div>
-          ))
-        }
+            );
+          }}
+        </For>
       </div>
     );
   }

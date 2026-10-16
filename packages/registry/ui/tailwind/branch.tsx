@@ -1,5 +1,5 @@
 import { StatefulComponent } from "@praxisjs/core";
-import { Component, Prop, State } from "@praxisjs/decorators";
+import { Component, Prop, Selector, State } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
 import { Icon } from "@morphos/icons";
@@ -20,6 +20,7 @@ export class Branch extends StatefulComponent {
   @Prop() class?: string;
 
   @State() _index = 0;
+  @Selector("_index") _isActive!: Selector<number>;
 
   prev(): void {
     this._index = Math.max(0, this._index - 1);
@@ -34,7 +35,7 @@ export class Branch extends StatefulComponent {
       <div data-slot="branch" class={cn("flex flex-col gap-2", this.class)}>
         <div>
           {this.branches.map((branch, i) => (
-            <div key={i} data-active={() => (this._index === i ? "" : undefined)} class="hidden data-[active]:block">
+            <div key={i} data-active={() => (this._isActive(i) ? "" : undefined)} class="hidden data-[active]:block">
               {branch}
             </div>
           ))}

@@ -1,5 +1,6 @@
 import { StatefulComponent } from "@praxisjs/core";
-import { Component, FunctionProp, Prop, Ref, State, type Ref as RefType } from "@praxisjs/decorators";
+import { Component, Computed, FunctionProp, Prop, Ref, State, type Ref as RefType } from "@praxisjs/decorators";
+import { For } from "@praxisjs/runtime";
 
 import { cn } from "@/lib/utils";
 
@@ -74,6 +75,11 @@ interface GanttColumn {
   x: number;
   width: number;
   isWeekend: boolean;
+}
+
+interface GanttBar {
+  task: GanttTask;
+  index: number;
 }
 
 interface GanttDependencyLine {
@@ -281,6 +287,20 @@ export class GanttChart extends StatefulComponent {
     return rows;
   }
 
+  private get _bars(): GanttBar[] {
+    return this.rows.flatMap((row, index) => (row.kind === "task" ? [{ task: row.task, index }] : []));
+  }
+
+  @Computed()
+  private get _hasTasks(): boolean {
+    return this.tasks.length > 0;
+  }
+
+  @Computed()
+  private get _hasDependencyLines(): boolean {
+    return this.dependencyLines.length > 0;
+  }
+
   barGeometry(task: GanttTask): { left: number; width: number } {
     const left = this.xForDate(task.start);
     const right = this.xForDate(addDays(task.end, 1));
@@ -464,210 +484,227 @@ export class GanttChart extends StatefulComponent {
         )}
 
         <div ref={this.scrollRef} class="overflow-auto" style={() => (this.height !== undefined ? { maxHeight: `${String(this.height)}px` } : undefined)}>
-          {() => {
-            const rows = this.rows;
-            if (rows.length === 0) {
-              return <div class="p-10 text-center text-sm text-muted-foreground">No tasks to display.</div>;
+          {() => (this._hasTasks ? this.renderChart() : <div class="p-10 text-center text-sm text-muted-foreground">No tasks to display.</div>)}
+        </div>
+      </div>
+    );
+  }
+
+  private renderChart() {
+    return (
+      <div class="relative" style={() => ({ width: `${String(this.sidebarWidth + this.totalWidth)}px`, minWidth: "100%" })}>
+        <div class="flex">
+          <div
+            class="sticky top-0 left-0 z-30 flex shrink-0 items-end border-r border-b bg-card px-3 pb-1.5 text-xs font-medium text-muted-foreground"
+            style={() => ({ width: `${String(this.sidebarWidth)}px`, height: `${String(HEADER_HEIGHT)}px` })}
+          >
+            Tasks
+          </div>
+          <div class="sticky top-0 z-20 flex bg-card" style={() => ({ width: `${String(this.totalWidth)}px`, height: `${String(HEADER_HEIGHT)}px` })}>
+            <For each={() => this.columns} by="key">
+              {(col) => (
+                <div
+                  class={() =>
+                    cn(
+                      "flex shrink-0 flex-col items-center justify-end gap-0.5 border-r border-b pb-1.5 text-[11px] text-muted-foreground",
+                      col().isWeekend && "bg-muted/30",
+                    )
+                  }
+                  style={() => ({ width: `${String(col().width)}px` })}
+                >
+                  {() => {
+                    const { sublabel } = col();
+                    return sublabel && <span class="text-[9px] uppercase opacity-70">{sublabel}</span>;
+                  }}
+                  <span class="font-medium text-foreground">{() => col().label}</span>
+                </div>
+              )}
+            </For>
+          </div>
+        </div>
+
+        <div class="flex">
+          <div class="sticky left-0 z-20 shrink-0 overflow-hidden border-r bg-card" style={() => ({ width: `${String(this.sidebarWidth)}px` })}>
+            <For each={() => this.rows} by="key">
+              {(item) => () => {
+                const row = item();
+                return row.kind === "group" ? (
+                  <div
+                    class="flex items-center border-b bg-muted/60 px-3 text-[11px] font-semibold tracking-wide text-foreground uppercase"
+                    style={{ height: `${String(this.rowHeight)}px` }}
+                  >
+                    {row.label}
+                  </div>
+                ) : (
+                  <div class="flex items-center gap-2 border-b px-3 text-sm text-foreground" style={{ height: `${String(this.rowHeight)}px` }} title={row.task.name}>
+                    <span class="min-w-0 flex-1 truncate">{row.task.name}</span>
+                  </div>
+                );
+              }}
+            </For>
+          </div>
+
+          <div class="relative" style={() => ({ width: `${String(this.totalWidth)}px`, height: `${String(this.rows.length * this.rowHeight)}px` })}>
+            <For each={() => (this.effectiveViewMode === "day" && this.showWeekends ? this.columns.filter((c) => c.isWeekend) : [])} by="key">
+              {(col) => <div class="absolute inset-y-0 bg-muted/30" style={() => ({ left: `${String(col().x)}px`, width: `${String(col().width)}px` })} />}
+            </For>
+
+            <For each={() => this.rows} by="key">
+              {(row, index) => (
+                <div
+                  class={cn("absolute inset-x-0 border-b", row().kind === "group" && "bg-muted/40")}
+                  style={() => ({ top: `${String(index() * this.rowHeight)}px`, height: `${String(this.rowHeight)}px` })}
+                />
+              )}
+            </For>
+
+            {() =>
+              this._hasDependencyLines && (
+                <svg
+                  class="pointer-events-none absolute inset-0 overflow-visible"
+                  width={() => this.totalWidth}
+                  height={() => this.rows.length * this.rowHeight}
+                >
+                  <defs>
+                    {/* Fixed marker id — safe if multiple GanttChart instances render at once since every instance's arrow def is identical. */}
+                    <marker id="kosmesis-gantt-arrow" markerWidth={8} markerHeight={8} refX={6} refY={3} orient="auto">
+                      <path d="M0,0 L6,3 L0,6 Z" class="fill-muted-foreground" />
+                    </marker>
+                  </defs>
+                  <For each={() => this.dependencyLines} by="key">
+                    {(line) => (
+                      <path
+                        d={() => line().d}
+                        fill="none"
+                        stroke-width={1.5}
+                        stroke-linecap="round"
+                        class="stroke-muted-foreground/70"
+                        marker-end="url(#kosmesis-gantt-arrow)"
+                      />
+                    )}
+                  </For>
+                </svg>
+              )
             }
 
-            const columns = this.columns;
-            const totalWidth = this.totalWidth;
-            const bodyHeight = rows.length * this.rowHeight;
-            const todayX = this.xForDate(startOfDay(new Date()));
-            const showTodayLine = this.showToday && todayX >= 0 && todayX <= totalWidth;
-
-            return (
-              <div class="relative" style={{ width: `${String(this.sidebarWidth + totalWidth)}px`, minWidth: "100%" }}>
-                <div class="flex">
-                  <div
-                    class="sticky top-0 left-0 z-30 flex shrink-0 items-end border-r border-b bg-card px-3 pb-1.5 text-xs font-medium text-muted-foreground"
-                    style={{ width: `${String(this.sidebarWidth)}px`, height: `${String(HEADER_HEIGHT)}px` }}
-                  >
-                    Tasks
+            {() => {
+              const todayX = this.xForDate(startOfDay(new Date()));
+              return (
+                this.showToday &&
+                todayX >= 0 &&
+                todayX <= this.totalWidth && (
+                  <div class="pointer-events-none absolute inset-y-0 z-10 w-px bg-primary" style={{ left: `${String(todayX)}px` }}>
+                    <span class="absolute -top-0.5 -left-1 size-2 animate-pulse rounded-full bg-primary" />
                   </div>
-                  <div class="sticky top-0 z-20 flex bg-card" style={{ width: `${String(totalWidth)}px`, height: `${String(HEADER_HEIGHT)}px` }}>
-                    {columns.map((col) => (
-                      <div
-                        key={col.key}
-                        class={cn(
-                          "flex shrink-0 flex-col items-center justify-end gap-0.5 border-r border-b pb-1.5 text-[11px] text-muted-foreground",
-                          col.isWeekend && "bg-muted/30",
-                        )}
-                        style={{ width: `${String(col.width)}px` }}
-                      >
-                        {col.sublabel && <span class="text-[9px] uppercase opacity-70">{col.sublabel}</span>}
-                        <span class="font-medium text-foreground">{col.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                )
+              );
+            }}
 
-                <div class="flex">
-                  <div class="sticky left-0 z-20 shrink-0 overflow-hidden border-r bg-card" style={{ width: `${String(this.sidebarWidth)}px` }}>
-                    {rows.map((row) =>
-                      row.kind === "group" ? (
-                        <div
-                          key={row.key}
-                          class="flex items-center border-b bg-muted/60 px-3 text-[11px] font-semibold tracking-wide text-foreground uppercase"
-                          style={{ height: `${String(this.rowHeight)}px` }}
-                        >
-                          {row.label}
-                        </div>
-                      ) : (
-                        <div
-                          key={row.key}
-                          class="flex items-center gap-2 border-b px-3 text-sm text-foreground"
-                          style={{ height: `${String(this.rowHeight)}px` }}
-                          title={row.task.name}
-                        >
-                          <span class="min-w-0 flex-1 truncate">{row.task.name}</span>
-                        </div>
-                      ),
-                    )}
-                  </div>
-
-                  <div class="relative" style={{ width: `${String(totalWidth)}px`, height: `${String(bodyHeight)}px` }}>
-                    {this.effectiveViewMode === "day" &&
-                      this.showWeekends &&
-                      columns
-                        .filter((c) => c.isWeekend)
-                        .map((col) => <div key={col.key} class="absolute inset-y-0 bg-muted/30" style={{ left: `${String(col.x)}px`, width: `${String(col.width)}px` }} />)}
-
-                    {rows.map((row, index) => (
-                      <div
-                        key={`bg:${row.key}`}
-                        class={cn("absolute inset-x-0 border-b", row.kind === "group" && "bg-muted/40")}
-                        style={{ top: `${String(index * this.rowHeight)}px`, height: `${String(this.rowHeight)}px` }}
-                      />
-                    ))}
-
-                    {this.showDependencies && this.dependencyLines.length > 0 && (
-                      <svg class="pointer-events-none absolute inset-0 overflow-visible" width={totalWidth} height={bodyHeight}>
-                        <defs>
-                          {/* Fixed marker id — safe if multiple GanttChart instances render at once since every instance's arrow def is identical. */}
-                          <marker id="kosmesis-gantt-arrow" markerWidth={8} markerHeight={8} refX={6} refY={3} orient="auto">
-                            <path d="M0,0 L6,3 L0,6 Z" class="fill-muted-foreground" />
-                          </marker>
-                        </defs>
-                        {this.dependencyLines.map((line) => (
-                          <path
-                            key={line.key}
-                            d={line.d}
-                            fill="none"
-                            stroke-width={1.5}
-                            stroke-linecap="round"
-                            class="stroke-muted-foreground/70"
-                            marker-end="url(#kosmesis-gantt-arrow)"
-                          />
-                        ))}
-                      </svg>
-                    )}
-
-                    {showTodayLine && (
-                      <div class="pointer-events-none absolute inset-y-0 z-10 w-px bg-primary" style={{ left: `${String(todayX)}px` }}>
-                        <span class="absolute -top-0.5 -left-1 size-2 animate-pulse rounded-full bg-primary" />
-                      </div>
-                    )}
-
-                    {rows.map((row, index) => {
-                      if (row.kind !== "task") return null;
-                      const task = row.task;
-                      const geom = this.barGeometry(task);
-                      const progress = clampProgress(task.progress ?? 0);
-                      const delay = Math.min(index * 30, 300);
-                      const top = index * this.rowHeight + this.rowHeight * 0.18;
-                      const barHeight = this.rowHeight * 0.64;
-
-                      if (task.milestone) {
-                        const size = Math.min(barHeight, 18);
-                        return (
-                          <div
-                            key={task.id}
-                            data-slot="gantt-milestone"
-                            class={cn(
-                              "absolute z-10 rotate-45 rounded-[3px] border-2 border-primary bg-background transition-[left,opacity] duration-500 ease-out",
-                              "data-dragging:z-20 data-dragging:shadow-lg data-dragging:ring-2 data-dragging:ring-primary/40",
-                              this.editable && "cursor-grab active:cursor-grabbing",
-                            )}
-                            style={{
-                              left: `${String(this.xForDate(task.start) - size / 2)}px`,
-                              top: `${String(index * this.rowHeight + this.rowHeight / 2 - size / 2)}px`,
-                              width: `${String(size)}px`,
-                              height: `${String(size)}px`,
-                              transitionDelay: `${String(delay)}ms`,
-                              opacity: this._mounted ? 1 : 0,
-                            }}
-                            title={`${task.name} — ${task.start.toLocaleDateString()}`}
-                            onPointerDown={(event: PointerEvent) => {
-                              this._handleBarPointerDown(event, task, "move", size);
-                            }}
-                            onPointerMove={this._handleBarPointerMove}
-                            onPointerUp={this._handleBarPointerUp}
-                          />
-                        );
-                      }
-
-                      return (
-                        <div
-                          key={task.id}
-                          data-slot="gantt-bar"
-                          class={cn(
-                            "group absolute z-10 overflow-hidden rounded-md shadow-xs transition-[left,width] duration-500 ease-out",
-                            "data-dragging:z-20 data-dragging:shadow-lg data-dragging:ring-2 data-dragging:ring-primary/40",
-                            this.editable && "cursor-grab active:cursor-grabbing",
-                          )}
-                          style={{
-                            left: `${String(geom.left)}px`,
-                            top: `${String(top)}px`,
-                            width: this._mounted ? `${String(geom.width)}px` : "0px",
-                            height: `${String(barHeight)}px`,
-                            backgroundColor: `color-mix(in oklab, ${task.color ?? "var(--color-primary)"} 22%, transparent)`,
-                            transitionDelay: `${String(delay)}ms`,
-                          }}
-                          title={`${task.name} (${String(progress)}%)`}
-                          onPointerDown={(event: PointerEvent) => {
-                            this._handleBarPointerDown(event, task, "move");
-                          }}
-                          onPointerMove={this._handleBarPointerMove}
-                          onPointerUp={this._handleBarPointerUp}
-                        >
-                          <div
-                            class="h-full rounded-[inherit] transition-[width] duration-700 ease-out"
-                            style={{
-                              width: this._mounted ? `${String(progress)}%` : "0%",
-                              backgroundColor: task.color ?? "var(--color-primary)",
-                              transitionDelay: `${String(delay + 150)}ms`,
-                            }}
-                          />
-                          {this.editable && (
-                            <>
-                              <div
-                                class="absolute inset-y-0 left-0 w-1.5 cursor-ew-resize opacity-0 group-hover:opacity-100"
-                                onPointerDown={(event: PointerEvent) => {
-                                  this._handleBarPointerDown(event, task, "resize-start");
-                                }}
-                                onPointerMove={this._handleBarPointerMove}
-                                onPointerUp={this._handleBarPointerUp}
-                              />
-                              <div
-                                class="absolute inset-y-0 right-0 w-1.5 cursor-ew-resize opacity-0 group-hover:opacity-100"
-                                onPointerDown={(event: PointerEvent) => {
-                                  this._handleBarPointerDown(event, task, "resize-end");
-                                }}
-                                onPointerMove={this._handleBarPointerMove}
-                                onPointerUp={this._handleBarPointerUp}
-                              />
-                            </>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            );
-          }}
+            <For each={() => this._bars} by={(bar) => (bar.task.milestone ? `${bar.task.id}:milestone` : bar.task.id)}>
+              {(bar) => (bar().task.milestone ? this.renderMilestone(bar) : this.renderBar(bar))}
+            </For>
+          </div>
         </div>
+      </div>
+    );
+  }
+
+  private renderMilestone(bar: () => GanttBar) {
+    const size = () => Math.min(this.rowHeight * 0.64, 18);
+    return (
+      <div
+        data-slot="gantt-milestone"
+        class={() =>
+          cn(
+            "absolute z-10 rotate-45 rounded-[3px] border-2 border-primary bg-background transition-[left,opacity] duration-500 ease-out",
+            "data-dragging:z-20 data-dragging:shadow-lg data-dragging:ring-2 data-dragging:ring-primary/40",
+            this.editable && "cursor-grab active:cursor-grabbing",
+          )
+        }
+        style={() => {
+          const { task, index } = bar();
+          return {
+            left: `${String(this.xForDate(task.start) - size() / 2)}px`,
+            top: `${String(index * this.rowHeight + this.rowHeight / 2 - size() / 2)}px`,
+            width: `${String(size())}px`,
+            height: `${String(size())}px`,
+            transitionDelay: `${String(Math.min(index * 30, 300))}ms`,
+            opacity: this._mounted ? 1 : 0,
+          };
+        }}
+        title={() => `${bar().task.name} — ${bar().task.start.toLocaleDateString()}`}
+        onPointerDown={(event: PointerEvent) => {
+          this._handleBarPointerDown(event, bar().task, "move", size());
+        }}
+        onPointerMove={this._handleBarPointerMove}
+        onPointerUp={this._handleBarPointerUp}
+      />
+    );
+  }
+
+  private renderBar(bar: () => GanttBar) {
+    return (
+      <div
+        data-slot="gantt-bar"
+        class={() =>
+          cn(
+            "group absolute z-10 overflow-hidden rounded-md shadow-xs transition-[left,width] duration-500 ease-out",
+            "data-dragging:z-20 data-dragging:shadow-lg data-dragging:ring-2 data-dragging:ring-primary/40",
+            this.editable && "cursor-grab active:cursor-grabbing",
+          )
+        }
+        style={() => {
+          const { task, index } = bar();
+          const geom = this.barGeometry(task);
+          return {
+            left: `${String(geom.left)}px`,
+            top: `${String(index * this.rowHeight + this.rowHeight * 0.18)}px`,
+            width: this._mounted ? `${String(geom.width)}px` : "0px",
+            height: `${String(this.rowHeight * 0.64)}px`,
+            backgroundColor: `color-mix(in oklab, ${task.color ?? "var(--color-primary)"} 22%, transparent)`,
+            transitionDelay: `${String(Math.min(index * 30, 300))}ms`,
+          };
+        }}
+        title={() => `${bar().task.name} (${String(clampProgress(bar().task.progress ?? 0))}%)`}
+        onPointerDown={(event: PointerEvent) => {
+          this._handleBarPointerDown(event, bar().task, "move");
+        }}
+        onPointerMove={this._handleBarPointerMove}
+        onPointerUp={this._handleBarPointerUp}
+      >
+        <div
+          class="h-full rounded-[inherit] transition-[width] duration-700 ease-out"
+          style={() => {
+            const { task, index } = bar();
+            return {
+              width: this._mounted ? `${String(clampProgress(task.progress ?? 0))}%` : "0%",
+              backgroundColor: task.color ?? "var(--color-primary)",
+              transitionDelay: `${String(Math.min(index * 30, 300) + 150)}ms`,
+            };
+          }}
+        />
+        {() =>
+          this.editable && (
+            <>
+              <div
+                class="absolute inset-y-0 left-0 w-1.5 cursor-ew-resize opacity-0 group-hover:opacity-100"
+                onPointerDown={(event: PointerEvent) => {
+                  this._handleBarPointerDown(event, bar().task, "resize-start");
+                }}
+                onPointerMove={this._handleBarPointerMove}
+                onPointerUp={this._handleBarPointerUp}
+              />
+              <div
+                class="absolute inset-y-0 right-0 w-1.5 cursor-ew-resize opacity-0 group-hover:opacity-100"
+                onPointerDown={(event: PointerEvent) => {
+                  this._handleBarPointerDown(event, bar().task, "resize-end");
+                }}
+                onPointerMove={this._handleBarPointerMove}
+                onPointerUp={this._handleBarPointerUp}
+              />
+            </>
+          )
+        }
       </div>
     );
   }

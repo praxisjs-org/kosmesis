@@ -1,6 +1,7 @@
 import { StatefulComponent, StatelessComponent } from "@praxisjs/core";
 import { cx, Stylesheet, Styled, tokenVars } from "@praxisjs/css";
-import { Component, Emit, Prop, State } from "@praxisjs/decorators";
+import { Component, Emit, Prop, Selector, State } from "@praxisjs/decorators";
+import { For } from "@praxisjs/runtime";
 import type { Children } from "@praxisjs/shared";
 
 import { Keys } from "@morphos/core";
@@ -35,6 +36,7 @@ export class CommandState extends StatefulComponent {
 
   @State() _query = "";
   @State() _activeIndex = 0;
+  @Selector("_activeItem") _isActiveItem!: Selector<CommandItemDef>;
 
   get query(): string {
     return this._query;
@@ -60,6 +62,10 @@ export class CommandState extends StatefulComponent {
     return groups;
   }
 
+  get _activeItem(): CommandItemDef | undefined {
+    return this.filtered[this._activeIndex];
+  }
+
   get activeIndex(): number {
     return this._activeIndex;
   }
@@ -70,7 +76,7 @@ export class CommandState extends StatefulComponent {
   }
 
   isActive(item: CommandItemDef): boolean {
-    return this.filtered[this._activeIndex] === item;
+    return this._isActiveItem(item);
   }
 
   // Mouse-driven equivalent of `moveActive`, so hover and keyboard nav share the same active item.
@@ -182,37 +188,42 @@ export class Command extends StatelessComponent<CommandProps> {
           />
         </div>
         <div role="listbox" class={this.$s.$list}>
-          {() =>
-            state.filtered.length === 0 ? (
-              <p class={this.$s.$empty}>{emptyText}</p>
-            ) : (
-              state.groups.map((group) => (
-                <div key={group.group ?? "_"} class={this.$s.$group}>
-                  {group.group && <div class={this.$s.$groupLabel}>{group.group}</div>}
-                  {group.items.map((item) => (
-                    <div
-                      key={item.value}
-                      role="option"
-                      aria-selected={state.isActive(item) ? ("true" as const) : ("false" as const)}
-                      aria-disabled={item.disabled ? ("true" as const) : undefined}
-                      data-active={state.isActive(item) ? "" : undefined}
-                      data-disabled={item.disabled ? "" : undefined}
-                      class={this.$s.$item}
-                      onMouseEnter={() => { state.setActive(item); }}
-                      onClick={() => {
-                        if (!item.disabled) {
-                          item.onSelect?.();
-                          state.onSelect?.(item);
-                        }
-                      }}
-                    >
-                      {item.label}
-                    </div>
-                  ))}
+          <For
+            each={() => state.groups}
+            by={(group) => group.group ?? "_"}
+            fallback={<p class={this.$s.$empty}>{emptyText}</p>}
+          >
+            {(group) => {
+              const label = group().group;
+              return (
+                <div class={this.$s.$group}>
+                  {label && <div class={this.$s.$groupLabel}>{label}</div>}
+                  <For each={() => group().items} by="value">
+                    {(item) => (
+                      <div
+                        role="option"
+                        aria-selected={() => (state.isActive(item()) ? ("true" as const) : ("false" as const))}
+                        aria-disabled={() => (item().disabled ? ("true" as const) : undefined)}
+                        data-active={() => (state.isActive(item()) ? "" : undefined)}
+                        data-disabled={() => (item().disabled ? "" : undefined)}
+                        class={this.$s.$item}
+                        onMouseEnter={() => { state.setActive(item()); }}
+                        onClick={() => {
+                          const current = item();
+                          if (!current.disabled) {
+                            current.onSelect?.();
+                            state.onSelect?.(current);
+                          }
+                        }}
+                      >
+                        {() => item().label}
+                      </div>
+                    )}
+                  </For>
                 </div>
-              ))
-            )
-          }
+              );
+            }}
+          </For>
         </div>
       </div>
     );

@@ -1,5 +1,6 @@
 import { StatefulComponent, StatelessComponent } from "@praxisjs/core";
 import { Component, FunctionProp, Prop, Ref, State, type Ref as RefType } from "@praxisjs/decorators";
+import { Index } from "@praxisjs/runtime";
 import type { Children } from "@praxisjs/shared";
 
 import { Icon } from "@morphos/icons";
@@ -246,13 +247,13 @@ export class ReelProgress extends StatelessComponent<ReelProgressProps> {
     const { state, class: cls } = this.props;
     return (
       <div data-slot="reel-progress" class={cn("absolute inset-x-0 top-0 z-20 flex gap-1 p-2", cls)}>
-        {() =>
-          state.items.map((item, index) => (
-            <div key={item.id} class="h-0.5 flex-1 overflow-hidden rounded-full bg-white/30">
-              <div class="h-full bg-white" style={{ width: `${String(segmentPercent(state, index))}%` }} />
+        <Index each={() => state.items}>
+          {(_item, index) => (
+            <div class="h-0.5 flex-1 overflow-hidden rounded-full bg-white/30">
+              <div class="h-full bg-white" style={() => ({ width: `${String(segmentPercent(state, index))}%` })} />
             </div>
-          ))
-        }
+          )}
+        </Index>
       </div>
     );
   }

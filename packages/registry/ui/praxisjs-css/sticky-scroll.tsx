@@ -1,6 +1,6 @@
 import { StatefulComponent } from "@praxisjs/core";
 import { cx, Stylesheet, Styled, tokenVars } from "@praxisjs/css";
-import { Component, Prop, Ref, State, type Ref as RefType } from "@praxisjs/decorators";
+import { Component, Prop, Ref, Selector, State, type Ref as RefType } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
 import { KosmesisTokens } from "@/lib/kosmesis-theme";
@@ -75,6 +75,7 @@ export class StickyScroll extends StatefulComponent {
   containerRef!: RefType<HTMLDivElement>;
 
   @State() _activeIndex = 0;
+  @Selector("_activeIndex") _isActive!: Selector<number>;
 
   private _observer?: IntersectionObserver;
 
@@ -114,7 +115,7 @@ export class StickyScroll extends StatefulComponent {
         </div>
         <div class={this.$s.$panel}>
           {this.items.map((item, i) => (
-            <div key={item.id} data-active={() => (this._activeIndex === i ? "" : undefined)} class={this.$s.$panelItem}>
+            <div key={item.id} data-active={() => (this._isActive(i) ? "" : undefined)} class={this.$s.$panelItem}>
               {item.content ?? item.title}
             </div>
           ))}

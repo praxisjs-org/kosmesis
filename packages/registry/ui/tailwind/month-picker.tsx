@@ -1,5 +1,6 @@
 import { StatefulComponent, StatelessComponent } from "@praxisjs/core";
 import { Component, Emit, FunctionProp, Prop, State } from "@praxisjs/decorators";
+import { Index } from "@praxisjs/runtime";
 
 import { Icon } from "@morphos/icons";
 import { type Popover, PopoverTrigger } from "@morphos/overlays";
@@ -191,15 +192,14 @@ export class MonthPickerPanel extends StatelessComponent<MonthPickerPanelProps> 
         </div>
 
         <div class="grid grid-cols-3 gap-1">
-          {() =>
-            state.monthLabels.map((label, month) => (
+          <Index each={() => state.monthLabels}>
+            {(label, month) => (
               <button
-                key={label}
                 type="button"
-                disabled={state.isDisabled(month)}
-                data-selected={state.isSelected(month) ? "" : undefined}
-                data-today={state.isCurrent(month) ? "" : undefined}
-                data-range-middle={state.isInRange(month) ? "" : undefined}
+                disabled={() => state.isDisabled(month)}
+                data-selected={() => (state.isSelected(month) ? "" : undefined)}
+                data-today={() => (state.isCurrent(month) ? "" : undefined)}
+                data-range-middle={() => (state.isInRange(month) ? "" : undefined)}
                 class={cn(
                   "flex h-9 w-16 items-center justify-center rounded-md p-0 text-sm font-normal capitalize text-foreground",
                   "hover:bg-accent hover:text-accent-foreground",
@@ -210,10 +210,10 @@ export class MonthPickerPanel extends StatelessComponent<MonthPickerPanelProps> 
                 )}
                 onClick={() => { state.pick(month); }}
               >
-                {label}
+                {() => label()}
               </button>
-            ))
-          }
+            )}
+          </Index>
         </div>
       </div>
     );

@@ -1,6 +1,7 @@
 import { StatefulComponent } from "@praxisjs/core";
 import { cx, Stylesheet, Styled, tokenVars } from "@praxisjs/css";
-import { Component, Emit, FunctionProp, Prop, State } from "@praxisjs/decorators";
+import { Component, Emit, FunctionProp, Prop, Selector, State } from "@praxisjs/decorators";
+import { For } from "@praxisjs/runtime";
 
 import { Icon } from "@morphos/icons";
 
@@ -86,8 +87,8 @@ function lineOffset(level: number): number {
 }
 
 /**
- * `_expandedIds` is a plain field, not `@State()` — the whole tree renders inside one reactive
- * thunk, and an `@State` read there would rebuild every node on toggle, killing the CSS expand
+ * `_expandedIds` is a plain field, not `@State()` — each row renders inside a reactive thunk, and
+ * an `@State` read there would rebuild the row's whole subtree on toggle, killing the CSS expand
  * transition and resetting manually expanded folders. Toggling writes straight to the DOM instead.
  */
 @Component()
@@ -103,6 +104,7 @@ export class TreeView extends StatefulComponent {
   @FunctionProp() onSelect?: TreeViewProps["onSelect"];
 
   @State() _selected: string | undefined = undefined;
+  @Selector("selectedId") _isSelected!: Selector<string>;
 
   private _expandedIds = new Set<string>();
 
@@ -158,83 +160,87 @@ export class TreeView extends StatefulComponent {
     this.select(node.id);
   };
 
-  private renderNodes(nodes: TreeNode[], depth: number, parentPath: boolean[] = []) {
-    return nodes.map((node, index) => {
-      const hasChildren = (node.children?.length ?? 0) > 0;
-      const expanded = this._expandedIds.has(node.id);
-      const isSelected = this.selectedId === node.id;
-      const isLast = index === nodes.length - 1;
+  private renderNodes(nodes: () => TreeNode[], depth: number, parentPath: boolean[] = []) {
+    return (
+      <For each={nodes} by="id">
+        {(item, index) => () => {
+          const node = item();
+          const hasChildren = (node.children?.length ?? 0) > 0;
+          const expanded = this._expandedIds.has(node.id);
+          const isLast = index() === nodes().length - 1;
 
-      return (
-        <li key={node.id}>
-          <div
-            data-slot="tree-row"
-            data-node-id={node.id}
-            role="treeitem"
-            aria-expanded={hasChildren ? expanded : undefined}
-            aria-selected={isSelected}
-            data-selected={isSelected ? "" : undefined}
-            class={this.$s.$row}
-            style={{ paddingLeft: `${String(depth * 20 + 6)}px` }}
-            onClick={(event: MouseEvent) => { this._handleRowClick(event, node); }}
-          >
-            {this.showLines && depth > 0 && (
-              <div aria-hidden class={this.$s.$lines}>
-                {parentPath.slice(0, depth - 1).map(
-                  (ancestorIsLast, level) =>
-                    !ancestorIsLast && <span key={level} class={this.$s.$lineVertical} style={{ left: `${String(lineOffset(level))}px` }} />,
+          return (
+            <li>
+              <div
+                data-slot="tree-row"
+                data-node-id={node.id}
+                role="treeitem"
+                aria-expanded={hasChildren ? expanded : undefined}
+                aria-selected={() => this._isSelected(node.id)}
+                data-selected={() => (this._isSelected(node.id) ? "" : undefined)}
+                class={this.$s.$row}
+                style={{ paddingLeft: `${String(depth * 20 + 6)}px` }}
+                onClick={(event: MouseEvent) => { this._handleRowClick(event, node); }}
+              >
+                {this.showLines && depth > 0 && (
+                  <div aria-hidden class={this.$s.$lines}>
+                    {parentPath.slice(0, depth - 1).map(
+                      (ancestorIsLast, level) =>
+                        !ancestorIsLast && <span key={level} class={this.$s.$lineVertical} style={{ left: `${String(lineOffset(level))}px` }} />,
+                    )}
+                    <span class={this.$s.$lineHorizontal} style={{ left: `${String(lineOffset(depth - 1))}px` }} />
+                    <span class={this.$s.$lineElbow} style={{ left: `${String(lineOffset(depth - 1))}px`, height: isLast ? "50%" : "100%" }} />
+                  </div>
                 )}
-                <span class={this.$s.$lineHorizontal} style={{ left: `${String(lineOffset(depth - 1))}px` }} />
-                <span class={this.$s.$lineElbow} style={{ left: `${String(lineOffset(depth - 1))}px`, height: isLast ? "50%" : "100%" }} />
-              </div>
-            )}
 
-            {hasChildren ? (
-              <button type="button" data-slot="tree-toggle" aria-label={expanded ? "Collapse" : "Expand"} class={this.$s.$toggle} onClick={this._handleToggleClick}>
-                <span data-slot="tree-chevron" class={this.$s.$chevron} style={{ transform: expanded ? "rotate(90deg)" : "rotate(0deg)" }}>
-                  <Icon name="ChevronRight" size={14} />
+                {hasChildren ? (
+                  <button type="button" data-slot="tree-toggle" aria-label={expanded ? "Collapse" : "Expand"} class={this.$s.$toggle} onClick={this._handleToggleClick}>
+                    <span data-slot="tree-chevron" class={this.$s.$chevron} style={{ transform: expanded ? "rotate(90deg)" : "rotate(0deg)" }}>
+                      <Icon name="ChevronRight" size={14} />
+                    </span>
+                  </button>
+                ) : (
+                  <span class={this.$s.$spacer} />
+                )}
+
+                <span class={this.$s.$iconWrap}>
+                  {node.icon ? (
+                    <Icon name={node.icon} size={15} class={this.$s.$mutedIcon} />
+                  ) : hasChildren ? (
+                    <>
+                      <span data-slot="tree-icon-folder" class={this.$s.$iconLayer} style={{ display: expanded ? "none" : "inline-flex" }}>
+                        <Icon name="Folder" size={15} class={this.$s.$folderIcon} />
+                      </span>
+                      <span data-slot="tree-icon-folder-open" class={this.$s.$iconLayerAbsolute} style={{ display: expanded ? "inline-flex" : "none" }}>
+                        <Icon name="FolderOpen" size={15} class={this.$s.$folderIcon} />
+                      </span>
+                    </>
+                  ) : (
+                    <Icon name="File" size={15} class={this.$s.$mutedIcon} />
+                  )}
                 </span>
-              </button>
-            ) : (
-              <span class={this.$s.$spacer} />
-            )}
 
-            <span class={this.$s.$iconWrap}>
-              {node.icon ? (
-                <Icon name={node.icon} size={15} class={this.$s.$mutedIcon} />
-              ) : hasChildren ? (
-                <>
-                  <span data-slot="tree-icon-folder" class={this.$s.$iconLayer} style={{ display: expanded ? "none" : "inline-flex" }}>
-                    <Icon name="Folder" size={15} class={this.$s.$folderIcon} />
-                  </span>
-                  <span data-slot="tree-icon-folder-open" class={this.$s.$iconLayerAbsolute} style={{ display: expanded ? "inline-flex" : "none" }}>
-                    <Icon name="FolderOpen" size={15} class={this.$s.$folderIcon} />
-                  </span>
-                </>
-              ) : (
-                <Icon name="File" size={15} class={this.$s.$mutedIcon} />
+                <span class={this.$s.$label}>{node.label}</span>
+              </div>
+
+              {hasChildren && (
+                <div class={this.$s.$childrenWrapper} style={{ gridTemplateRows: expanded ? "1fr" : "0fr" }}>
+                  <ul class={this.$s.$childrenList} role="group">
+                    {this.renderNodes(() => node.children ?? [], depth + 1, [...parentPath, isLast])}
+                  </ul>
+                </div>
               )}
-            </span>
-
-            <span class={this.$s.$label}>{node.label}</span>
-          </div>
-
-          {hasChildren && (
-            <div class={this.$s.$childrenWrapper} style={{ gridTemplateRows: expanded ? "1fr" : "0fr" }}>
-              <ul class={this.$s.$childrenList} role="group">
-                {this.renderNodes(node.children ?? [], depth + 1, [...parentPath, isLast])}
-              </ul>
-            </div>
-          )}
-        </li>
-      );
-    });
+            </li>
+          );
+        }}
+      </For>
+    );
   }
 
   render() {
     return (
       <ul id={this.id} role="tree" class={cx(this.$s.$root, this.class)}>
-        {() => this.renderNodes(this.data, 0)}
+        {this.renderNodes(() => this.data, 0)}
       </ul>
     );
   }

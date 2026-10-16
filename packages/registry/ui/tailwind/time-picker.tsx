@@ -1,5 +1,6 @@
 import { StatefulComponent, StatelessComponent } from "@praxisjs/core";
-import { Component, Emit, FunctionProp, Prop, State } from "@praxisjs/decorators";
+import { Component, Emit, FunctionProp, Prop, Selector, State } from "@praxisjs/decorators";
+import { For } from "@praxisjs/runtime";
 
 import { Icon } from "@morphos/icons";
 import { type Popover, PopoverTrigger } from "@morphos/overlays";
@@ -10,6 +11,8 @@ import { PopoverContent } from "./popover";
 import { cn } from "@/lib/utils";
 
 const pad = (n: number): string => String(n).padStart(2, "0");
+
+const PERIODS = ["AM", "PM"] as const;
 
 function range(count: number, step: number, start = 0): number[] {
   return Array.from({ length: Math.ceil(count / step) }, (_, i) => start + i * step);
@@ -33,6 +36,10 @@ export class TimePickerState extends StatefulComponent {
   @FunctionProp() onSelect?: TimePickerStateProps["onSelect"];
 
   @State() _value: string | undefined = undefined;
+  @Selector("_selectedHour") _isHourSelected!: Selector<number>;
+  @Selector("_selectedMinute") _isMinuteSelected!: Selector<number>;
+  @Selector("_selectedSecond") _isSecondSelected!: Selector<number>;
+  @Selector("_selectedPeriod") _isPeriodSelected!: Selector<"AM" | "PM">;
 
   onBeforeMount() {
     this._value = this.selected;
@@ -74,6 +81,22 @@ export class TimePickerState extends StatefulComponent {
     return this.hourCycle === 12 ? this.hours % 12 || 12 : this.hours;
   }
 
+  get _selectedHour(): number | undefined {
+    return this.value === undefined ? undefined : this.displayHour;
+  }
+
+  get _selectedMinute(): number | undefined {
+    return this.value === undefined ? undefined : this.minutes;
+  }
+
+  get _selectedSecond(): number | undefined {
+    return this.value === undefined ? undefined : this.seconds;
+  }
+
+  get _selectedPeriod(): "AM" | "PM" | undefined {
+    return this.value === undefined ? undefined : this.period;
+  }
+
   get formattedValue(): string | undefined {
     if (this.value === undefined) return undefined;
     const seconds = this.showSeconds ? `:${pad(this.seconds)}` : "";
@@ -111,12 +134,6 @@ export class TimePickerState extends StatefulComponent {
   }
 }
 
-interface ColumnOption {
-  label: string;
-  selected: boolean;
-  pick: () => void;
-}
-
 export interface TimePickerPanelProps {
   state: TimePickerState;
   class?: string;
@@ -127,62 +144,46 @@ export class TimePickerPanel extends StatelessComponent<TimePickerPanelProps> {
   render() {
     const { state, class: cls } = this.props;
 
-    const column = (label: string, options: () => ColumnOption[]) => (
+    const column = <T extends number | string>(
+      label: string,
+      options: () => readonly T[],
+      format: (option: T) => string,
+      isSelected: (option: T) => boolean,
+      pick: (option: T) => void,
+    ) => (
       <div role="listbox" aria-label={label} class="flex max-h-72 flex-col gap-1 overflow-y-auto p-1">
-        {() =>
-          options().map((option) => (
-            <button
-              key={option.label}
-              type="button"
-              role="option"
-              aria-selected={option.selected}
-              data-selected={option.selected ? "" : undefined}
-              class={cn(
-                "flex h-8 w-12 items-center justify-center rounded-md p-0 text-sm font-normal text-foreground",
-                "hover:bg-accent hover:text-accent-foreground",
-                "data-selected:bg-primary data-selected:text-primary-foreground data-selected:hover:bg-primary data-selected:hover:text-primary-foreground",
-              )}
-              onClick={option.pick}
-            >
-              {option.label}
-            </button>
-          ))
-        }
+        <For each={options}>
+          {(option) => {
+            const value = option();
+            return (
+              <button
+                type="button"
+                role="option"
+                aria-selected={() => isSelected(value)}
+                data-selected={() => (isSelected(value) ? "" : undefined)}
+                class={cn(
+                  "flex h-8 w-12 items-center justify-center rounded-md p-0 text-sm font-normal text-foreground",
+                  "hover:bg-accent hover:text-accent-foreground",
+                  "data-selected:bg-primary data-selected:text-primary-foreground data-selected:hover:bg-primary data-selected:hover:text-primary-foreground",
+                )}
+                onClick={() => { pick(value); }}
+              >
+                {format(value)}
+              </button>
+            );
+          }}
+        </For>
       </div>
     );
 
     return (
       <div class={cn("flex w-fit divide-x rounded-md border bg-background p-1", cls)}>
-        {column("Hours", () =>
-          state.hourOptions.map((h) => ({
-            label: pad(h),
-            selected: state.value !== undefined && state.displayHour === h,
-            pick: () => { state.setHour(h); },
-          })),
-        )}
-        {column("Minutes", () =>
-          state.minuteOptions.map((m) => ({
-            label: pad(m),
-            selected: state.value !== undefined && state.minutes === m,
-            pick: () => { state.setMinute(m); },
-          })),
-        )}
+        {column("Hours", () => state.hourOptions, pad, (h) => state._isHourSelected(h), (h) => { state.setHour(h); })}
+        {column("Minutes", () => state.minuteOptions, pad, (m) => state._isMinuteSelected(m), (m) => { state.setMinute(m); })}
         {state.showSeconds &&
-          column("Seconds", () =>
-            state.secondOptions.map((s) => ({
-              label: pad(s),
-              selected: state.value !== undefined && state.seconds === s,
-              pick: () => { state.setSecond(s); },
-            })),
-          )}
+          column("Seconds", () => state.secondOptions, pad, (s) => state._isSecondSelected(s), (s) => { state.setSecond(s); })}
         {state.hourCycle === 12 &&
-          column("Period", () =>
-            (["AM", "PM"] as const).map((p) => ({
-              label: p,
-              selected: state.value !== undefined && state.period === p,
-              pick: () => { state.setPeriod(p); },
-            })),
-          )}
+          column("Period", () => PERIODS, (p) => p, (p) => state._isPeriodSelected(p), (p) => { state.setPeriod(p); })}
       </div>
     );
   }

@@ -1,5 +1,5 @@
 import { StatefulComponent } from "@praxisjs/core";
-import { Component, Prop, State } from "@praxisjs/decorators";
+import { Component, Prop, Selector, State } from "@praxisjs/decorators";
 
 import { cn } from "@/lib/utils";
 
@@ -17,6 +17,7 @@ export class ProductGallery extends StatefulComponent {
   @Prop() class?: string;
 
   @State() _index = 0;
+  @Selector("_index") _isActive!: Selector<number>;
 
   select(index: number): void {
     this._index = index;
@@ -35,7 +36,7 @@ export class ProductGallery extends StatefulComponent {
                 key={src}
                 type="button"
                 aria-label={`Show image ${String(i + 1)}`}
-                data-active={() => (this._index === i ? "" : undefined)}
+                data-active={() => (this._isActive(i) ? "" : undefined)}
                 class="size-14 shrink-0 overflow-hidden rounded-lg border-2 border-transparent opacity-70 transition-opacity data-[active]:border-primary data-[active]:opacity-100"
                 onClick={() => { this.select(i); }}
               >

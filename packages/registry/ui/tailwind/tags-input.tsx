@@ -1,5 +1,6 @@
 import { StatefulComponent } from "@praxisjs/core";
 import { Component, Emit, FunctionProp, Prop, Ref, State, type Ref as RefType } from "@praxisjs/decorators";
+import { For } from "@praxisjs/runtime";
 
 import { Icon } from "@morphos/icons";
 
@@ -91,28 +92,27 @@ export class TagsInput extends StatefulComponent {
         )}
         onClick={() => { this.inputRef.current?.focus(); }}
       >
-        {() =>
-          this.tags.map((tag) => (
+        <For each={() => this.tags}>
+          {(tag) => (
             <span
-              key={tag}
               class="inline-flex items-center gap-1 rounded-sm bg-secondary px-1.5 py-0.5 text-xs font-medium text-secondary-foreground"
             >
-              {tag}
+              {tag()}
               <button
                 type="button"
-                aria-label={`Remove ${tag}`}
-                disabled={this.disabled}
+                aria-label={`Remove ${tag()}`}
+                disabled={() => this.disabled}
                 class="rounded-xs text-secondary-foreground/60 hover:text-secondary-foreground disabled:pointer-events-none"
                 onClick={(event: MouseEvent) => {
                   event.stopPropagation();
-                  this.removeTag(tag);
+                  this.removeTag(tag());
                 }}
               >
                 <Icon name="X" size={12} />
               </button>
             </span>
-          ))
-        }
+          )}
+        </For>
         <input
           ref={this.inputRef}
           value={() => this._draft}

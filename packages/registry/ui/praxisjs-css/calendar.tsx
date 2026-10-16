@@ -1,6 +1,7 @@
 import { StatefulComponent, StatelessComponent } from "@praxisjs/core";
 import { cx, Stylesheet, Styled, tokenVars } from "@praxisjs/css";
 import { Component, Emit, FunctionProp, Prop, State } from "@praxisjs/decorators";
+import { For } from "@praxisjs/runtime";
 
 import { Icon } from "@morphos/icons";
 
@@ -255,23 +256,25 @@ export class Calendar extends StatelessComponent<CalendarProps> {
         </div>
 
         <div class={this.$s.$grid}>
-          {() =>
-            state.grid.map(({ date, inMonth }) => (
-              <button
-                key={date.toISOString()}
-                type="button"
-                disabled={state.isDisabled(date)}
-                data-selected={state.isSelected(date) ? "" : undefined}
-                data-today={state.isToday(date) ? "" : undefined}
-                data-range-middle={state.isInRange(date) ? "" : undefined}
-                data-outside-month={!inMonth ? "" : undefined}
-                class={this.$s.$day}
-                onClick={() => { state.pick(date); }}
-              >
-                {date.getDate()}
-              </button>
-            ))
-          }
+          <For each={() => state.grid} by={(cell) => cell.date.toISOString()}>
+            {(cell) => {
+              const { date } = cell();
+              return (
+                <button
+                  type="button"
+                  disabled={() => state.isDisabled(date)}
+                  data-selected={() => (state.isSelected(date) ? "" : undefined)}
+                  data-today={() => (state.isToday(date) ? "" : undefined)}
+                  data-range-middle={() => (state.isInRange(date) ? "" : undefined)}
+                  data-outside-month={() => (!cell().inMonth ? "" : undefined)}
+                  class={this.$s.$day}
+                  onClick={() => { state.pick(date); }}
+                >
+                  {date.getDate()}
+                </button>
+              );
+            }}
+          </For>
         </div>
       </div>
     );

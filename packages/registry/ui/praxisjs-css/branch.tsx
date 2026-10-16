@@ -1,6 +1,6 @@
 import { StatefulComponent } from "@praxisjs/core";
 import { cx, Stylesheet, Styled, tokenVars } from "@praxisjs/css";
-import { Component, Prop, State } from "@praxisjs/decorators";
+import { Component, Prop, Selector, State } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
 import { Icon } from "@morphos/icons";
@@ -37,6 +37,7 @@ export class Branch extends StatefulComponent {
   @Prop() class?: string;
 
   @State() _index = 0;
+  @Selector("_index") _isActive!: Selector<number>;
 
   prev(): void {
     this._index = Math.max(0, this._index - 1);
@@ -51,7 +52,7 @@ export class Branch extends StatefulComponent {
       <div data-slot="branch" class={cx(this.$s.$root, this.class)}>
         <div>
           {this.branches.map((branch, i) => (
-            <div key={i} data-active={() => (this._index === i ? "" : undefined)} class={this.$s.$branch}>
+            <div key={i} data-active={() => (this._isActive(i) ? "" : undefined)} class={this.$s.$branch}>
               {branch}
             </div>
           ))}

@@ -2,6 +2,7 @@ import { FilePreview, formatFileSize, type FileError } from "@praxisjs/composabl
 import { StatefulComponent, StatelessComponent } from "@praxisjs/core";
 import { cx, Stylesheet, Styled, tokenVars } from "@praxisjs/css";
 import { Component, Compose, getter, Prop } from "@praxisjs/decorators";
+import { For } from "@praxisjs/runtime";
 
 import { Icon } from "@morphos/icons";
 
@@ -131,20 +132,20 @@ export class FileList extends StatelessComponent<FileListProps> {
 
     return (
       <ul class={cx(this.$s.$list, cls)}>
-        {() =>
-          source.files.map((file) => (
-            <li key={`${file.name}-${String(file.lastModified)}-${String(file.size)}`} class={this.$s.$row}>
-              <FileThumbnail file={file} />
+        <For each={() => source.files} by={(file) => `${file.name}-${String(file.lastModified)}-${String(file.size)}`}>
+          {(file) => (
+            <li class={this.$s.$row}>
+              <FileThumbnail file={file()} />
               <div class={this.$s.$meta}>
-                <p class={this.$s.$name}>{file.name}</p>
-                <p class={this.$s.$size}>{formatFileSize(file.size)}</p>
+                <p class={this.$s.$name}>{file().name}</p>
+                <p class={this.$s.$size}>{formatFileSize(file().size)}</p>
               </div>
-              <button type="button" aria-label={`Remove ${file.name}`} class={this.$s.$removeButton} onClick={() => { source.remove(file); }}>
+              <button type="button" aria-label={`Remove ${file().name}`} class={this.$s.$removeButton} onClick={() => { source.remove(file()); }}>
                 <Icon name="X" size={14} />
               </button>
             </li>
-          ))
-        }
+          )}
+        </For>
       </ul>
     );
   }
@@ -164,16 +165,16 @@ export class FileThumbnailGrid extends StatelessComponent<FileThumbnailGridProps
 
     return (
       <ul class={cx(this.$s.$grid, cls)}>
-        {() =>
-          source.files.map((file) => (
-            <li key={`${file.name}-${String(file.lastModified)}-${String(file.size)}`} class={this.$s.$cell}>
-              <FileThumbnail file={file} class={this.$s.$thumbFill} />
-              <button type="button" aria-label={`Remove ${file.name}`} class={this.$s.$overlayRemove} onClick={() => { source.remove(file); }}>
+        <For each={() => source.files} by={(file) => `${file.name}-${String(file.lastModified)}-${String(file.size)}`}>
+          {(file) => (
+            <li class={this.$s.$cell}>
+              <FileThumbnail file={file()} class={this.$s.$thumbFill} />
+              <button type="button" aria-label={`Remove ${file().name}`} class={this.$s.$overlayRemove} onClick={() => { source.remove(file()); }}>
                 <Icon name="X" size={12} />
               </button>
             </li>
-          ))
-        }
+          )}
+        </For>
       </ul>
     );
   }
@@ -193,7 +194,9 @@ export class FileErrors extends StatelessComponent<FileErrorsProps> {
 
     return (
       <ul role="alert" class={cx(this.$s.$errors, cls)}>
-        {() => source.errors.map((error) => <li key={error.message}>{error.message}</li>)}
+        <For each={() => source.errors} by="message">
+          {(error) => <li>{error().message}</li>}
+        </For>
       </ul>
     );
   }

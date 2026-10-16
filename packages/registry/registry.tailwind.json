@@ -863,7 +863,7 @@
     },
     {
       "name": "sonner",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "registry:ui",
       "title": "Sonner",
       "description": "An auto-dismissing notification queue with a global toast() helper, wrapping Morphos's ToastProvider.",
@@ -881,7 +881,7 @@
     },
     {
       "name": "calendar",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "registry:ui",
       "title": "Calendar",
       "description": "A month-grid date picker (single date or range) with real date math. Purely presentational — no Morphos equivalent.",
@@ -920,7 +920,7 @@
     },
     {
       "name": "time-picker",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "registry:ui",
       "title": "Time Picker",
       "description": "A Popover + scrollable hour/minute/second columns composition for picking a time or a time range. Purely presentational — no Morphos equivalent.",
@@ -941,7 +941,7 @@
     },
     {
       "name": "month-picker",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "registry:ui",
       "title": "Month Picker",
       "description": "A Popover + year-navigable month grid composition for picking a month. Purely presentational — no Morphos equivalent.",
@@ -1038,7 +1038,7 @@
     },
     {
       "name": "file-list",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "registry:ui",
       "title": "File List",
       "description": "Selected-file list, thumbnail grid and validation errors, with image previews via the FilePreview composable.",
@@ -1056,7 +1056,7 @@
     },
     {
       "name": "file-upload-list",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "registry:ui",
       "title": "File Upload List",
       "description": "Per-file upload rows with progress, cancel, retry and remove, plus an overall summary bar, driven by the FileUpload composable.",
@@ -1115,7 +1115,7 @@
     },
     {
       "name": "command",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "registry:ui",
       "title": "Command",
       "description": "A cmdk-style, always-filtered command list, with a CommandDialog composition over Morphos's Dialog.",
@@ -1139,7 +1139,7 @@
     },
     {
       "name": "data-table",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "registry:ui",
       "title": "Data Table",
       "description": "A sortable, paginated data table composing Table with a lightweight table-model helper (no external table library).",
@@ -1161,7 +1161,7 @@
     },
     {
       "name": "gantt-chart",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "registry:ui",
       "title": "Gantt Chart",
       "description": "A customizable, animated project timeline with draggable/resizable task bars, day/week/month views, dependency connectors, and milestones. Purely presentational + date math — no Morphos equivalent.",
@@ -1196,7 +1196,7 @@
     },
     {
       "name": "reel",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "registry:ui",
       "title": "Reel",
       "description": "A full-height, story-style video/image viewer with segmented progress bars. Purely presentational — no Morphos equivalent.",
@@ -1546,7 +1546,7 @@
     },
     {
       "name": "tags-input",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "registry:ui",
       "title": "Tags Input",
       "description": "A free-text chip input — type + Enter/comma to add, Backspace to remove the last. Purely presentational — no Morphos equivalent.",
@@ -1698,7 +1698,7 @@
     },
     {
       "name": "tree-view",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "registry:ui",
       "title": "Tree View",
       "description": "A recursive expand/collapse/select tree. Purely presentational — no Morphos equivalent.",
@@ -1835,7 +1835,7 @@
     },
     {
       "name": "sticky-scroll",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "registry:ui",
       "title": "Sticky Scroll",
       "description": "A two-column scroll-linked reveal with a sticky synced panel. Purely presentational — no Morphos equivalent.",
@@ -2195,7 +2195,7 @@
     },
     {
       "name": "branch",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "registry:ui",
       "title": "Branch",
       "description": "Navigable alternate responses (regenerations) for one AI turn. Purely presentational — no Morphos equivalent.",
@@ -2558,7 +2558,7 @@
     },
     {
       "name": "product-gallery",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "registry:ui",
       "title": "Product Gallery",
       "description": "A main-image + thumbnail-strip product gallery. Purely presentational — no Morphos equivalent.",

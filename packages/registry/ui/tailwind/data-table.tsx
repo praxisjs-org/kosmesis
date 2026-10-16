@@ -1,5 +1,6 @@
 import { StatefulComponent, StatelessComponent } from "@praxisjs/core";
 import { Component, Prop, State } from "@praxisjs/decorators";
+import { For } from "@praxisjs/runtime";
 import type { Children } from "@praxisjs/shared";
 
 import { Icon } from "@morphos/icons";
@@ -132,30 +133,38 @@ export class DataTable<T> extends StatelessComponent<DataTableProps<T>> {
                 }}
               >
                 {column.header}
-                {column.sortable && state.sortKey === column.key && (
-                  <Icon
-                    name={state.sortDirection === "asc" ? "ArrowUp" : "ArrowDown"}
-                    size={12}
-                    class="ml-1 inline-block align-text-bottom"
-                  />
-                )}
+                {() =>
+                  column.sortable &&
+                  state.sortKey === column.key && (
+                    <Icon
+                      name={state.sortDirection === "asc" ? "ArrowUp" : "ArrowDown"}
+                      size={12}
+                      class="ml-1 inline-block align-text-bottom"
+                    />
+                  )
+                }
               </TableHead>
             ))}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {state.rows.map((row) => (
-            <TableRow key={getRowKey(row)}>
-              {state.columns.map((column) => (
-                <TableCell
-                  key={column.key}
-                  class={cn(column.align === "right" && "text-right", column.align === "center" && "text-center")}
-                >
-                  {column.cell ? column.cell(row) : formatCellValue((row as Record<string, unknown>)[column.key])}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
+          <For each={() => state.rows} by={getRowKey}>
+            {(item) => () => {
+              const row = item();
+              return (
+                <TableRow>
+                  {state.columns.map((column) => (
+                    <TableCell
+                      key={column.key}
+                      class={cn(column.align === "right" && "text-right", column.align === "center" && "text-center")}
+                    >
+                      {column.cell ? column.cell(row) : formatCellValue((row as Record<string, unknown>)[column.key])}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              );
+            }}
+          </For>
         </TableBody>
       </UiTable>
     );

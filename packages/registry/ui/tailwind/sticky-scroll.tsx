@@ -1,5 +1,5 @@
 import { StatefulComponent } from "@praxisjs/core";
-import { Component, Prop, Ref, State, type Ref as RefType } from "@praxisjs/decorators";
+import { Component, Prop, Ref, Selector, State, type Ref as RefType } from "@praxisjs/decorators";
 import type { Children } from "@praxisjs/shared";
 
 import { cn } from "@/lib/utils";
@@ -42,6 +42,7 @@ export class StickyScroll extends StatefulComponent {
   containerRef!: RefType<HTMLDivElement>;
 
   @State() _activeIndex = 0;
+  @Selector("_activeIndex") _isActive!: Selector<number>;
 
   private _observer?: IntersectionObserver;
 
@@ -81,7 +82,7 @@ export class StickyScroll extends StatefulComponent {
         </div>
         <div class="sticky top-24 hidden h-fit rounded-xl border bg-card p-6 text-card-foreground md:block">
           {this.items.map((item, i) => (
-            <div key={item.id} data-active={() => (this._activeIndex === i ? "" : undefined)} class="hidden data-[active]:block">
+            <div key={item.id} data-active={() => (this._isActive(i) ? "" : undefined)} class="hidden data-[active]:block">
               {item.content ?? item.title}
             </div>
           ))}

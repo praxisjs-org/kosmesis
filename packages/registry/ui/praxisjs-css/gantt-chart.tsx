@@ -1,6 +1,7 @@
 import { StatefulComponent } from "@praxisjs/core";
 import { cx, keyframes, Stylesheet, Styled, tokenVars } from "@praxisjs/css";
-import { Component, FunctionProp, Prop, Ref, State, type Ref as RefType } from "@praxisjs/decorators";
+import { Component, Computed, FunctionProp, Prop, Ref, State, type Ref as RefType } from "@praxisjs/decorators";
+import { For } from "@praxisjs/runtime";
 
 import { KosmesisTokens } from "@/lib/kosmesis-theme";
 
@@ -301,6 +302,11 @@ interface GanttColumn {
   isWeekend: boolean;
 }
 
+interface GanttBar {
+  task: GanttTask;
+  index: number;
+}
+
 interface GanttDependencyLine {
   key: string;
   d: string;
@@ -508,6 +514,20 @@ export class GanttChart extends StatefulComponent {
     return rows;
   }
 
+  private get _bars(): GanttBar[] {
+    return this.rows.flatMap((row, index) => (row.kind === "task" ? [{ task: row.task, index }] : []));
+  }
+
+  @Computed()
+  private get _hasTasks(): boolean {
+    return this.tasks.length > 0;
+  }
+
+  @Computed()
+  private get _hasDependencyLines(): boolean {
+    return this.dependencyLines.length > 0;
+  }
+
   barGeometry(task: GanttTask): { left: number; width: number } {
     const left = this.xForDate(task.start);
     const right = this.xForDate(addDays(task.end, 1));
@@ -686,183 +706,201 @@ export class GanttChart extends StatefulComponent {
         )}
 
         <div ref={this.scrollRef} class={this.$s.$scrollArea} style={() => (this.height !== undefined ? { maxHeight: `${String(this.height)}px` } : undefined)}>
-          {() => {
-            const rows = this.rows;
-            if (rows.length === 0) {
-              return <div class={this.$s.$empty}>No tasks to display.</div>;
+          {() => (this._hasTasks ? this.renderChart() : <div class={this.$s.$empty}>No tasks to display.</div>)}
+        </div>
+      </div>
+    );
+  }
+
+  private renderChart() {
+    return (
+      <div class={this.$s.$inner} style={() => ({ width: `${String(this.sidebarWidth + this.totalWidth)}px`, minWidth: "100%" })}>
+        <div class={this.$s.$headerRow}>
+          <div class={this.$s.$corner} style={() => ({ width: `${String(this.sidebarWidth)}px`, height: `${String(HEADER_HEIGHT)}px` })}>
+            Tasks
+          </div>
+          <div class={this.$s.$headerCells} style={() => ({ width: `${String(this.totalWidth)}px`, height: `${String(HEADER_HEIGHT)}px` })}>
+            <For each={() => this.columns} by="key">
+              {(col) => (
+                <div class={() => cx(this.$s.$headerCell, col().isWeekend && this.$s.$headerCellWeekend)} style={() => ({ width: `${String(col().width)}px` })}>
+                  {() => {
+                    const { sublabel } = col();
+                    return sublabel && <span class={this.$s.$headerSublabel}>{sublabel}</span>;
+                  }}
+                  <span class={this.$s.$headerLabel}>{() => col().label}</span>
+                </div>
+              )}
+            </For>
+          </div>
+        </div>
+
+        <div class={this.$s.$bodyRow}>
+          <div class={this.$s.$sidebarCol} style={() => ({ width: `${String(this.sidebarWidth)}px` })}>
+            <For each={() => this.rows} by="key">
+              {(item) => () => {
+                const row = item();
+                return row.kind === "group" ? (
+                  <div class={this.$s.$groupRow} style={{ height: `${String(this.rowHeight)}px` }}>
+                    {row.label}
+                  </div>
+                ) : (
+                  <div class={this.$s.$taskRowLabel} style={{ height: `${String(this.rowHeight)}px` }} title={row.task.name}>
+                    <span class={this.$s.$taskRowLabelText}>{row.task.name}</span>
+                  </div>
+                );
+              }}
+            </For>
+          </div>
+
+          <div class={this.$s.$timelineCol} style={() => ({ width: `${String(this.totalWidth)}px`, height: `${String(this.rows.length * this.rowHeight)}px` })}>
+            <For each={() => (this.effectiveViewMode === "day" && this.showWeekends ? this.columns.filter((c) => c.isWeekend) : [])} by="key">
+              {(col) => <div class={this.$s.$weekendTint} style={() => ({ left: `${String(col().x)}px`, width: `${String(col().width)}px` })} />}
+            </For>
+
+            <For each={() => this.rows} by="key">
+              {(row, index) => (
+                <div
+                  class={cx(this.$s.$rowBg, row().kind === "group" && this.$s.$rowBgGroup)}
+                  style={() => ({ top: `${String(index() * this.rowHeight)}px`, height: `${String(this.rowHeight)}px` })}
+                />
+              )}
+            </For>
+
+            {() =>
+              this._hasDependencyLines && (
+                <svg
+                  style={{ pointerEvents: "none", position: "absolute", inset: 0, overflow: "visible" }}
+                  width={() => this.totalWidth}
+                  height={() => this.rows.length * this.rowHeight}
+                >
+                  <defs>
+                    {/* Fixed marker id — safe if multiple GanttChart instances render at once since every instance's arrow def is identical. */}
+                    <marker id="kosmesis-gantt-arrow" markerWidth={8} markerHeight={8} refX={6} refY={3} orient="auto">
+                      <path d="M0,0 L6,3 L0,6 Z" fill={t.mutedForeground} />
+                    </marker>
+                  </defs>
+                  <For each={() => this.dependencyLines} by="key">
+                    {(line) => (
+                      <path
+                        d={() => line().d}
+                        fill="none"
+                        stroke={`color-mix(in oklab, ${t.mutedForeground} 70%, transparent)`}
+                        stroke-width={1.5}
+                        stroke-linecap="round"
+                        marker-end="url(#kosmesis-gantt-arrow)"
+                      />
+                    )}
+                  </For>
+                </svg>
+              )
             }
 
-            const columns = this.columns;
-            const totalWidth = this.totalWidth;
-            const bodyHeight = rows.length * this.rowHeight;
-            const todayX = this.xForDate(startOfDay(new Date()));
-            const showTodayLine = this.showToday && todayX >= 0 && todayX <= totalWidth;
-
-            return (
-              <div class={this.$s.$inner} style={{ width: `${String(this.sidebarWidth + totalWidth)}px`, minWidth: "100%" }}>
-                <div class={this.$s.$headerRow}>
-                  <div class={this.$s.$corner} style={{ width: `${String(this.sidebarWidth)}px`, height: `${String(HEADER_HEIGHT)}px` }}>
-                    Tasks
+            {() => {
+              const todayX = this.xForDate(startOfDay(new Date()));
+              return (
+                this.showToday &&
+                todayX >= 0 &&
+                todayX <= this.totalWidth && (
+                  <div class={this.$s.$todayLine} style={{ left: `${String(todayX)}px` }}>
+                    <span class={this.$s.$todayDot} />
                   </div>
-                  <div class={this.$s.$headerCells} style={{ width: `${String(totalWidth)}px`, height: `${String(HEADER_HEIGHT)}px` }}>
-                    {columns.map((col) => (
-                      <div key={col.key} class={cx(this.$s.$headerCell, col.isWeekend && this.$s.$headerCellWeekend)} style={{ width: `${String(col.width)}px` }}>
-                        {col.sublabel && <span class={this.$s.$headerSublabel}>{col.sublabel}</span>}
-                        <span class={this.$s.$headerLabel}>{col.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                )
+              );
+            }}
 
-                <div class={this.$s.$bodyRow}>
-                  <div class={this.$s.$sidebarCol} style={{ width: `${String(this.sidebarWidth)}px` }}>
-                    {rows.map((row) =>
-                      row.kind === "group" ? (
-                        <div key={row.key} class={this.$s.$groupRow} style={{ height: `${String(this.rowHeight)}px` }}>
-                          {row.label}
-                        </div>
-                      ) : (
-                        <div key={row.key} class={this.$s.$taskRowLabel} style={{ height: `${String(this.rowHeight)}px` }} title={row.task.name}>
-                          <span class={this.$s.$taskRowLabelText}>{row.task.name}</span>
-                        </div>
-                      ),
-                    )}
-                  </div>
-
-                  <div class={this.$s.$timelineCol} style={{ width: `${String(totalWidth)}px`, height: `${String(bodyHeight)}px` }}>
-                    {this.effectiveViewMode === "day" &&
-                      this.showWeekends &&
-                      columns
-                        .filter((c) => c.isWeekend)
-                        .map((col) => <div key={col.key} class={this.$s.$weekendTint} style={{ left: `${String(col.x)}px`, width: `${String(col.width)}px` }} />)}
-
-                    {rows.map((row, index) => (
-                      <div
-                        key={`bg:${row.key}`}
-                        class={cx(this.$s.$rowBg, row.kind === "group" && this.$s.$rowBgGroup)}
-                        style={{ top: `${String(index * this.rowHeight)}px`, height: `${String(this.rowHeight)}px` }}
-                      />
-                    ))}
-
-                    {this.showDependencies && this.dependencyLines.length > 0 && (
-                      <svg style={{ pointerEvents: "none", position: "absolute", inset: 0, overflow: "visible" }} width={totalWidth} height={bodyHeight}>
-                        <defs>
-                          {/* Fixed marker id — safe if multiple GanttChart instances render at once since every instance's arrow def is identical. */}
-                          <marker id="kosmesis-gantt-arrow" markerWidth={8} markerHeight={8} refX={6} refY={3} orient="auto">
-                            <path d="M0,0 L6,3 L0,6 Z" fill={t.mutedForeground} />
-                          </marker>
-                        </defs>
-                        {this.dependencyLines.map((line) => (
-                          <path
-                            key={line.key}
-                            d={line.d}
-                            fill="none"
-                            stroke={`color-mix(in oklab, ${t.mutedForeground} 70%, transparent)`}
-                            stroke-width={1.5}
-                            stroke-linecap="round"
-                            marker-end="url(#kosmesis-gantt-arrow)"
-                          />
-                        ))}
-                      </svg>
-                    )}
-
-                    {showTodayLine && (
-                      <div class={this.$s.$todayLine} style={{ left: `${String(todayX)}px` }}>
-                        <span class={this.$s.$todayDot} />
-                      </div>
-                    )}
-
-                    {rows.map((row, index) => {
-                      if (row.kind !== "task") return null;
-                      const task = row.task;
-                      const geom = this.barGeometry(task);
-                      const progress = clampProgress(task.progress ?? 0);
-                      const delay = Math.min(index * 30, 300);
-                      const top = index * this.rowHeight + this.rowHeight * 0.18;
-                      const barHeight = this.rowHeight * 0.64;
-
-                      if (task.milestone) {
-                        const size = Math.min(barHeight, 18);
-                        return (
-                          <div
-                            key={task.id}
-                            data-slot="gantt-milestone"
-                            class={cx(this.$s.$milestone, this.editable && this.$s.$milestoneEditable)}
-                            style={{
-                              left: `${String(this.xForDate(task.start) - size / 2)}px`,
-                              top: `${String(index * this.rowHeight + this.rowHeight / 2 - size / 2)}px`,
-                              width: `${String(size)}px`,
-                              height: `${String(size)}px`,
-                              transitionDelay: `${String(delay)}ms`,
-                              opacity: this._mounted ? 1 : 0,
-                            }}
-                            title={`${task.name} — ${task.start.toLocaleDateString()}`}
-                            onPointerDown={(event: PointerEvent) => {
-                              this._handleBarPointerDown(event, task, "move", size);
-                            }}
-                            onPointerMove={this._handleBarPointerMove}
-                            onPointerUp={this._handleBarPointerUp}
-                          />
-                        );
-                      }
-
-                      return (
-                        <div
-                          key={task.id}
-                          data-slot="gantt-bar"
-                          class={cx(this.$s.$bar, this.editable && this.$s.$barEditable)}
-                          style={{
-                            left: `${String(geom.left)}px`,
-                            top: `${String(top)}px`,
-                            width: this._mounted ? `${String(geom.width)}px` : "0px",
-                            height: `${String(barHeight)}px`,
-                            backgroundColor: `color-mix(in oklab, ${task.color ?? t.primary} 22%, transparent)`,
-                            transitionDelay: `${String(delay)}ms`,
-                          }}
-                          title={`${task.name} (${String(progress)}%)`}
-                          onPointerDown={(event: PointerEvent) => {
-                            this._handleBarPointerDown(event, task, "move");
-                          }}
-                          onPointerMove={this._handleBarPointerMove}
-                          onPointerUp={this._handleBarPointerUp}
-                        >
-                          <div
-                            class={this.$s.$barFill}
-                            style={{
-                              width: this._mounted ? `${String(progress)}%` : "0%",
-                              backgroundColor: task.color ?? t.primary,
-                              transitionDelay: `${String(delay + 150)}ms`,
-                            }}
-                          />
-                          {this.editable && (
-                            <>
-                              <div
-                                class={cx(this.$s.$resizeHandle, this.$s.$resizeHandleLeft)}
-                                onPointerDown={(event: PointerEvent) => {
-                                  this._handleBarPointerDown(event, task, "resize-start");
-                                }}
-                                onPointerMove={this._handleBarPointerMove}
-                                onPointerUp={this._handleBarPointerUp}
-                              />
-                              <div
-                                class={cx(this.$s.$resizeHandle, this.$s.$resizeHandleRight)}
-                                onPointerDown={(event: PointerEvent) => {
-                                  this._handleBarPointerDown(event, task, "resize-end");
-                                }}
-                                onPointerMove={this._handleBarPointerMove}
-                                onPointerUp={this._handleBarPointerUp}
-                              />
-                            </>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            );
-          }}
+            <For each={() => this._bars} by={(bar) => (bar.task.milestone ? `${bar.task.id}:milestone` : bar.task.id)}>
+              {(bar) => (bar().task.milestone ? this.renderMilestone(bar) : this.renderBar(bar))}
+            </For>
+          </div>
         </div>
+      </div>
+    );
+  }
+
+  private renderMilestone(bar: () => GanttBar) {
+    const size = () => Math.min(this.rowHeight * 0.64, 18);
+    return (
+      <div
+        data-slot="gantt-milestone"
+        class={() => cx(this.$s.$milestone, this.editable && this.$s.$milestoneEditable)}
+        style={() => {
+          const { task, index } = bar();
+          return {
+            left: `${String(this.xForDate(task.start) - size() / 2)}px`,
+            top: `${String(index * this.rowHeight + this.rowHeight / 2 - size() / 2)}px`,
+            width: `${String(size())}px`,
+            height: `${String(size())}px`,
+            transitionDelay: `${String(Math.min(index * 30, 300))}ms`,
+            opacity: this._mounted ? 1 : 0,
+          };
+        }}
+        title={() => `${bar().task.name} — ${bar().task.start.toLocaleDateString()}`}
+        onPointerDown={(event: PointerEvent) => {
+          this._handleBarPointerDown(event, bar().task, "move", size());
+        }}
+        onPointerMove={this._handleBarPointerMove}
+        onPointerUp={this._handleBarPointerUp}
+      />
+    );
+  }
+
+  private renderBar(bar: () => GanttBar) {
+    return (
+      <div
+        data-slot="gantt-bar"
+        class={() => cx(this.$s.$bar, this.editable && this.$s.$barEditable)}
+        style={() => {
+          const { task, index } = bar();
+          const geom = this.barGeometry(task);
+          return {
+            left: `${String(geom.left)}px`,
+            top: `${String(index * this.rowHeight + this.rowHeight * 0.18)}px`,
+            width: this._mounted ? `${String(geom.width)}px` : "0px",
+            height: `${String(this.rowHeight * 0.64)}px`,
+            backgroundColor: `color-mix(in oklab, ${task.color ?? t.primary} 22%, transparent)`,
+            transitionDelay: `${String(Math.min(index * 30, 300))}ms`,
+          };
+        }}
+        title={() => `${bar().task.name} (${String(clampProgress(bar().task.progress ?? 0))}%)`}
+        onPointerDown={(event: PointerEvent) => {
+          this._handleBarPointerDown(event, bar().task, "move");
+        }}
+        onPointerMove={this._handleBarPointerMove}
+        onPointerUp={this._handleBarPointerUp}
+      >
+        <div
+          class={this.$s.$barFill}
+          style={() => {
+            const { task, index } = bar();
+            return {
+              width: this._mounted ? `${String(clampProgress(task.progress ?? 0))}%` : "0%",
+              backgroundColor: task.color ?? t.primary,
+              transitionDelay: `${String(Math.min(index * 30, 300) + 150)}ms`,
+            };
+          }}
+        />
+        {() =>
+          this.editable && (
+            <>
+              <div
+                class={cx(this.$s.$resizeHandle, this.$s.$resizeHandleLeft)}
+                onPointerDown={(event: PointerEvent) => {
+                  this._handleBarPointerDown(event, bar().task, "resize-start");
+                }}
+                onPointerMove={this._handleBarPointerMove}
+                onPointerUp={this._handleBarPointerUp}
+              />
+              <div
+                class={cx(this.$s.$resizeHandle, this.$s.$resizeHandleRight)}
+                onPointerDown={(event: PointerEvent) => {
+                  this._handleBarPointerDown(event, bar().task, "resize-end");
+                }}
+                onPointerMove={this._handleBarPointerMove}
+                onPointerUp={this._handleBarPointerUp}
+              />
+            </>
+          )
+        }
       </div>
     );
   }

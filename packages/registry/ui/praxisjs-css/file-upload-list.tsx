@@ -2,6 +2,7 @@ import { formatFileSize, type FileUpload } from "@praxisjs/composables";
 import { StatelessComponent } from "@praxisjs/core";
 import { cx, Stylesheet, Styled, tokenVars } from "@praxisjs/css";
 import { Component } from "@praxisjs/decorators";
+import { For } from "@praxisjs/runtime";
 
 import { Icon } from "@morphos/icons";
 
@@ -89,43 +90,60 @@ export class FileUploadList extends StatelessComponent<FileUploadListProps> {
 
     return (
       <ul class={cx(this.$s.$list, cls)}>
-        {() =>
-          upload.items.map((item) => (
-            <li key={item.id} class={this.$s.$row}>
-              <div class={this.$s.$header}>
-                <span data-status={item.status} class={this.$s.$icon}>
-                  <Icon name={item.status === "success" ? "CircleCheck" : item.status === "error" ? "CircleAlert" : "File"} size={16} />
-                </span>
-                <div class={this.$s.$meta}>
-                  <p class={this.$s.$name}>{item.file.name}</p>
-                  <p class={item.status === "error" ? this.$s.$statusError : this.$s.$status}>
-                    {formatFileSize(item.file.size)} · {item.error ?? STATUS_LABEL[item.status]}
-                  </p>
+        <For each={() => upload.items} by="id">
+          {(item) => {
+            const { id, file } = item();
+            return (
+              <li class={this.$s.$row}>
+                <div class={this.$s.$header}>
+                  <span data-status={() => item().status} class={this.$s.$icon}>
+                    {() => {
+                      const { status } = item();
+                      return <Icon name={status === "success" ? "CircleCheck" : status === "error" ? "CircleAlert" : "File"} size={16} />;
+                    }}
+                  </span>
+                  <div class={this.$s.$meta}>
+                    <p class={this.$s.$name}>{file.name}</p>
+                    <p class={() => (item().status === "error" ? this.$s.$statusError : this.$s.$status)}>
+                      {formatFileSize(file.size)} · {() => item().error ?? STATUS_LABEL[item().status]}
+                    </p>
+                  </div>
+                  {() =>
+                    item().status === "uploading" && (
+                      <button type="button" aria-label={`Cancel ${file.name}`} class={this.$s.$iconButton} onClick={() => { upload.cancel(id); }}>
+                        <Icon name="X" size={14} />
+                      </button>
+                    )
+                  }
+                  {() =>
+                    (item().status === "error" || item().status === "aborted") && (
+                      <button type="button" aria-label={`Retry ${file.name}`} class={this.$s.$iconButton} onClick={() => { upload.retry(id); }}>
+                        <Icon name="RotateCw" size={14} />
+                      </button>
+                    )
+                  }
+                  {() =>
+                    item().status !== "uploading" && (
+                      <button type="button" aria-label={`Remove ${file.name}`} class={this.$s.$iconButton} onClick={() => { upload.remove(id); }}>
+                        <Icon name="Trash2" size={14} />
+                      </button>
+                    )
+                  }
                 </div>
-                {item.status === "uploading" && (
-                  <button type="button" aria-label={`Cancel ${item.file.name}`} class={this.$s.$iconButton} onClick={() => { upload.cancel(item.id); }}>
-                    <Icon name="X" size={14} />
-                  </button>
-                )}
-                {(item.status === "error" || item.status === "aborted") && (
-                  <button type="button" aria-label={`Retry ${item.file.name}`} class={this.$s.$iconButton} onClick={() => { upload.retry(item.id); }}>
-                    <Icon name="RotateCw" size={14} />
-                  </button>
-                )}
-                {item.status !== "uploading" && (
-                  <button type="button" aria-label={`Remove ${item.file.name}`} class={this.$s.$iconButton} onClick={() => { upload.remove(item.id); }}>
-                    <Icon name="Trash2" size={14} />
-                  </button>
-                )}
-              </div>
-              {(item.status === "uploading" || item.status === "pending") && (
-                <div role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.progress} class={this.$s.$track}>
-                  <div class={this.$s.$bar} style={`width:${String(item.progress)}%`} />
+                <div
+                  role="progressbar"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={() => item().progress}
+                  hidden={() => item().status !== "uploading" && item().status !== "pending"}
+                  class={this.$s.$track}
+                >
+                  <div class={this.$s.$bar} style={() => `width:${String(item().progress)}%`} />
                 </div>
-              )}
-            </li>
-          ))
-        }
+              </li>
+            );
+          }}
+        </For>
       </ul>
     );
   }
