@@ -56,7 +56,7 @@ wasn't already there. No `@kosmesis/*` package ever ships to your `node_modules`
 
 | Package | Description |
 |---|---|
-| [`kosmesis`](packages/cli) | The CLI — `kosmesis init` and `kosmesis add <component...>` |
+| [`kosmesis`](packages/cli) | The CLI — `kosmesis init`, `kosmesis add <component...>`, `kosmesis outdated`, `kosmesis update <component...>` |
 
 ```sh
 npm install -D kosmesis

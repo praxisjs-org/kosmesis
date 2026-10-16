@@ -4,6 +4,49 @@ description: Changelog for kosmesis.
 icon: Terminal
 ---
 
+## 0.5.0
+
+- `kosmesis init` works with `@morphos/icons` 2.0.0, which moved `LucideSource` to the
+  `@morphos/icons/lucide` subpath. The generated root component now imports `IconProvider` from
+  `@morphos/icons` and `LucideSource` from `@morphos/icons/lucide`; before, a fresh project failed
+  to type-check (`Module "@morphos/icons" has no exported member "LucideSource"`). Projects
+  initialized with 0.4.0 can apply the same one-line import change by hand.
+- `kosmesis init` installs `@morphos/icons@^2.0.1` and `lucide@^1.27.0` instead of whatever is
+  latest, so a future major of either can't break the code it generates. A package already in
+  `package.json` is left alone.
+- `kosmesis registry build` fails when a component imports a package it doesn't list in
+  `dependencies` (or, for type-only imports, `devDependencies`), or a relative file that isn't its
+  own or one of its `registryDependencies`, and lists every case. Only `@praxisjs/core`,
+  `@praxisjs/decorators`, `@praxisjs/jsx` and `@praxisjs/runtime` may be imported undeclared.
+  `kosmesis registry init`'s example now lists `@praxisjs/shared` under `devDependencies`.
+- Registry fixes found by that check: every component that imports `@praxisjs/shared` now lists it
+  under `devDependencies` (with pnpm, `kosmesis add` used to leave 72 imports unresolved), Morphing
+  Dialog lists `@morphos/icons`, the Tailwind Sidebar lists `class-variance-authority`, and Command
+  lists `dialog` as a registry dependency.
+- Components are versioned. Every registry item has a `version` (every Kosmesis component starts
+  at 1.0.0), and `kosmesis add` records it, with a hash of each file it wrote, in a new
+  `components.lock.json` next to `components.json` (commit it).
+- New `kosmesis outdated` lists installed components with the installed and latest version, and
+  whether you edited them, including components from your own registries.
+- New `kosmesis update <component...>` (or `--all`) shows the diff and asks before writing. A
+  file you edited is never replaced silently: you choose to skip it (the default), overwrite it,
+  or write the new version next to it as `<name>.new.tsx` to merge by hand. When not interactive
+  (CI), `update` only writes with `--yes`, and never overwrites edited files. Files the registry
+  didn't change keep your edits, and new registry or npm dependencies are installed.
+- Projects created before 0.5.0 are migrated on the first `outdated` or `update`: components found
+  in the `ui` folder that match a registry component start being tracked, at the registry's version
+  when the file is identical to it, otherwise with an unknown version and treated as possibly
+  edited. Your own components are never tracked.
+- `kosmesis add` asks before overwriting a file you edited or that it didn't install (default:
+  no), and skips such files when not interactive. `--overwrite` replaces them anyway. Unedited files
+  it installed are replaced as before.
+- `kosmesis registry build` checks each item's `version` against a committed `registry-lock.json`:
+  it fails when an item's files or dependencies changed without a version bump, when a version goes
+  down, or when a version isn't semver. Items without a version build with a warning and are served
+  unversioned (shown as `unknown`, never as an update). Built items carry a `hash` per file, and
+  each style system gets an `index.json` listing every item without content. `kosmesis registry
+  init`'s example starts at version 1.0.0.
+
 ## 0.4.0
 
 - `kosmesis init` now prompts for an icon library (`Lucide`, backed by `@morphos/icons`' built-in

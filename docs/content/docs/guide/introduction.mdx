@@ -63,8 +63,10 @@ moment it lands — you can change anything about it immediately, with no escape
 
 ## What Kosmesis does not provide [#what-kosmesis-does-not-provide]
 
-- A package to install and keep up to date. Once copied, a component has no ongoing relationship
-  with Kosmesis — no version to track, no breaking-change migration to run later.
+- A package to install and keep up to date. Once copied, a component is yours: nothing updates it
+  behind your back, and there's no breaking-change migration to run later. If you want a newer
+  version, `kosmesis outdated` tells you which components have one, and `kosmesis update` shows the
+  diff and asks first (see [Updating Components](/docs/guide/updating-components)).
 - Any behavior of its own. Kosmesis never reimplements what Morphos already does — it wraps or
   directly re-exports the primitive, never both.
 - A fixed design opinion. Variants, tokens, and spacing all live in the copied source — change

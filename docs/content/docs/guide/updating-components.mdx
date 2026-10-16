@@ -1,0 +1,181 @@
+---
+title: Updating Components
+description: Find out when a component you installed has a newer version, and update it without losing your edits.
+icon: RefreshCw
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+A copied component is your code, and you're expected to edit it. Registries still fix bugs and
+improve components after you copy them, so every registry component carries a version, and
+Kosmesis records what it installed. Two commands use that record:
+
+| Command | What it does |
+| --- | --- |
+| `kosmesis outdated [component...]` | Lists installed components with the version you have, the latest version, and whether you edited them. Changes nothing. |
+| `kosmesis update <component...>` | Shows what changed and asks before writing anything. Never replaces a file you edited without asking. |
+| `kosmesis update --all` | The same, for every component `outdated` reports as having an update. |
+
+## `components.lock.json`
+
+`kosmesis add` writes `components.lock.json` next to `components.json`. For every component it
+installed, it records the registry version and a hash of each file as it was written:
+
+```json title="components.lock.json"
+{
+  "$schema": "https://kosmesis.praxisjs.org/schema/lock.json",
+  "lockfileVersion": 1,
+  "components": {
+    "button": {
+      "version": "1.0.0",
+      "files": {
+        "src/components/ui/button.tsx": "sha256-5f06a9e6..."
+      }
+    },
+    "@acme/fancy-card": {
+      "version": "2.3.1",
+      "files": {
+        "src/components/ui/fancy-card.tsx": "sha256-91c0b2d4..."
+      }
+    }
+  }
+}
+```
+
+Commit it. Comparing a file's current hash with the recorded one is how Kosmesis tells "you edited
+this" apart from "this is what we installed", so a teammate's `kosmesis update` is as careful as
+yours. Hashes ignore line endings, so a Windows checkout doesn't look edited.
+
+Only files a registry installed are listed. A component you wrote yourself in the same folder is
+never tracked, never reported, and never touched by `update`.
+
+## Checking for updates
+
+```bash
+kosmesis outdated
+```
+
+```
+Component         Installed  Latest  Status            Local
+@acme/fancy-card  2.3.1      2.4.0   update available
+badge             unknown    1.0.0   unknown           may be edited
+button            1.0.0      1.1.0   update available  edited locally
+card              1.0.0      1.0.0   up to date
+```
+
+- **Status** compares versions: `update available`, `up to date`, `unknown` (one of the two
+  versions isn't known, see below) or `not found` (the registry no longer serves it, or its
+  namespace was removed from `components.json`).
+- **Local** is `edited locally` when a file no longer matches what was installed (or was deleted),
+  and `may be edited` when Kosmesis can't tell, for components installed before versioning.
+
+Components from your own registries (`@acme/...`) are checked against the registry they came from.
+A registry that serves an `index.json` (every registry built with Kosmesis 0.5.0 or later does) is
+checked in one request; older ones are checked one component at a time.
+
+## Updating
+
+```bash
+kosmesis update button
+kosmesis update --all
+```
+
+For each component, `update` compares every file on disk with what's recorded and with the new
+version:
+
+| Your file | What happens |
+| --- | --- |
+| Unchanged since it was installed | The diff is shown, then one confirmation per component. |
+| Edited, and the registry changed it too | A warning, the diff, and a choice (below). Default: skip. |
+| Edited, and the registry didn't change it | Kept as is. Your edits stay; nothing to merge. |
+| Deleted by you | You're asked whether to restore it. Default: leave it deleted. |
+| New in this version | Written. |
+| Dropped by this version | Left on disk, with a note to delete it if nothing uses it. |
+
+New `registryDependencies` the version needs are installed the way `kosmesis add` would, and so are
+new npm `dependencies`. Components that are already installed aren't updated as a side effect:
+they show up in `outdated` on their own.
+
+### When you edited a file
+
+Kosmesis doesn't keep old versions of a component, so it can't show you a true three-way merge.
+It tells you where each side stands instead:
+
+```
+▲ src/components/ui/button.tsx was edited after Kosmesis installed it.
+    installed: 1.0.0 (the copy Kosmesis wrote; your file no longer matches it)
+    yours:     that copy plus your edits
+    new:       version 1.1.0
+  The diff goes from your file to version 1.1.0. Lines marked "-" include your own edits:
+  overwriting discards them.
+```
+
+Then the diff from your file to the new version, and three choices:
+
+- **Skip** (the default): your file stays as it is. The component keeps its old version in
+  `components.lock.json`, so `outdated` keeps reporting the update.
+- **Overwrite**: replaces your file with the new version. Your edits are gone (unless they're in
+  git).
+- **Write `button.new.tsx` next to it**: writes the new version beside your file so you can merge
+  by hand, then delete `button.new.tsx`. The component is recorded at the new version: your
+  file then counts as "the new version plus your edits".
+
+### In CI, or any non-interactive shell
+
+When stdin isn't a terminal, or `CI` is set, `update` never prompts:
+
+- Without `--yes`, it changes nothing and lists what it would update.
+- With `--yes`, it updates files you haven't edited.
+- Files you edited are **never** overwritten, with or without `--yes`. They're skipped with a
+  warning, and the component stays reported by `outdated`.
+
+```bash
+kosmesis update --all --yes
+```
+
+## Unknown versions
+
+A version shows as `unknown` (and is never reported as an update) when:
+
+- **The registry doesn't version that component.** Third-party registries may serve items without a
+  `version`, and registries built before versioning have none at all. `kosmesis update <name>`
+  still works by comparing content: it shows the diff and asks, as above. `update --all` skips
+  these.
+- **The component was installed before versioning.** See below.
+
+## Projects created before versioning
+
+If your components were added with a Kosmesis CLI older than 0.5.0, there's no
+`components.lock.json` yet. The first time you run `kosmesis outdated` or `kosmesis update`, Kosmesis
+looks for files in your `ui` folder that match a component in one of your registries and starts
+tracking them, telling you which ones it found:
+
+- A file identical to the registry's current version is recorded at that version: it's known to be
+  unedited.
+- Anything else is recorded with an unknown version. Kosmesis can't tell an older version from your
+  edits, so `update` treats those files as possibly edited: it shows the diff and asks, and never
+  overwrites them in CI.
+
+Files that don't match any registry component (your own components) are left alone. A file that
+matches components in two registries isn't tracked either: run `kosmesis add <address>` for the
+right one to track it.
+
+## Re-running `kosmesis add`
+
+`kosmesis add` installs components as before and now records them in `components.lock.json`. If a
+file it's about to write already exists and was edited (or wasn't installed by Kosmesis), it asks
+before overwriting it (default: no), and skips it when not interactive. Pass `--overwrite` to
+replace such files anyway. Use `kosmesis update <component>` to see the diff first.
+
+<Callout type="info">
+  To stop tracking a component (for example, because you've rewritten it into something of your
+  own), delete its entry from `components.lock.json`. `outdated` and `update` then ignore it, unless
+  its files still match a registry component, in which case it's tracked again with an unknown
+  version.
+</Callout>
+
+## Publishing versions from your own registry
+
+If you serve components from your own registry, give each item a `version` and bump it when you
+change it. `kosmesis registry build` enforces it with a committed `registry-lock.json`. See
+[Custom Registry: Versioning](/docs/guide/custom-registry#versioning).

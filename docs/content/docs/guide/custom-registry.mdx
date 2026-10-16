@@ -45,8 +45,9 @@ my-registry/
     example-button.tsx    # a real, working example component
 ```
 
-`registry.json`'s one entry points at `src/example-button.tsx` with an empty `dependencies` /
-`devDependencies` / `registryDependencies`. Edit the example in place, or add more items to
+`registry.json`'s one entry points at `src/example-button.tsx`, at `"version": "1.0.0"`, with
+`@praxisjs/shared` (the example's `import type { Children }`) as its only `devDependencies` entry
+and empty `dependencies` / `registryDependencies`. Edit the example in place, or add more items to
 `registry.json` plus their source files under `src/` — same shape either way.
 
 </Step>
@@ -65,8 +66,10 @@ inlined as a string. `registry build` reads `registry.json`, inlines every refer
 content, and writes exactly that shape to `dist/r/tailwind/example-button.json` (default style
 system is `tailwind`; pass `--style-system praxisjs-css` for the other one, or write both
 `registry.tailwind.json` and `registry.praxisjs-css.json` to build both in one call). It fails
-loudly — naming the exact component — if a `files[].path` doesn't exist or a
-`registryDependencies` name isn't in the index.
+loudly — naming the exact component — if a `files[].path` doesn't exist, a
+`registryDependencies` name isn't in the index, or a component imports something it doesn't
+declare (see [Dependencies](#dependencies-other-components-npm-packages-and-dev-only-npm-packages)),
+or changed without a version bump (see [Versioning](#versioning)).
 
 </Step>
 <Step>
@@ -96,6 +99,10 @@ HTTP, style-system-specific dependencies, cross-component dependencies, and the 
 | `[dir]` (positional) | current directory | Where to look for `registry.json` / `registry.<styleSystem>.json`, and where source `files[].path` entries are resolved from. |
 | `--style-system <tailwind\|praxisjs-css>` | `tailwind` | Only applies to a bare `registry.json` (no style-system suffix). Ignored if `registry.tailwind.json` and/or `registry.praxisjs-css.json` exist — both get built automatically when present. |
 | `--out <dir>` | `<dir>/dist/r` | Where the built `<styleSystem>/<name>.json` files are written. |
+
+Besides one `<name>.json` per component, the build writes `<styleSystem>/index.json` (every item,
+without file content, so `kosmesis outdated` can check the whole registry in one request) and
+updates `registry-lock.json` next to your index (see [Versioning](#versioning)).
 
 ## Serving it for real
 
@@ -168,9 +175,58 @@ packages (type declarations, codegen tools) and gets installed with `-D`/`--save
 }
 ```
 
+`kosmesis registry build` reads every component's imports and fails, listing each one, when a
+component imports something it doesn't declare:
+
+- an npm package must be in `dependencies`, or in `devDependencies` when every import of it is
+  `import type` (it's erased from the build, so only `tsc` needs it). The four packages every
+  PraxisJS app already has (`@praxisjs/core`, `@praxisjs/decorators`, `@praxisjs/jsx`,
+  `@praxisjs/runtime`) are the only ones that don't need declaring.
+- a relative import (`./example-button`) must point at one of the component's own files or a file of
+  one of its `registryDependencies`, since `kosmesis add` writes them all into the same directory.
+
+`@/` project aliases (`@/lib/utils`) and `node:` builtins aren't checked.
+
 If a package ends up listed as a runtime `dependencies` entry by one component and a
 `devDependencies` entry by another (in the same `kosmesis add` call), the runtime one wins — it
 needs to ship, not just type-check, so it's installed once, without `-D`.
+
+## Versioning
+
+Give every item a `version` ([semver](https://semver.org)) and bump it whenever you change the
+item's files or dependencies. Projects that installed it see the new version in
+`kosmesis outdated`, and `kosmesis update` shows them the diff (see
+[Updating Components](/docs/guide/updating-components)).
+
+```json title="registry.json"
+{
+  "name": "example-button",
+  "version": "1.1.0",
+  "type": "registry:ui",
+  "files": [{ "path": "src/example-button.tsx", "type": "registry:ui" }]
+}
+```
+
+`kosmesis registry build` keeps you honest with `registry-lock.json`, which it writes next to your
+index: each item's version plus a hash of everything a consumer receives (each file's content and
+target, and its `dependencies`, `devDependencies` and `registryDependencies`; not `title` or
+`description`). **Commit it.** On the next build:
+
+- an item whose content changed but whose `version` didn't fails the build, naming the item;
+- a `version` lower than the locked one fails the build;
+- a `version` that isn't valid semver fails the build;
+- otherwise the lock is updated to the new versions and hashes.
+
+The first build after adding versions just creates the lock. Bumping a version without changing
+anything is allowed (for example, to re-announce a component).
+
+`version` is optional for a registry you serve yourself. An item without one builds with a
+warning and is served unversioned: projects that install it see its version as `unknown`, never as
+an update, though `kosmesis update <name>` still compares its content. Registries built with
+older Kosmesis versions keep working the same way.
+
+The built item also carries a `hash` for each file (SHA-256 of its content, line endings
+normalized), which you never write by hand.
 
 ## The full JSON shape
 
@@ -180,6 +236,7 @@ For reference, here's every field a built `<styleSystem>/<name>.json` can have �
 ```json title="dist/r/tailwind/example-button.json"
 {
   "name": "example-button",
+  "version": "1.1.0",
   "type": "registry:ui",
   "title": "Example Button",
   "description": "Optional, human-readable.",
@@ -191,6 +248,7 @@ For reference, here's every field a built `<styleSystem>/<name>.json` can have �
       "path": "src/example-button.tsx",
       "type": "registry:ui",
       "target": "example-button.tsx",
+      "hash": "sha256-3b5d5c37...",
       "content": "// inlined file source"
     }
   ]
@@ -199,10 +257,12 @@ For reference, here's every field a built `<styleSystem>/<name>.json` can have �
 
 | Field | Meaning |
 | --- | --- |
-| `name` | Must match the filename. What consumers type after `kosmesis add` (or `@namespace/`). |
+| `name` | Must match the filename. What consumers type after `kosmesis add` (or `@namespace/`). `index` is reserved. |
+| `version` | Semver, bumped on every change. Optional: without it the item is served unversioned. |
 | `type` | `registry:ui`, `registry:lib`, `registry:hook`, or `registry:block`. |
 | `dependencies` | npm packages needed at runtime, installed automatically. |
 | `devDependencies` | npm packages only needed at build/type-check time, installed automatically with `-D`. |
 | `registryDependencies` | Other component names in this same registry, resolved and written first. |
 | `files[].target` | Where the file lands under the consumer's `aliases.ui` directory. Defaults to the basename of `path`. |
 | `files[].content` | The full file source, inlined as a string — this is what actually gets written to disk. |
+| `files[].hash` | `sha256-` plus the hex SHA-256 of `content`, written by the build. |

@@ -14,7 +14,7 @@ instead of Radix UI. Every component ships in **two independent style systems** 
 
 | Package              | Role                                                                                        |
 | --------------------- | --------------------------------------------------------------------------------------------- |
-| `kosmesis`            | The CLI (`packages/cli`) — `kosmesis init`, `kosmesis add <component...>`, `kosmesis registry <init\|build\|add\|remove\|list>` |
+| `kosmesis`            | The CLI (`packages/cli`) — `kosmesis init`, `kosmesis add <component...>`, `kosmesis outdated`, `kosmesis update <component...>`, `kosmesis registry <init\|build\|add\|remove\|list>` |
 | `@kosmesis/registry`  | Source of truth for every component (`packages/registry`, see "Registry" below)              |
 | `@kosmesis/docs`      | Fumadocs + Next.js site (`docs/`) — serves the built registry JSON as static files            |
 | `kosmesis-stories`    | Storybook (`storybook/`) — one story file per component per style system                     |
@@ -28,8 +28,9 @@ Private, workspace-only, never published to npm: `@kosmesis/registry`, `@kosmesi
 
 ```
 packages/
-  cli/            the `kosmesis` CLI — commands/ (init, add), utils/, templates/
+  cli/            the `kosmesis` CLI — commands/ (init, add, outdated, update, registry), utils/, templates/
   registry/       registry.tailwind.json + registry.praxisjs-css.json (source-of-truth indexes)
+                  registry-lock.json (committed: each item's version + content hash, see "Versioning")
                   ui/tailwind/*.tsx, ui/praxisjs-css/*.tsx  (one pair of files per component)
                   lib/ (utils.ts, kosmesis-theme.ts — same shape the CLI generates in a consumer
                   project, so `@/lib/utils` / `@/lib/kosmesis-theme` imports resolve here too)
@@ -91,8 +92,9 @@ To run a single CLI test, use vitest's own filtering against the one test file:
   `docs/package.json`'s `registry:build` script (`node ../packages/registry/scripts/build-registry.mjs
   ./public/r`) invokes the registry's own build script with an explicit output directory, since the
   script itself defaults to writing into `packages/registry/dist/r` when run standalone. The script
-  also copies `packages/registry/schema/*.json` to `docs/public/schema.json` and
-  `docs/public/schema/registry.json`, referenced by `$schema` in generated `components.json` files.
+  also copies `packages/registry/schema/*.json` to `docs/public/schema.json`,
+  `docs/public/schema/registry.json` and `docs/public/schema/lock.json`, referenced by `$schema` in
+  generated `components.json` / `components.lock.json` files.
 
 ---
 
@@ -162,6 +164,34 @@ naming the exact component and missing file, if an entry references a source fil
 exist yet — don't add a registry entry before its file exists. It also warns (doesn't fail) about
 files on disk that no entry references.
 
+The build also reads every component's imports and fails, listing each case, on an undeclared one:
+an npm package must be in `dependencies` (or `devDependencies` when every import of it is
+`import type`, e.g. `@praxisjs/shared`'s `Children`), and a relative `./x` import must be a file of
+the item itself or of one of its `registryDependencies`. Only `@praxisjs/core`,
+`@praxisjs/decorators`, `@praxisjs/jsx` and `@praxisjs/runtime` (`HOST_PACKAGES`, in every
+create-praxisjs template) may be imported undeclared; `@/` aliases and `node:` builtins are skipped.
+The check lives in `packages/cli/src/utils/registry-imports.ts` (used by `kosmesis registry build`)
+and is mirrored in plain JS in `packages/registry/scripts/check-imports.mjs` (this script runs with
+no build step). Change both together: `registry-imports.test.ts` fails if they disagree, and it
+also runs the check over the real registry.
+
+### Versioning
+
+Every entry has a semver `version` (all started at `1.0.0`). Bump it in the same change that edits
+the item's files or its `dependencies`/`devDependencies`/`registryDependencies` (title/description
+don't count): `build-registry.mjs` compares each item's content hash with
+`packages/registry/registry-lock.json` and fails on "changed but still version X", on a version
+going down, on invalid semver, and (for this repo only, `requireVersion: true`) on a missing
+version. On success it rewrites the lock: commit it with the change. `--frozen-lock` makes it fail
+instead of rewriting (the tests use it, so a stale lock fails `pnpm test`). Tailwind and
+`@praxisjs/css` versions of the same component are independent (each index has its own lock
+section); bump only the one you changed. The check lives in
+`packages/cli/src/utils/registry-versions.ts` (used by `kosmesis registry build`, which only warns
+on missing versions) and is mirrored in `packages/registry/scripts/check-versions.mjs`, with a
+parity test in `registry-versions.test.ts`, like the import check. Both builds also write a
+`hash` (`sha256-<hex>` of the content, CRLF normalized) into every served file and a
+`<styleSystem>/index.json` listing every item without content, which `kosmesis outdated` reads.
+
 `registryDependencies` in an entry pull in other registry items transitively (e.g. `data-table`
 depends on `table`); `kosmesis add` (`resolveRegistryTree` in `packages/cli/src/utils/registry.ts`)
 resolves this closure, each item appearing once at first use.
@@ -200,7 +230,12 @@ instead of `registry`; its own `registryDependencies` stay within that same name
   prompts for the project's root component path (default `DEFAULT_MAIN_COMPONENT_PATH`,
   `src/app.tsx`) and wires `@Themed(KosmesisTokens, LightTheme, { persist: true, syncTabs: true })`
   above its `@Component()` via `ensureThemedDecorator` (`utils/praxisjs-css.ts`) — falls back to a
-  manual `note()` only if that file can't be found.
+  manual `note()` only if that file can't be found. With the Lucide icon library it wires
+  `@IconProvider(LucideSource)` (`IconProvider` from `@morphos/icons`, `LucideSource` from
+  `@morphos/icons/lucide`) and installs `ICON_LIBRARY_DEPENDENCIES` (`constants.ts`), which are
+  pinned to a major range (`@morphos/icons@^2.0.1`) because the generated import only exists from
+  2.0.0. Those ranges must match `packages/registry/package.json` exactly (a test enforces it): when a
+  `chore: bump` moves `@morphos/icons` or `lucide`, update both.
 - **`kosmesis add <component...>`** (`packages/cli/src/commands/add.ts`): reads `components.json`,
   resolves the requested components' registry dependency closure, writes every file into the
   consumer's `aliases.ui` directory, and installs missing `dependencies` and `devDependencies`
@@ -209,6 +244,27 @@ instead of `registry`; its own `registryDependencies` stay within that same name
   registry for one invocation (this override never applies to namespaced `@acme/button` addresses,
   which always use their configured `registries` entry). A component name may be a bare
   `<name>` (default registry) or `@namespace/<name>` (a registry added via `kosmesis registry add`).
+  `add` also records every installed component in `components.lock.json` (`utils/lock.ts`): its
+  version and a hash per file (keyed by project-relative path). Before writing, each file is
+  classified by `planItemFiles` (`utils/component-files.ts`): missing/identical/clean files are
+  written as before; an edited file, an untracked existing file or an adopted one asks (default
+  no) or, when not interactive (`utils/interactive.ts`: no TTY or `CI`), is skipped. `--overwrite`
+  forces it.
+- **`kosmesis outdated [name...]`** (`commands/outdated.ts`, `utils/installed.ts`): compares each
+  lock entry's version with its registry's (one `index.json` request per registry when served,
+  item by item otherwise) and prints a table with local edit status. Unversioned items or entries
+  are `unknown`, never outdated.
+- **`kosmesis update <name...> | --all [--yes]`** (`commands/update.ts`): per component, shows the
+  diff (`utils/diff.ts`, a dependency-free Myers line diff) of unedited files and asks once (or
+  `--yes`); for each edited/deleted/untracked file explains installed vs yours vs new, shows the
+  diff and offers skip (default) / overwrite / write `<name>.new<ext>` alongside. Not interactive:
+  nothing without `--yes`, and edited files are never written. Files the registry didn't change
+  are kept with their edits; new registry/npm dependencies are installed; skipped files keep the
+  old lock version so `outdated` keeps reporting them.
+- Both commands first run the migration in `utils/adopt.ts`: files in `aliases.ui` not owned by a
+  lock entry are matched against every configured registry (via `index.json`, or by basename);
+  matches start being tracked, at the registry version if identical, else flagged `adopted`
+  (version unknown, treated as possibly edited). Non-registry files are never tracked.
 - **`kosmesis registry add|remove|list`** (`packages/cli/src/commands/registry.ts`): manages the
   `registries` map in `components.json`. `add <namespace> <url>` writes/overwrites
   `registries["@namespace"]` (the `@` is added automatically if omitted); `remove <namespace>`
@@ -221,7 +277,8 @@ instead of `registry`; its own `registryDependencies` stay within that same name
   consumer project — neither requires `components.json`. `init` scaffolds a `registry.json` index
   and one example component under `[dir]` (default: cwd). `build` reads that index (or
   `registry.tailwind.json`/`registry.praxisjs-css.json` if either exists — both are built in one
-  call when both are present) from `[dir]`, inlines every referenced file's content, and writes
+  call when both are present) from `[dir]`, checks every component's imports (see "Registry"),
+  inlines every referenced file's content, and writes
   `<dir>/dist/r/<styleSystem>/<name>.json` (override with `--out <dir>`; the bare-`registry.json`
   case's style system defaults to `tailwind`, override with `--style-system`). `buildRegistry` in
   `registry-build.ts` fails loudly (`RegistryBuildError`), naming the exact component, on a missing
@@ -288,8 +345,12 @@ which should not happen if a port was done correctly.
 
 ## Testing
 
-Only the CLI has tests (`packages/cli/src/__tests__/utils.test.ts`, run via `pnpm test` from the
-root, resolved through the `@kosmesis/cli` alias in `vitest.config.ts`). Registry components are
+Only the CLI has tests (`packages/cli/src/__tests__/*.test.ts`, run via `pnpm test` from the
+root, resolved through the `@kosmesis/cli` alias in `vitest.config.ts`). `registry-imports.test.ts`
+and `registry-versions.test.ts` are the exceptions that also cover the registry: they run the import
+and version checks over both index files (the latter also checks `registry-lock.json` is current)
+and run `build-registry.mjs` itself. `versioning.test.ts` covers `add`/`outdated`/`update` against
+mocked registries, with `utils/interactive` mocked to switch between interactive and CI behavior. Registry components are
 verified by typechecking (`packages/registry/tsconfig.json`) and by a real `kosmesis init` +
 `kosmesis add` + `vite build` against a scaffolded PraxisJS app — there is no per-component unit
 test suite.

@@ -112,6 +112,13 @@ Want to serve your own components this way? See [Custom Registry](/docs/guide/cu
 
 ## Updating a component
 
-There's no update command — because there's no dependency to update. If a newer version of a
-component ships better defaults, re-run `kosmesis add <component>` and diff the result before
-overwriting your local copy (or just apply the change by hand).
+`kosmesis add` records each component's version, and a hash of every file it wrote, in
+`components.lock.json` (commit it). When a registry publishes a newer version:
+
+```bash
+kosmesis outdated          # what has an update, and which of your copies you edited
+kosmesis update button     # shows the diff and asks before writing anything
+```
+
+Files you edited are never replaced without asking. See
+[Updating Components](/docs/guide/updating-components).
