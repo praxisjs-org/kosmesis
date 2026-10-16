@@ -3,6 +3,7 @@ import { jsx } from "@praxisjs/jsx/jsx-runtime";
 import type { ComponentConstructor } from "@praxisjs/shared/internal";
 
 import { setIconProvider } from "@morphos/icons";
+import "@morphos/icons/lucide";
 
 // `./praxisjs-css-theme` must be imported before `./tailwind-theme.css`: it triggers
 // `@praxisjs/css`'s `preflight()`, which (as of @praxisjs/css 0.2.0) wraps its reset in
@@ -22,9 +23,8 @@ export { renderToCanvas } from "@praxisjs/storybook";
 // Stories mount components directly rather than through a decorated root `@Component()`, so
 // there's no class to apply `@IconProvider(...)` to — `setIconProvider` does the same thing
 // without one, same as `kosmesis init` wires `@IconProvider(LucideSource)` into a real project's
-// root component. Importing from `@morphos/icons` evaluates its `LucideSource` module (and the
-// `@RegisterIconProvider("lucide")` decorator on it) regardless of which named export is used, so
-// no separate `LucideSource` import is needed here.
+// root component. The side-effect import above is what registers `LucideSource` under "lucide"
+// (`@morphos/icons` 2.0.0 moved it out of the main entry).
 setIconProvider("lucide");
 
 interface RenderContext {

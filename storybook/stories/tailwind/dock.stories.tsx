@@ -2,7 +2,8 @@ import { StatelessComponent } from "@praxisjs/core";
 import { Component } from "@praxisjs/decorators";
 import type { Meta, StoryObj } from "@praxisjs/storybook";
 
-import { Icon, type LucideIconName } from "@morphos/icons";
+import { Icon } from "@morphos/icons";
+import type { LucideIconName } from "@morphos/icons/lucide";
 
 import { Dock, DockItem } from "@/ui/tailwind/dock";
 
