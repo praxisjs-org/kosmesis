@@ -1264,7 +1264,7 @@ describe("kosmesis init", () => {
 
     expect(hoisted.spawnMock).toHaveBeenCalledWith(
       "npm",
-      ["install", "@morphos/icons@^2.0.1", "lucide@^1.27.0"],
+      ["install", "@morphos/icons@^2.0.3", "lucide@^1.27.0"],
       expect.objectContaining({ cwd: tmpDir }),
     );
   });
@@ -1281,7 +1281,7 @@ describe("kosmesis init", () => {
     expect(hoisted.spawnMock).toHaveBeenCalledWith("npm", ["install", "lucide@^1.27.0"], expect.objectContaining({ cwd: tmpDir }));
     expect(hoisted.spawnMock).not.toHaveBeenCalledWith(
       "npm",
-      expect.arrayContaining(["@morphos/icons@^2.0.1"]),
+      expect.arrayContaining(["@morphos/icons@^2.0.3"]),
       expect.anything(),
     );
   });
@@ -1297,7 +1297,7 @@ describe("kosmesis init", () => {
     await init();
 
     expect(clack.note).toHaveBeenCalledWith(
-      "npm install @morphos/icons@^2.0.1 lucide@^1.27.0",
+      "npm install @morphos/icons@^2.0.3 lucide@^1.27.0",
       "Run this command to install icon dependencies",
     );
   });

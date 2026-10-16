@@ -21,8 +21,8 @@ importers:
         specifier: ^2.30.0
         version: 2.31.0(@types/node@25.9.4)
       '@praxisjs/vite-plugin':
-        specifier: ^4.1.0
-        version: 4.1.0(@praxisjs/css@0.3.5)(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
+        specifier: ^4.2.1
+        version: 4.2.1(@praxisjs/css@0.3.5)(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
       '@types/node':
         specifier: ^25.9.1
         version: 25.9.4
@@ -144,23 +144,23 @@ importers:
         version: 1.5.4
     devDependencies:
       '@morphos/core':
-        specifier: ^0.1.4
-        version: 0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)
+        specifier: ^0.1.6
+        version: 0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)
       '@morphos/feedback':
-        specifier: ^1.0.4
-        version: 1.0.4(@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)
+        specifier: ^1.1.1
+        version: 1.1.1(@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)
       '@morphos/icons':
-        specifier: ^2.0.1
-        version: 2.0.1(@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)(lucide@1.27.0)(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
+        specifier: ^2.0.3
+        version: 2.0.3(@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)(lucide@1.27.0)(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
       '@morphos/inputs':
-        specifier: ^1.0.4
-        version: 1.0.4(@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)
+        specifier: ^1.1.1
+        version: 1.1.1(@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)
       '@morphos/layout':
-        specifier: ^1.1.4
-        version: 1.1.4(@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)
+        specifier: ^1.2.1
+        version: 1.2.1(@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)
       '@morphos/overlays':
-        specifier: ^1.0.5
-        version: 1.0.5(@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)
+        specifier: ^1.0.7
+        version: 1.0.7(@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)
       '@praxisjs/core':
         specifier: ^2.3.0
         version: 2.3.0
@@ -171,11 +171,11 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       '@praxisjs/jsx':
-        specifier: ^0.8.0
-        version: 0.8.0
+        specifier: ^0.8.1
+        version: 0.8.1
       '@praxisjs/runtime':
-        specifier: ^0.8.0
-        version: 0.8.0
+        specifier: ^0.8.1
+        version: 0.8.1
       '@praxisjs/shared':
         specifier: ^0.3.2
         version: 0.3.2
@@ -201,23 +201,23 @@ importers:
   storybook:
     dependencies:
       '@morphos/core':
-        specifier: ^0.1.4
-        version: 0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)
+        specifier: ^0.1.6
+        version: 0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)
       '@morphos/feedback':
-        specifier: ^1.0.4
-        version: 1.0.4(@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)
+        specifier: ^1.1.1
+        version: 1.1.1(@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)
       '@morphos/icons':
-        specifier: ^2.0.1
-        version: 2.0.1(@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)(lucide@1.27.0)(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
+        specifier: ^2.0.3
+        version: 2.0.3(@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)(lucide@1.27.0)(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
       '@morphos/inputs':
-        specifier: ^1.0.4
-        version: 1.0.4(@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)
+        specifier: ^1.1.1
+        version: 1.1.1(@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)
       '@morphos/layout':
-        specifier: ^1.1.4
-        version: 1.1.4(@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)
+        specifier: ^1.2.1
+        version: 1.2.1(@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)
       '@morphos/overlays':
-        specifier: ^1.0.5
-        version: 1.0.5(@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)
+        specifier: ^1.0.7
+        version: 1.0.7(@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)
       '@praxisjs/composables':
         specifier: ^1.2.2
         version: 1.2.2
@@ -231,14 +231,14 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       '@praxisjs/runtime':
-        specifier: ^0.8.0
-        version: 0.8.0
+        specifier: ^0.8.1
+        version: 0.8.1
       '@praxisjs/shared':
         specifier: ^0.3.2
         version: 0.3.2
       '@praxisjs/storybook':
-        specifier: ^0.3.0
-        version: 0.3.0(@praxisjs/css@0.3.5)(@storybook/builder-vite@10.4.6(esbuild@0.28.2)(rollup@4.62.2)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react@19.2.7))(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0)))(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react@19.2.7))(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
+        specifier: ^0.3.2
+        version: 0.3.2(@praxisjs/css@0.3.5)(@storybook/builder-vite@10.4.6(esbuild@0.28.2)(rollup@4.62.2)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react@19.2.7))(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0)))(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react@19.2.7))(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -253,8 +253,8 @@ importers:
         version: 3.6.0
     devDependencies:
       '@praxisjs/jsx':
-        specifier: ^0.8.0
-        version: 0.8.0
+        specifier: ^0.8.1
+        version: 0.8.1
       '@storybook/builder-vite':
         specifier: ^10.4.0
         version: 10.4.6(esbuild@0.28.2)(rollup@4.62.2)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react@19.2.7))(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
@@ -981,27 +981,27 @@ packages:
   '@mdx-js/mdx@3.1.1':
     resolution: {integrity: sha512-f6ZO2ifpwAQIpzGWaBQT2TXxPv6z3RBzQKpVftEWN78Vl/YweF1uwussDx8ECAXVtr3Rs89fKyG9YlzUs9DyGQ==}
 
-  '@morphos/core@0.1.4':
-    resolution: {integrity: sha512-D+Uq+JcGOWy87bXErf8sM7J2joB6LQUfvPXhI/9wYQf+UwgoN0E4/TS6IHmPZKcUFm2O3UARjF4wb4bnnMfQng==}
+  '@morphos/core@0.1.6':
+    resolution: {integrity: sha512-m9i5qUBJkliqH6POUwGiuNdKm8E9/GxL/GJ+U8uqdUWnA0YqSYz93QrVPCw/qrWCEPzPYySSB46NrsqSMdd5lw==}
     peerDependencies:
       '@praxisjs/core': '>=1.0.0'
       '@praxisjs/decorators': '>=1.0.0'
       '@praxisjs/jsx': '>=0.5.0'
       '@praxisjs/runtime': '>=0.3.0'
 
-  '@morphos/feedback@1.0.4':
-    resolution: {integrity: sha512-dvrtFrDy3sNavhkEAQJXdbap4NKYIUpyjIF6cVmOoMrhf3z52NfZPEclcM1hGTx7VRvVjffRnwkytb0nOjf5EA==}
+  '@morphos/feedback@1.1.1':
+    resolution: {integrity: sha512-KSFCWEKKbwj5Al1sPO1JtZaAEvWjaVedvgebON66kG7FkK9ybVJNgf14d7UmhuwhJxauc2buOjkou0Qdtf8NpQ==}
     peerDependencies:
-      '@morphos/core': 0.1.4
-      '@praxisjs/core': '>=1.0.0'
-      '@praxisjs/decorators': '>=1.0.0'
-      '@praxisjs/jsx': '>=0.5.0'
-      '@praxisjs/runtime': '>=0.3.0'
+      '@morphos/core': 0.1.6
+      '@praxisjs/core': '>=2.3.0'
+      '@praxisjs/decorators': '>=2.0.0'
+      '@praxisjs/jsx': '>=0.8.0'
+      '@praxisjs/runtime': '>=0.8.0'
 
-  '@morphos/icons@2.0.1':
-    resolution: {integrity: sha512-sMfKBVAq9Mo6f/crEf6PJeJVJoYEFSq4YIAjPrXrij1YZhSD/z0Fyn3xM5AFV2l2nSBGMBMqE+fmtrVENB9hnw==}
+  '@morphos/icons@2.0.3':
+    resolution: {integrity: sha512-Jn05yto58J5kECtAluZyI7tIvLDC2/2263NzjomJtBkCH7ckc5ePkGiHJdYUVVk62azQg3IWUWVqKWWIQY7tDg==}
     peerDependencies:
-      '@morphos/core': 0.1.4
+      '@morphos/core': 0.1.6
       '@praxisjs/core': '>=1.0.0'
       '@praxisjs/decorators': '>=1.0.0'
       '@praxisjs/jsx': '>=0.5.0'
@@ -1014,28 +1014,28 @@ packages:
       vite:
         optional: true
 
-  '@morphos/inputs@1.0.4':
-    resolution: {integrity: sha512-AxiX5+DUNEJvKtIsDkW74Pi8YMxstbHcEV9esnq1RqdXqb+Xw4xDN05m7nmMvGMojcFSIeQSe4LXPHHx/l/0rg==}
+  '@morphos/inputs@1.1.1':
+    resolution: {integrity: sha512-vo2O2RpKhMVVZDiPDeF2drzK/DPabet10VzcYHUCzfiTgTiLGR0Qg0aQFBl7cf+y46GRqKGTXMA73lvRvCbWFA==}
     peerDependencies:
-      '@morphos/core': 0.1.4
-      '@praxisjs/core': '>=1.0.0'
-      '@praxisjs/decorators': '>=1.0.0'
-      '@praxisjs/jsx': '>=0.5.0'
-      '@praxisjs/runtime': '>=0.3.0'
+      '@morphos/core': 0.1.6
+      '@praxisjs/core': '>=2.3.0'
+      '@praxisjs/decorators': '>=2.0.0'
+      '@praxisjs/jsx': '>=0.8.0'
+      '@praxisjs/runtime': '>=0.8.0'
 
-  '@morphos/layout@1.1.4':
-    resolution: {integrity: sha512-eVV2bP83pppkQOK61vhOHoOvIPzW8i9brDRqSp4MDvSydt8nzRzNJml0L5fm9T9JddC6DLOgJGNJ4jRo7e0RpA==}
+  '@morphos/layout@1.2.1':
+    resolution: {integrity: sha512-aqHDC97Twfc3C2HOHtUszaqSPjA70V9a1ejazxOBJkgzm8zPKl83Yidj01UaElFajYOm7RU37/vNyuIC+XAbTA==}
     peerDependencies:
-      '@morphos/core': 0.1.4
-      '@praxisjs/core': '>=1.0.0'
-      '@praxisjs/decorators': '>=1.0.0'
-      '@praxisjs/jsx': '>=0.5.0'
-      '@praxisjs/runtime': '>=0.3.0'
+      '@morphos/core': 0.1.6
+      '@praxisjs/core': '>=2.3.0'
+      '@praxisjs/decorators': '>=2.0.0'
+      '@praxisjs/jsx': '>=0.8.0'
+      '@praxisjs/runtime': '>=0.8.0'
 
-  '@morphos/overlays@1.0.5':
-    resolution: {integrity: sha512-4kEkQ+e02cpXR/02yCgWZBHHd3QAa80oQWq2wvu+btQxMOAHgCT7igwsT6x0G9b8t3ScMPJkF15KhmHbFwBB4Q==}
+  '@morphos/overlays@1.0.7':
+    resolution: {integrity: sha512-/kuvsY9gvQWBAkFr+N3qyisMc5Btl3clUtP+x+Z2yIg9beLKpuF1DVwD08ZdjassFzb9RKTf1VA2OqITdjCptA==}
     peerDependencies:
-      '@morphos/core': 0.1.4
+      '@morphos/core': 0.1.6
       '@praxisjs/core': '>=1.0.0'
       '@praxisjs/decorators': '>=1.0.0'
       '@praxisjs/jsx': '>=0.5.0'
@@ -1373,23 +1373,23 @@ packages:
   '@praxisjs/decorators@2.0.0':
     resolution: {integrity: sha512-Lro2VDSfyUG8NGZUxr/9/87MB7L0CD+dZbNBpprw53XSvDoZgHWksqrcfRBEYeENH+qFLGdCjF1UEXnpz6IHNw==}
 
-  '@praxisjs/jsx@0.8.0':
-    resolution: {integrity: sha512-m157F57hq7lIAQb1Do2ykiH3vs4wYWMLHF2ju23oj/wfXSZ+bUPqjLTwkt+BOLAx613URtSB2oGYLdHpB/6JyQ==}
+  '@praxisjs/jsx@0.8.1':
+    resolution: {integrity: sha512-omcapzs7oxMt3hIUg8XF2rp6eVKEhpggvDQH6tR/kDZQKNOPu7c7E3nOp44OAqIr9LIjWOJZqjaEFMQ5ancD+Q==}
 
-  '@praxisjs/runtime@0.8.0':
-    resolution: {integrity: sha512-e0btEarp5tOzY6deI5o/ctjyKaj37MyctjsK4e5uXukyGk9aA0bmnGFyPHuCDJg7q//YPFMbLB6NkdagDqrLvw==}
+  '@praxisjs/runtime@0.8.1':
+    resolution: {integrity: sha512-mxt/gGiqlfRFNBMaZeQ5nV8cdIF9JEBGAXyjmfxRvmfP9LVxwneFoUotQV0C0KMK8L+M5n4hBTUXGOzeCw9Fgw==}
 
   '@praxisjs/shared@0.3.2':
     resolution: {integrity: sha512-tuV/s3Qliw0EB0mYSAqtL9G/l8+ijsz7BmF4qtJqU+GfIO2MiHeih+5XM30KMxi+5WRnbTmvAE2qjZ/yIBaJXA==}
 
-  '@praxisjs/storybook@0.3.0':
-    resolution: {integrity: sha512-zf4EQLbPGaKtd2AsHQh73xPJvMhIfSEmq7/vl0ZKFLKYrvjgFjiNQ3+cEBJlDshQs2E/Zs94Uh3raM3DPhD3ag==}
+  '@praxisjs/storybook@0.3.2':
+    resolution: {integrity: sha512-C2KujAuzM36CZSYxvmQW7o3f0Y4pqZDPpEVtdJ0FyXaovETHDnLIR/efaqd3a0mijAVHVGGNXnTIfog7i41YFA==}
     peerDependencies:
       '@storybook/builder-vite': '>=8.0.0'
       storybook: '>=8.0.0'
 
-  '@praxisjs/vite-plugin@4.1.0':
-    resolution: {integrity: sha512-dnLEIXgI72h0KL4ds2x9XLWCvUFgmenAi8p0SExJspEyFO72t62kVPhEGPP98/z8vfhJ0FpluIxUbh13r8lM+w==}
+  '@praxisjs/vite-plugin@4.2.1':
+    resolution: {integrity: sha512-jy4JwSqOutUMWcSJNShV9CV1MBq/iYSzHvIBQOluuxe7rWPEko3vtaggxEHlG7Gy5xyxVLdHG6VJJvnx7MsykA==}
     peerDependencies:
       '@praxisjs/css': 0.3.5
       vite: '>=8.0.0'
@@ -5738,55 +5738,55 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)':
+  '@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)':
     dependencies:
       '@praxisjs/core': 2.3.0
       '@praxisjs/decorators': 2.0.0
-      '@praxisjs/jsx': 0.8.0
-      '@praxisjs/runtime': 0.8.0
+      '@praxisjs/jsx': 0.8.1
+      '@praxisjs/runtime': 0.8.1
 
-  '@morphos/feedback@1.0.4(@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)':
+  '@morphos/feedback@1.1.1(@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)':
     dependencies:
-      '@morphos/core': 0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)
+      '@morphos/core': 0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)
       '@praxisjs/core': 2.3.0
       '@praxisjs/decorators': 2.0.0
-      '@praxisjs/jsx': 0.8.0
-      '@praxisjs/runtime': 0.8.0
+      '@praxisjs/jsx': 0.8.1
+      '@praxisjs/runtime': 0.8.1
 
-  '@morphos/icons@2.0.1(@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)(lucide@1.27.0)(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))':
+  '@morphos/icons@2.0.3(@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)(lucide@1.27.0)(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))':
     dependencies:
-      '@morphos/core': 0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)
+      '@morphos/core': 0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)
       '@praxisjs/core': 2.3.0
       '@praxisjs/decorators': 2.0.0
-      '@praxisjs/jsx': 0.8.0
-      '@praxisjs/runtime': 0.8.0
+      '@praxisjs/jsx': 0.8.1
+      '@praxisjs/runtime': 0.8.1
     optionalDependencies:
       lucide: 1.27.0
       vite: 8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0)
 
-  '@morphos/inputs@1.0.4(@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)':
+  '@morphos/inputs@1.1.1(@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)':
     dependencies:
-      '@morphos/core': 0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)
+      '@morphos/core': 0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)
       '@praxisjs/core': 2.3.0
       '@praxisjs/decorators': 2.0.0
-      '@praxisjs/jsx': 0.8.0
-      '@praxisjs/runtime': 0.8.0
+      '@praxisjs/jsx': 0.8.1
+      '@praxisjs/runtime': 0.8.1
 
-  '@morphos/layout@1.1.4(@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)':
+  '@morphos/layout@1.2.1(@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)':
     dependencies:
-      '@morphos/core': 0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)
+      '@morphos/core': 0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)
       '@praxisjs/core': 2.3.0
       '@praxisjs/decorators': 2.0.0
-      '@praxisjs/jsx': 0.8.0
-      '@praxisjs/runtime': 0.8.0
+      '@praxisjs/jsx': 0.8.1
+      '@praxisjs/runtime': 0.8.1
 
-  '@morphos/overlays@1.0.5(@morphos/core@0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)':
+  '@morphos/overlays@1.0.7(@morphos/core@0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1))(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)':
     dependencies:
-      '@morphos/core': 0.1.4(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.0)(@praxisjs/runtime@0.8.0)
+      '@morphos/core': 0.1.6(@praxisjs/core@2.3.0)(@praxisjs/decorators@2.0.0)(@praxisjs/jsx@0.8.1)(@praxisjs/runtime@0.8.1)
       '@praxisjs/core': 2.3.0
       '@praxisjs/decorators': 2.0.0
-      '@praxisjs/jsx': 0.8.0
-      '@praxisjs/runtime': 0.8.0
+      '@praxisjs/jsx': 0.8.1
+      '@praxisjs/runtime': 0.8.1
 
   '@napi-rs/wasm-runtime@1.1.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
     dependencies:
@@ -6005,13 +6005,13 @@ snapshots:
       '@praxisjs/core': 2.3.0
       '@praxisjs/shared': 0.3.2
 
-  '@praxisjs/jsx@0.8.0':
+  '@praxisjs/jsx@0.8.1':
     dependencies:
       '@praxisjs/core': 2.3.0
-      '@praxisjs/runtime': 0.8.0
+      '@praxisjs/runtime': 0.8.1
       '@praxisjs/shared': 0.3.2
 
-  '@praxisjs/runtime@0.8.0':
+  '@praxisjs/runtime@0.8.1':
     dependencies:
       '@praxisjs/core': 2.3.0
       '@praxisjs/decorators': 2.0.0
@@ -6019,17 +6019,17 @@ snapshots:
 
   '@praxisjs/shared@0.3.2': {}
 
-  '@praxisjs/storybook@0.3.0(@praxisjs/css@0.3.5)(@storybook/builder-vite@10.4.6(esbuild@0.28.2)(rollup@4.62.2)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react@19.2.7))(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0)))(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react@19.2.7))(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))':
+  '@praxisjs/storybook@0.3.2(@praxisjs/css@0.3.5)(@storybook/builder-vite@10.4.6(esbuild@0.28.2)(rollup@4.62.2)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react@19.2.7))(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0)))(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react@19.2.7))(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))':
     dependencies:
-      '@praxisjs/runtime': 0.8.0
-      '@praxisjs/vite-plugin': 4.1.0(@praxisjs/css@0.3.5)(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
+      '@praxisjs/runtime': 0.8.1
+      '@praxisjs/vite-plugin': 4.2.1(@praxisjs/css@0.3.5)(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
       '@storybook/builder-vite': 10.4.6(esbuild@0.28.2)(rollup@4.62.2)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react@19.2.7))(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
       storybook: 10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react@19.2.7)
     transitivePeerDependencies:
       - '@praxisjs/css'
       - vite
 
-  '@praxisjs/vite-plugin@4.1.0(@praxisjs/css@0.3.5)(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))':
+  '@praxisjs/vite-plugin@4.2.1(@praxisjs/css@0.3.5)(vite@8.1.4(@types/node@25.9.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))':
     dependencies:
       '@praxisjs/css': 0.3.5
       esbuild: 0.28.2

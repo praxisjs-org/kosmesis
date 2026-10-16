@@ -233,7 +233,7 @@ instead of `registry`; its own `registryDependencies` stay within that same name
   manual `note()` only if that file can't be found. With the Lucide icon library it wires
   `@IconProvider(LucideSource)` (`IconProvider` from `@morphos/icons`, `LucideSource` from
   `@morphos/icons/lucide`) and installs `ICON_LIBRARY_DEPENDENCIES` (`constants.ts`), which are
-  pinned to a major range (`@morphos/icons@^2.0.1`) because the generated import only exists from
+  pinned to a major range (`@morphos/icons@^2.0.3`) because the generated import only exists from
   2.0.0. Those ranges must match `packages/registry/package.json` exactly (a test enforces it): when a
   `chore: bump` moves `@morphos/icons` or `lucide`, update both. Every prompt has a flag
   (`utils/init-options.ts`: `--style-system`, `--icon-library`, `--css`, `--root-component`,

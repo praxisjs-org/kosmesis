@@ -90,7 +90,7 @@ export const DEFAULT_ICON_LIBRARY: IconLibrary = "lucide";
  * against (a test enforces it).
  */
 export const ICON_LIBRARY_DEPENDENCIES: Record<IconLibrary, readonly string[]> = {
-  lucide: ["@morphos/icons@^2.0.1", "lucide@^1.27.0"],
+  lucide: ["@morphos/icons@^2.0.3", "lucide@^1.27.0"],
   none: [],
 };
 
